@@ -6,3 +6,5 @@ History
 ------------------
 
 * First release on GitLab.
+* Adding LICENSE
+* Creating setup and structure

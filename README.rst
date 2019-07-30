@@ -8,7 +8,7 @@ Cisco DNA center device claim and delete functionalities
     :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp/LICENSE
     :alt: License
 
-.. image:: https://img.shields.io/badge/Platform-Windows%20%7C%20Lunix%20%7C%20Mac-yellowgreen?style=for-the-badge
+.. image:: https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20Mac-yellowgreen?style=for-the-badge
    :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp
    :alt: OS Support
 
