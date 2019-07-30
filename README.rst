@@ -5,15 +5,15 @@ dnac-pnp
 Cisco DNA center device claim and delete functionalities
 
 .. image:: https://img.shields.io/badge/License-NTT%20EULA%201.0.1-blue.svg?style=for-the-badge
-    :target: https://scm.dimensiondata.com/de-ps/automation/vw-cdn/vw-cdn/blob/master/LICENSE
+    :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp/LICENSE
     :alt: License
 
-.. image:: https://img.shields.io/badge/Platform-linux%20%7C%20mac-yellowgreen.svg?style=for-the-badge
-   :target: https://scm.dimensiondata.com/de-ps/automation/vw-cdn-automation/xnfve
+.. image:: https://img.shields.io/badge/Platform-Windows%20%7C%20Lunix%20%7C%20Mac-yellowgreen?style=for-the-badge
+   :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp
    :alt: OS Support
 
 .. image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7-blue.svg?style=for-the-badge
-   :target: https://scm.dimensiondata.com/de-ps/automation/vw-cdn-automation/xnfve
+   :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp
    :alt: Python Version Support
 
 .. image:: https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge

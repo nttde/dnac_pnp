@@ -43,7 +43,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/N/A/dnac_pnp',
+    url='https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp',
     version='0.1.0',
     zip_safe=False,
 )
