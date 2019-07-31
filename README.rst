@@ -20,7 +20,7 @@ Cisco DNA center device claim and delete functionalities
     :target: https://github.com/python/black
     :alt: Code Style
 
-.. image:: https://img.shields.io/badge/Project%20Layout-Cookiecutter-green.svg?style=for-the-badge
+.. image:: https://img.shields.io/badge/Project%20Layout-Cookiecutter-yellowgreen.svg?style=for-the-badge
     :target: https://cookiecutter.readthedocs.io/en/latest/
     :alt: Project Layout
 
