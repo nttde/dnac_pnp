@@ -1,0 +1,7 @@
+---
+dnac:
+  host: sandboxdnac.cisco.com
+  username: devnetuser
+  password: Cisco123!
+  device_serial: XXXXXX
+  site_name: "global"

@@ -12,7 +12,7 @@ Cisco DNA center device claim and delete functionalities
    :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp
    :alt: OS Support
 
-.. image:: https://img.shields.io/badge/Python-3.6%20%7C%203.7-blue.svg?style=for-the-badge
+.. image:: https://img.shields.io/badge/Python-3.6.7%20%7C%203.7.4-blue.svg?style=for-the-badge
    :target: https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp
    :alt: Python Version Support
 
