@@ -3,18 +3,10 @@
 
 """Main module for dnac-pnp"""
 
-
-# Import builtin python libraries
-import time
-
 # Import external python libraries
-import click
-from tqdm import tqdm
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore
 
 # Import custom python libraries
-import dnac_pnp
-from dnac_pnp.header_handler import get_headers
 from dnac_pnp.dnac_handler import dnac_login
 from dnac_pnp.config_handler import config_files, load_config
 

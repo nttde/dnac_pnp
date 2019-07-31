@@ -14,14 +14,11 @@ Email: kamlesh.koladiya@dimensiondata.com
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
-# Import python libraries
-import sys
-
 # import external python library
 import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore
 
 # Initialize
 init(autoreset=True)

@@ -8,11 +8,10 @@
 import os
 import sys
 from pathlib import Path
-import collections
 
 # Import external python libraries
 import yaml
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore
 
 # Import custom python libraries
 from dnac_pnp import __package_name__ as package_name
