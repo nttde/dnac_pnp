@@ -3,3 +3,4 @@ requests==2.22.0
 tqdm==4.32.2
 colorama==0.4.1
 pyyaml==5.1.1
+wasabi==0.2.2

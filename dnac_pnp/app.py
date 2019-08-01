@@ -3,12 +3,14 @@
 
 """Main module for dnac-pnp"""
 
+# Import builtin python libraries
+import sys
+
 # Import external python libraries
 from colorama import init, Fore
 
-# Import custom python libraries
-from dnac_pnp.dnac_handler import dnac_login
-from dnac_pnp.config_handler import config_files, load_config
+# Import custom (local) python libraries
+from dnac_pnp.dnac_handler import import_manager
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -20,11 +22,7 @@ init(autoreset=True)
 
 def mission_control():
     """Mission control module for this application"""
-    all_configs = load_config(config_files)
-    dnac_configs = all_configs['dnac']
-    token = dnac_login(host=dnac_configs['host'], username=dnac_configs['username'], password=dnac_configs['password'])
-    print(Fore.GREEN + "Token received!")
-    print(f"Token: {token}")
+    import_manager(import_type="bulk")
 
 
 if __name__ == "__main__":

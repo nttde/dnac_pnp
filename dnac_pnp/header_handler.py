@@ -6,6 +6,12 @@
 # Import builtin python libraries
 import sys
 
+# import external python libraries
+from colorama import init, Fore
+
+# Initialize
+init(autoreset=True)
+
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
@@ -16,10 +22,9 @@ def get_headers():
     """
     This function returns appropriate headers
 
-    :param header_type: (str) API call header type (xml/json)
     :return: (dict) A python dictionary of headers
     """
-    msg.info("Setting API headers.....")
+    print(Fore.BLUE + "Setting API headers.....")
     headers = {
         "Content-Type": "application/json"
     }

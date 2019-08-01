@@ -71,7 +71,6 @@ def load_config(config_file_paths=None):
     :return: (dict) Merged configurations
     """
 
-    print(Fore.CYAN + "Configurations")
     # Config finder flag
     file_flag = 0
     permission_flag = 0
@@ -81,7 +80,7 @@ def load_config(config_file_paths=None):
         if os.path.exists(path) and os.path.isfile(path):
             file_flag = 1
             if os.access(path, os.F_OK) and os.access(path, os.R_OK):
-                print(Fore.GREEN + "User configuration: [{}]".format(path))
+                print(Fore.GREEN + "Using configuration from: [{}]".format(path))
                 default_config = path
                 if os.path.exists(default_config) and os.path.isfile(default_config):
                     permission_flag = 1
@@ -101,5 +100,5 @@ def load_config(config_file_paths=None):
     # Create "common" key at runtime
     all_configs["common"] = {}
     all_configs["common"]["base_directory"] = base_directory
-    print(Fore.GREEN + "Configuration read complete")
+    print(Fore.GREEN + "Configuration read complete!")
     return all_configs

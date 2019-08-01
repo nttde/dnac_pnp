@@ -1,10 +1,15 @@
 {
-    "add-device": {
+    "import-device": {
         "method": "POST",
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device/import"
     },
-    "delete-device": {
+    "claim-device": {
+        "method": "POST",
+        "protocol": "https",
+        "api": ""
+    },
+    "remove-device": {
         "method": "DELETE",
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device/import"
