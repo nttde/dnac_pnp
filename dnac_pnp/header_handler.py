@@ -25,7 +25,5 @@ def get_headers():
     :return: (dict) A python dictionary of headers
     """
     print(Fore.BLUE + "Setting API headers.....")
-    headers = {
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
     return headers

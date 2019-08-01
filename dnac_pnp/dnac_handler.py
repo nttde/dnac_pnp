@@ -28,6 +28,7 @@ from wasabi import Printer
 # Import custom (local) python packages
 from dnac_pnp.config_handler import config_files, load_config
 from dnac_pnp.header_handler import get_headers
+from dnac_pnp.device_import_handler import import_single_device, import_bulk_device
 
 # Initialize
 init(autoreset=True)
@@ -61,21 +62,27 @@ def _dnac_login(host=None, username=None, password=None):
 
 
 # Import one or more devices
-def import_manager(**kwargs):
+def import_manager(inputs=None, import_type=None, **kwargs):
     """
     This module manages import of the device(s)
 
+    :param inputs: (dict) A dictionary of user provided inputs
+    :param import_type: (str) device import type "single" or "bulk"
     :param kwargs: (kwargs) Key value pair
     :returns: (str) import status
     """
 
     msg.divider("Configurations")
     all_configs = load_config(config_files)
-    dnac_configs = all_configs['dnac']
+    dnac_configs = all_configs["dnac"]
 
     msg.divider("DNAc login/Token creation")
     try:
-        token = _dnac_login(host=dnac_configs['host'], username=dnac_configs['username'], password=dnac_configs['password'])
+        token = _dnac_login(
+            host=dnac_configs["host"],
+            username=dnac_configs["username"],
+            password=dnac_configs["password"],
+        )
     except KeyError:
         print(Fore.RED + "Key Value pair missing in config file.")
         sys.exit(1)
@@ -83,12 +90,21 @@ def import_manager(**kwargs):
 
     msg.divider("API header management")
     print(Fore.BLUE + f"Generating API headers.....")
-    api_headers = get_headers()
+    dnac_api_headers = get_headers()
     print(Fore.BLUE + f"Attaching authentication token to API header.....")
-    api_headers['X-Auth-Token'] = token
+    dnac_api_headers["X-Auth-Token"] = token
     print(Fore.GREEN + f"Authentication token successfully attached to API header!")
 
     msg.divider(f"Device import")
-    device_catalog_dir = os.path.join(all_configs['common']['base_directory'], 'catalog')
-    device_catalog_file = os.path.join(device_catalog_dir, 'dnac_device_catalog.csv')
+    if import_type == "single":
+        import_single_device(api_headers=dnac_api_headers)
+    elif import_type == "bulk":
+        import_bulk_device(api_headers=dnac_api_headers)
+    else:
+        print(Fore.RED + "Invalid import type!")
+        sys.exit(1)
+    device_catalog_dir = os.path.join(
+        all_configs["common"]["base_directory"], "catalog"
+    )
+    device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
     print(Fore.YELLOW + f"Looking for device catalog in [{device_catalog_file}].....")

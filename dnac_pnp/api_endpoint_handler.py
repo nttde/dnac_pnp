@@ -36,9 +36,7 @@ def generate_api_url(host=None, vendor=None, api_type=None):
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
     )
     if os.path.isfile(api_collection):
-        if os.access(api_collection, os.F_OK) and os.access(
-            api_collection, os.R_OK
-        ):
+        if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
             print(Fore.YELLOW + "Reading API collection.....")
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
