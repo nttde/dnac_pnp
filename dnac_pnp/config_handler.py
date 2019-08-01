@@ -96,7 +96,7 @@ def load_config(config_file_paths=None):
     else:
         print(Fore.YELLOW + "Couldn't locate configuration file!")
         sys.exit(1)
-    base_directory = Path(default_config).parent
+    base_directory = Path(Path(default_config).parent).parent
     # Create "common" key at runtime
     all_configs["common"] = {}
     all_configs["common"]["base_directory"] = base_directory
