@@ -13,6 +13,7 @@ from colorama import init, Fore
 
 # Import custom (local) python libraries
 from dnac_pnp._validators import (
+    initial_message,
     show_info,
     validate_alphanumeric,
     validate_file_extension,
@@ -40,6 +41,7 @@ init(autoreset=True)
 @click.version_option()
 def mission_control(debug):
     """ Application mission control module"""
+    initial_message()
     if debug:
         try:
             from http.client import HTTPConnection
@@ -95,10 +97,13 @@ def acclaim_one(serial_number, product_id, site_name, host_name):
     if host_name is None:
         host_name = serial_number
     air_config = {
-        "serial_number": serial_number,
-        "product_id": product_id,
-        "site_name": site_name,
-        "host_name": host_name,
+        "serialNumber": serial_number,
+        "pid": product_id,
+        "tags": {
+            "siteName": [site_name],
+            "rfProfile": ["TYPICAL"]
+        },
+        "hostname": host_name,
     }
     logging.info(f"Air Config: {air_config}")
     import_manager(inputs=air_config, import_type="single")

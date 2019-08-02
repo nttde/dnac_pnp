@@ -8,6 +8,7 @@
 import os
 import sys
 import json
+import logging
 
 # Import external python libraries
 from colorama import init, Fore
@@ -21,12 +22,11 @@ init(autoreset=True)
 
 
 # Define API URL generator
-def generate_api_url(host=None, vendor=None, api_type=None):
+def generate_api_url(host=None, api_type=None):
     """
     This function creates appropriate API URL based on vendor and api call type
 
-    :param host: (str) IP address or
-    :param vendor: (str) Name of the NFV provider in one word (cisco, juniper)
+    :param host: (str) IP address or FQDN
     :param api_type: (str) API call type (name) e.g. deploy-vm, nfv-status
     :return: (str) API endpoint
     """
@@ -35,12 +35,14 @@ def generate_api_url(host=None, vendor=None, api_type=None):
     api_collection = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
     )
+    logging.info(f"Endpoint file: {api_collection}")
     if os.path.isfile(api_collection):
         if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
-            print(Fore.YELLOW + "Reading API collection.....")
+            print(Fore.CYAN + "Reading API collection.....")
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
-            api_components = api_collection[vendor][api_type]
+            api_components = api_collection[api_type]
+            logging.info(f"API components: {api_components}")
         else:
             print(Fore.RED + f"Read permission error")
             sys.exit(1)

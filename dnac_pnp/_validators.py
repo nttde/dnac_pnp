@@ -8,6 +8,7 @@ import sys
 
 # Import external python libraries
 from colorama import init, Fore
+from wasabi import Printer
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -15,6 +16,7 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 # Initialize text coloring
 init(autoreset=True)
+msg = Printer()
 
 
 # Show information about the package
@@ -58,3 +60,11 @@ def validate_file_extension(ctx, param, value):
         ctx.abort()
     else:
         return value
+
+
+# Initial message
+def initial_message():
+    """This function shows the initialization message"""
+
+    msg.divider("Initializing")
+    print(Fore.CYAN + f"Initializing.....")

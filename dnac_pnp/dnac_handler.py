@@ -80,13 +80,16 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     msg.divider("Configurations")
     all_configs = load_config(config_files)
     dnac_configs = all_configs["dnac"]
+    dnac_host = dnac_configs["host"]
+    dnac_username = dnac_configs["username"]
+    dnac_password = dnac_configs["password"]
 
     msg.divider("DNAc login/Token creation")
     try:
         token = _dnac_login(
-            host=dnac_configs["host"],
-            username=dnac_configs["username"],
-            password=dnac_configs["password"],
+            host=dnac_host,
+            username=dnac_username,
+            password=dnac_password,
         )
     except KeyError:
         print(Fore.RED + "Key Value pair missing in config file.")
@@ -95,7 +98,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     print(Fore.GREEN + "Token received!")
 
     msg.divider("API header management")
-    print(Fore.BLUE + f"Generating API headers.....")
+    print(Fore.CYAN + f"Generating API headers.....")
 
     dnac_api_headers = get_headers()
     print(Fore.BLUE + f"Attaching authentication token to API header.....")
@@ -103,16 +106,16 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     print(Fore.GREEN + f"Authentication token successfully attached to API header!")
     logging.info(f"Headers: {dnac_api_headers}")
 
-    msg.divider(f"Device import")
+    msg.divider(f"Device management")
     if import_type == "single":
-        import_single_device(api_headers=dnac_api_headers)
+        import_single_device(host=dnac_host, api_headers=dnac_api_headers, payload=inputs)
     elif import_type == "bulk":
+        device_catalog_dir = os.path.join(
+            all_configs["common"]["base_directory"], "catalog"
+        )
+        device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
+        print(Fore.CYAN + f"Looking for device catalog in [{device_catalog_file}].....")
         import_bulk_device(api_headers=dnac_api_headers)
     else:
         print(Fore.RED + "Invalid import type!")
         sys.exit(1)
-    device_catalog_dir = os.path.join(
-        all_configs["common"]["base_directory"], "catalog"
-    )
-    device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
-    print(Fore.CYAN + f"Looking for device catalog in [{device_catalog_file}].....")
