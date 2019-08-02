@@ -17,6 +17,7 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Import builtin python libraries
 import sys
 import os
+import logging
 
 # import external python libraries
 import requests
@@ -50,7 +51,7 @@ def _dnac_login(host=None, username=None, password=None):
 
     url = "https://{}/dna/system/api/v1/auth/token".format(host)
     headers = {"content-type": "application/json"}
-    print(Fore.YELLOW + f"Logging in to DNAC at [{host}].....")
+    print(Fore.CYAN + f"Logging in to DNAC at [{host}].....")
     response = requests.request(
         "POST",
         url,
@@ -86,14 +87,17 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     except KeyError:
         print(Fore.RED + "Key Value pair missing in config file.")
         sys.exit(1)
+    logging.info(f"Token: {token}")
     print(Fore.GREEN + "Token received!")
 
     msg.divider("API header management")
     print(Fore.BLUE + f"Generating API headers.....")
+
     dnac_api_headers = get_headers()
     print(Fore.BLUE + f"Attaching authentication token to API header.....")
     dnac_api_headers["X-Auth-Token"] = token
     print(Fore.GREEN + f"Authentication token successfully attached to API header!")
+    logging.info(f"Headers: {dnac_api_headers}")
 
     msg.divider(f"Device import")
     if import_type == "single":
@@ -107,4 +111,4 @@ def import_manager(inputs=None, import_type=None, **kwargs):
         all_configs["common"]["base_directory"], "catalog"
     )
     device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
-    print(Fore.YELLOW + f"Looking for device catalog in [{device_catalog_file}].....")
+    print(Fore.CYAN + f"Looking for device catalog in [{device_catalog_file}].....")

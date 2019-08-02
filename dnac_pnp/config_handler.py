@@ -8,6 +8,7 @@
 import os
 import sys
 from pathlib import Path
+import logging
 
 # Import external python libraries
 import yaml
@@ -75,6 +76,7 @@ def load_config(config_file_paths=None):
     file_flag = 0
     permission_flag = 0
 
+    logging.info(f"Default lookup paths: {config_file_paths}")
     for path in config_file_paths:
         print(Fore.CYAN + f"Looking for config in: [{path}].....")
         if os.path.exists(path) and os.path.isfile(path):
@@ -101,4 +103,5 @@ def load_config(config_file_paths=None):
     all_configs["common"] = {}
     all_configs["common"]["base_directory"] = base_directory
     print(Fore.GREEN + "Configuration read complete!")
+    logging.info(f"Configs: {all_configs}")
     return all_configs

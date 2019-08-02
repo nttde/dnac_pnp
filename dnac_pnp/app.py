@@ -5,12 +5,18 @@
 
 # Import builtin python libraries
 import sys
+import logging
 
 # Import external python libraries
 import click
 from colorama import init, Fore
 
 # Import custom (local) python libraries
+from dnac_pnp._validators import (
+    show_info,
+    validate_alphanumeric,
+    validate_file_extension,
+)
 from dnac_pnp.dnac_handler import import_manager
 
 # Source code meta data
@@ -21,53 +27,33 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 init(autoreset=True)
 
 
-# Show information abou the package
-def show_info():
-    """This module prints information about the package on screen"""
-
-    try:
-        from dnac_pnp import __package_name__ as package_name
-        from dnac_pnp import __version__ as version
-        from dnac_pnp import __license__ as package_license
-        from dnac_pnp import __author__ as author
-        from dnac_pnp import __email__ as email
-    except ImportError:
-        print(Fore.RED + f"[x] Can't import information")
-        sys.exit(1)
-    print(Fore.CYAN + f"Package Name: " + Fore.GREEN + f"{package_name}")
-    print(Fore.CYAN + f"Version: " + Fore.GREEN + f"{version}")
-    print(Fore.CYAN + f"License: " + Fore.GREEN + f"{package_license}")
-    print(Fore.CYAN + f"Author: " + Fore.GREEN + f"{author}")
-    print(Fore.CYAN + f"Contact: " + Fore.GREEN + f"{email}")
-
-
-# Validate input serial number
-def validate_alphanumeric(ctx, param, value):
-    """This function validates and allows only letters and numbers"""
-
-    if not value.isalnum():
-        print(Fore.RED + "[x] Invalid input!")
-        ctx.abort()
-    else:
-        return value
-
-
-# Validate file extension
-def validate_file_extension(ctx, param, value):
-    """This function validates file extensions"""
-    allowed_extensions = ["csv"]
-    if value.rsplit(".", 1)[1] not in allowed_extensions:
-        print(Fore.RED + "[x] Provided file extension not allowed!")
-        ctx.abort()
-    else:
-        return value
-
-
 @click.group()
+@click.option(
+    "--debug",
+    "debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
 @click.version_option()
-def mission_control():
+def mission_control(debug):
     """ Application mission control module"""
-    pass
+    if debug:
+        try:
+            from http.client import HTTPConnection
+        except ImportError:
+            print(Fore.RED + f"[x] Can't import http client")
+            sys.exit(1)
+        print(Fore.YELLOW + f"[+] DEBUG MODE IS ON")
+        debug_format = Fore.YELLOW + f"[+] %(levelname)s %(asctime)-15s %(message)s"
+        HTTPConnection.debuglevel = 4
+        logging.basicConfig(format=debug_format)
+        logging.getLogger().setLevel(logging.DEBUG)
+        requests_log = logging.getLogger("urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -114,8 +100,8 @@ def acclaim_one(serial_number, product_id, site_name, host_name):
         "site_name": site_name,
         "host_name": host_name,
     }
-    print(air_config)
-    # import_manager(inputs=air_config, import_type="single")
+    logging.info(f"Air Config: {air_config}")
+    import_manager(inputs=air_config, import_type="single")
 
 
 @mission_control.command(short_help="Add and claim multiple devices.")
@@ -130,12 +116,14 @@ def acclaim_one(serial_number, product_id, site_name, host_name):
 )
 # Add multiple devices
 def acclaim_in_bulk(catalog_file):
-    pass
+    """Add and claim multiple devices"""
+
+    print(catalog_file)
 
 
 @mission_control.command(short_help="Shows package information.")
 # Information about this package
 def info():
-    """This module prints informaion about the package"""
+    """This module prints information about the package"""
 
     show_info()
