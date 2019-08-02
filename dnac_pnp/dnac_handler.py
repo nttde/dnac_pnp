@@ -59,7 +59,11 @@ def _dnac_login(host=None, username=None, password=None):
         headers=headers,
         verify=False,
     )
-    return response.json()["Token"]
+    if response.status_code == 200:
+        return response.json()["Token"]
+    else:
+        print(Fore.RED + f"[x] Server responded with [{response.status_code}] [{response.text}]")
+        sys.exit(1)
 
 
 # Import one or more devices
