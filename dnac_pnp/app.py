@@ -9,7 +9,7 @@ import logging
 
 # Import external python libraries
 import click
-from colorama import init, Fore
+from colorama import init, Fore, Back
 
 # Import custom (local) python libraries
 from dnac_pnp._validators import (
@@ -24,8 +24,19 @@ from dnac_pnp.dnac_handler import import_manager
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
-# Initialize text coloring
-init(autoreset=True)
+
+# Click context manager class
+class Context(object):
+    """Click context manager class"""
+
+    def __init__(self):
+        """Constructor method for click context manager class"""
+
+        self.debug = False
+        self.initial_msg = False
+
+
+pass_context = click.make_pass_decorator(Context, ensure=True)
 
 
 @click.group()
@@ -39,17 +50,18 @@ init(autoreset=True)
     type=str,
 )
 @click.version_option()
-def mission_control(debug):
-    """ Application mission control module"""
-    initial_message()
+@pass_context
+def mission_control(context, debug):
+    """ Mission control module for the application"""
+    context.debug = debug
     if debug:
         try:
             from http.client import HTTPConnection
         except ImportError:
-            print(Fore.RED + f"[x] Can't import http client")
+            click.secho(f"[x] Can't import http client", fg="red")
             sys.exit(1)
-        print(Fore.YELLOW + f"[+] DEBUG MODE IS ON")
-        debug_format = Fore.YELLOW + f"[+] %(levelname)s %(asctime)-15s %(message)s"
+        click.secho(f"[+] DEBUG mode is ON", fg="yellow")
+        debug_format = "[+] %(levelname)s %(asctime)-15s %(message)s"
         HTTPConnection.debuglevel = 4
         logging.basicConfig(format=debug_format)
         logging.getLogger().setLevel(logging.DEBUG)
@@ -93,16 +105,20 @@ def mission_control(debug):
     required=False,
     type=str,
 )
-def acclaim_one(serial_number, product_id, site_name, host_name):
+@pass_context
+def acclaim_one(context, serial_number, product_id, site_name, host_name):
     if host_name is None:
+        click.secho("[^] Warning: ", nl=False, fg="yellow")
+        click.secho(
+            f"No hostname provided! Serial number will be used as hostname",
+            fg="black",
+            bg="yellow",
+        )
         host_name = serial_number
     air_config = {
         "serialNumber": serial_number,
         "pid": product_id,
-        "tags": {
-            "siteName": [site_name],
-            "rfProfile": ["TYPICAL"]
-        },
+        "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
         "hostname": host_name,
     }
     logging.info(f"Air Config: {air_config}")
@@ -119,16 +135,17 @@ def acclaim_one(serial_number, product_id, site_name, host_name):
     type=click.Path(exists=True, dir_okay=False),
     callback=validate_file_extension,
 )
-# Add multiple devices
-def acclaim_in_bulk(catalog_file):
+@pass_context
+def acclaim_in_bulk(context, catalog_file):
     """Add and claim multiple devices"""
 
     print(catalog_file)
 
 
 @mission_control.command(short_help="Shows package information.")
+@pass_context
 # Information about this package
-def info():
+def info(context):
     """This module prints information about the package"""
 
     show_info()
