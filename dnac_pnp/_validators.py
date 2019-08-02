@@ -35,7 +35,7 @@ def show_info():
     print(Fore.CYAN + f"Package Name: " + Fore.GREEN + f"{package_name}")
     print(Fore.CYAN + f"Version: " + Fore.GREEN + f"{version}")
     print(Fore.CYAN + f"License: " + Fore.GREEN + f"{package_license}")
-    print(Fore.CYAN + f"Author: " + Fore.GREEN + f"{author}")
+    print(Fore.CYAN + f"Maintainer: " + Fore.GREEN + f"{author}")
     print(Fore.CYAN + f"Contact: " + Fore.GREEN + f"{email}")
 
 
