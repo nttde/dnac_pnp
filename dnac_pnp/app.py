@@ -17,6 +17,7 @@ from dnac_pnp._validators import (
     show_info,
     validate_alphanumeric,
     validate_file_extension,
+    debug_manager,
 )
 from dnac_pnp.dnac_handler import import_manager
 
@@ -53,21 +54,9 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
 @pass_context
 def mission_control(context, debug):
     """ Mission control module for the application"""
+
     context.debug = debug
-    if debug:
-        try:
-            from http.client import HTTPConnection
-        except ImportError:
-            click.secho(f"[x] Can't import http client", fg="red")
-            sys.exit(1)
-        click.secho(f"[+] DEBUG mode is ON", fg="yellow")
-        debug_format = "[+] %(levelname)s %(asctime)-15s %(message)s"
-        HTTPConnection.debuglevel = 4
-        logging.basicConfig(format=debug_format)
-        logging.getLogger().setLevel(logging.DEBUG)
-        requests_log = logging.getLogger("urllib3")
-        requests_log.setLevel(logging.DEBUG)
-        requests_log.propagate = True
+    context.initial_msg = True
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -107,13 +96,14 @@ def mission_control(context, debug):
 )
 @pass_context
 def acclaim_one(context, serial_number, product_id, site_name, host_name):
+    """This module is the entry-point for single device add and claim"""
+
+    if context.initial_msg:
+        initial_message()
+    if context.debug:
+        debug_manager()
     if host_name is None:
-        click.secho("[^] Warning: ", nl=False, fg="yellow")
-        click.secho(
-            f"No hostname provided! Serial number will be used as hostname",
-            fg="black",
-            bg="yellow",
-        )
+        click.secho(f"[^] Warning: No hostname provided! Serial number will be used as hostname", fg="yellow")
         host_name = serial_number
     air_config = {
         "serialNumber": serial_number,
