@@ -46,7 +46,7 @@ config_files = [
 # Read configurations
 def _read_configs(config_file_paths=None):
     """
-    This function reads configurations from a .yml file
+    This private method reads configurations from a .yml file
 
     :param config_file_paths: Configuration files full path (default and custom)
     """
@@ -69,11 +69,11 @@ def load_config(config_file_paths=None):
     :return: (dict) Merged configurations
     """
 
+    logging.info(f"Default lookup paths: {config_file_paths}")
     # Config finder flag
     file_flag = 0
     permission_flag = 0
 
-    logging.info(f"Default lookup paths: {config_file_paths}")
     for path in config_file_paths:
         click.secho(f"[*] Searching config in: [{path}].....", fg="cyan")
         if os.path.exists(path) and os.path.isfile(path):
