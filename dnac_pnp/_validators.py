@@ -8,7 +8,6 @@ import sys
 import logging
 
 # Import external python libraries
-from colorama import init, Fore
 from wasabi import Printer
 import click
 
@@ -73,7 +72,7 @@ def initial_message():
     """This function shows the initialization message"""
 
     msg.divider("Initializing")
-    click.secho(f"[#] Initializing.....", fg="cyan")
+    click.secho(f"[*] Initializing.....", fg="cyan")
 
 
 # Turn on/off debugging

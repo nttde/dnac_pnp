@@ -23,7 +23,7 @@ import logging
 import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
-from colorama import init, Fore
+import click
 from wasabi import Printer
 
 # Import custom (local) python packages
@@ -32,7 +32,6 @@ from dnac_pnp.header_handler import get_headers
 from dnac_pnp.device_import_handler import import_single_device, import_bulk_device
 
 # Initialize
-init(autoreset=True)
 msg = Printer()
 
 # Disable SSL warning
@@ -51,7 +50,7 @@ def _dnac_login(host=None, username=None, password=None):
 
     url = "https://{}/dna/system/api/v1/auth/token".format(host)
     headers = {"content-type": "application/json"}
-    print(Fore.CYAN + f"Logging in to DNAC at [{host}].....")
+    click.secho(f"[$] Generating authentication token.....", fg="blue")
     response = requests.request(
         "POST",
         url,
@@ -59,10 +58,11 @@ def _dnac_login(host=None, username=None, password=None):
         headers=headers,
         verify=False,
     )
+
     if response.status_code == 200:
         return response.json()["Token"]
     else:
-        print(Fore.RED + f"[x] Server responded with [{response.status_code}] [{response.text}]")
+        click.secho(f"[x] Server responded with [{response.status_code}] [{response.text}]", fg="red")
         sys.exit(1)
 
 
@@ -85,6 +85,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     dnac_password = dnac_configs["password"]
 
     msg.divider("DNAc login/Token creation")
+    click.secho(f"[*] Logging in to DNAC at [{dnac_host}].....", fg="cyan")
     try:
         token = _dnac_login(
             host=dnac_host,
@@ -92,18 +93,17 @@ def import_manager(inputs=None, import_type=None, **kwargs):
             password=dnac_password,
         )
     except KeyError:
-        print(Fore.RED + "Key Value pair missing in config file.")
+        click.secho(f"[x] Key Value pair missing in config file.", fg="red")
         sys.exit(1)
     logging.info(f"Token: {token}")
-    print(Fore.GREEN + "Token received!")
+    click.secho(f"[#] Token received!", fg="green")
 
     msg.divider("API header management")
-    print(Fore.CYAN + f"Generating API headers.....")
-
+    click.secho(f"[*] Generating API headers.....", fg="cyan")
     dnac_api_headers = get_headers()
-    print(Fore.BLUE + f"Attaching authentication token to API header.....")
+    click.secho(f"[$] Attaching authentication token to API header.....", fg="blue")
     dnac_api_headers["X-Auth-Token"] = token
-    print(Fore.GREEN + f"Authentication token successfully attached to API header!")
+    click.secho(f"[#] Authentication token successfully attached to API header!", fg="green")
     logging.info(f"Headers: {dnac_api_headers}")
 
     msg.divider(f"Device management")
@@ -114,8 +114,8 @@ def import_manager(inputs=None, import_type=None, **kwargs):
             all_configs["common"]["base_directory"], "catalog"
         )
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
-        print(Fore.CYAN + f"Looking for device catalog in [{device_catalog_file}].....")
+        click.secho(f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan")
         import_bulk_device(api_headers=dnac_api_headers)
     else:
-        print(Fore.RED + "Invalid import type!")
+        click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)

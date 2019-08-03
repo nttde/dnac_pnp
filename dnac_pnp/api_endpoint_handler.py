@@ -11,14 +11,11 @@ import json
 import logging
 
 # Import external python libraries
-from colorama import init, Fore
+import click
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
-
-# Initialize colorama
-init(autoreset=True)
 
 
 # Define API URL generator
@@ -38,22 +35,20 @@ def generate_api_url(host=None, api_type=None):
     logging.info(f"Endpoint file: {api_collection}")
     if os.path.isfile(api_collection):
         if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
-            print(Fore.CYAN + "Reading API collection.....")
+            click.secho("[$] Reading API collection.....", fg="blue")
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
             api_components = api_collection[api_type]
             logging.info(f"API components: {api_components}")
         else:
-            print(Fore.RED + f"Read permission error")
+            click.secho(f"[X] Read permission error", fg="red")
             sys.exit(1)
     else:
-        print(Fore.RED + f"Can't find API collection!")
+        click.secho(f"[x] Can't find API collection!", fg="red")
         sys.exit(1)
     protocol = api_components["protocol"]
     api = api_components["api"]
     method = api_components["method"]
     parameters = api_components["parameters"]
-
     api_url = f"{protocol}://{host}{api}"
-
     return method, api_url, parameters

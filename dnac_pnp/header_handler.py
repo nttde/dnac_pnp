@@ -3,14 +3,8 @@
 
 """This module handles the headers for API call"""
 
-# Import builtin python libraries
-import sys
-
 # import external python libraries
-from colorama import init, Fore
-
-# Initialize
-init(autoreset=True)
+import click
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -24,6 +18,6 @@ def get_headers():
 
     :return: (dict) A python dictionary of headers
     """
-    print(Fore.BLUE + "Setting API headers.....")
+    click.secho(f"[$] Setting API headers.....", fg="blue")
     headers = {"Content-Type": "application/json"}
     return headers

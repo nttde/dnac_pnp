@@ -4,12 +4,10 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
-import sys
 import logging
 
 # Import external python libraries
 import click
-from colorama import init, Fore, Back
 
 # Import custom (local) python libraries
 from dnac_pnp._validators import (

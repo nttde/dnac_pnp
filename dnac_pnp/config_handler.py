@@ -12,7 +12,7 @@ import logging
 
 # Import external python libraries
 import yaml
-from colorama import init, Fore
+import click
 
 # Import custom python libraries
 from dnac_pnp import __package_name__ as package_name
@@ -21,9 +21,6 @@ from dnac_pnp import __package_name__ as package_name
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
-
-# Initialize wasabi
-init(autoreset=True)
 
 # Config and template path
 base_locations = [
@@ -53,13 +50,13 @@ def _read_configs(config_file_paths=None):
 
     :param config_file_paths: Configuration files full path (default and custom)
     """
-    print(Fore.BLUE + "Reading configurations.....")
+    click.secho(f"[$] Reading configurations.....", fg="blue")
     for config_file in config_file_paths:
         with open(config_file, "r") as stream:
             try:
                 defaults = yaml.load(stream, Loader=yaml.FullLoader)
             except Exception as err:
-                print(Fore.RED + f"ERROR: {err}")
+                click.secho(f"ERROR: {err}", fg="red")
                 sys.exit(1)
     return defaults
 
@@ -78,17 +75,17 @@ def load_config(config_file_paths=None):
 
     logging.info(f"Default lookup paths: {config_file_paths}")
     for path in config_file_paths:
-        print(Fore.CYAN + f"Looking for config in: [{path}].....")
+        click.secho(f"[*] Searching config in: [{path}].....", fg="cyan")
         if os.path.exists(path) and os.path.isfile(path):
             file_flag = 1
             if os.access(path, os.F_OK) and os.access(path, os.R_OK):
-                print(Fore.GREEN + "Using configuration from: [{}]".format(path))
+                click.secho(f"[#] Using config from: [{path}]", fg="green")
                 default_config = path
                 if os.path.exists(default_config) and os.path.isfile(default_config):
                     permission_flag = 1
                 break
             else:
-                print(Fore.YELLOW + "Permission ERROR: [{}]".format(path))
+                click.secho(f"[x] Permission ERROR: [{path}]", fg="red")
                 permission_flag = 0
         else:
             file_flag = 0
@@ -96,12 +93,12 @@ def load_config(config_file_paths=None):
         # Read configurations
         all_configs = _read_configs(config_file_paths=[default_config])
     else:
-        print(Fore.YELLOW + "Couldn't locate configuration file!")
+        click.secho(f"[x] Could not locate configuration file!", fg="red")
         sys.exit(1)
     base_directory = Path(Path(default_config).parent).parent
     # Create "common" key at runtime
     all_configs["common"] = {}
     all_configs["common"]["base_directory"] = base_directory
-    print(Fore.GREEN + "Configuration read complete!")
+    click.secho(f"[#] Configuration read complete!", fg="green")
     logging.info(f"Configs: {all_configs}")
     return all_configs
