@@ -101,7 +101,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name):
     if context.debug:
         debug_manager()
     if host_name is None:
-        click.secho(f"[^] Warning: No hostname provided! Serial number will be used as hostname", fg="yellow")
+        click.secho(f"[!] Warning: No hostname provided! Serial number will be used as hostname", fg="yellow")
         host_name = serial_number
     air_config = {
         "serialNumber": serial_number,

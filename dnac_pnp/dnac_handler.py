@@ -110,9 +110,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     if import_type == "single":
         import_single_device(host=dnac_host, api_headers=dnac_api_headers, payload=inputs)
     elif import_type == "bulk":
-        device_catalog_dir = os.path.join(
-            all_configs["common"]["base_directory"], "catalog"
-        )
+        device_catalog_dir = os.path.join(all_configs["common"]["base_directory"], "catalog")
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
         click.secho(f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan")
         import_bulk_device(api_headers=dnac_api_headers)
