@@ -18,6 +18,9 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Initialize wasabi printer class
 msg = Printer()
 
+# Accepted status codes
+accepted_status_codes = [200]
+
 
 # Show information about the package
 def show_info():
@@ -71,6 +74,7 @@ def validate_file_extension(ctx, param, value):
 def initial_message():
     """This function shows the initialization message"""
 
+    click.clear()
     msg.divider("Initializing")
     click.secho(f"[*] Initializing.....", fg="cyan")
 

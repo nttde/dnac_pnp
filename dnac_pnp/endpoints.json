@@ -3,9 +3,7 @@
         "method": "POST",
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device/import",
-        "parameters": {
-
-        }
+        "parameters": {}
     },
     "claim-device": {
         "method": "POST",

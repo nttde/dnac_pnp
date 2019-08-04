@@ -17,6 +17,7 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Import builtin python libraries
 import sys
 import os
+import json
 import logging
 
 # import external python libraries
@@ -95,20 +96,22 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     except KeyError:
         click.secho(f"[x] Key Value pair missing in config file.", fg="red")
         sys.exit(1)
-    logging.info(f"Token: {token}")
+    logging.info(f"Token from DNAc: {token}")
     click.secho(f"[#] Token received!", fg="green")
-
-    msg.divider("API header management")
-    click.secho(f"[*] Generating API headers.....", fg="cyan")
-    dnac_api_headers = get_headers()
-    click.secho(f"[$] Attaching authentication token to API header.....", fg="blue")
-    dnac_api_headers["X-Auth-Token"] = token
-    click.secho(f"[#] Authentication token successfully attached to API header!", fg="green")
-    logging.info(f"Headers: {dnac_api_headers}")
-
+    dnac_api_headers = get_headers(auth_token=token)
     msg.divider(f"Device management")
+    click.secho(f"[*] Starting device management.....", fg="cyan")
+    click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     if import_type == "single":
-        import_single_device(host=dnac_host, api_headers=dnac_api_headers, payload=inputs)
+        try:
+            json_input = json.loads(inputs)
+        except TypeError:
+            click.secho(f"[!] Warning: Input data stream is not valid JSON format!", fg="yellow")
+            logging.info(f"Input data is not valid JSON format")
+            click.secho(f"[$] Trying to convert the input stream into JSON.....", fg="blue")
+            json_input = json.dumps(inputs)
+            logging.info(f"JSON formatted input: {json.dumps(inputs, indent=4)}")
+        import_single_device(host=dnac_host, api_headers=dnac_api_headers, data=json_input)
     elif import_type == "bulk":
         device_catalog_dir = os.path.join(all_configs["common"]["base_directory"], "catalog")
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")

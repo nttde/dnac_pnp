@@ -48,13 +48,23 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
     help="Turns on DEBUG mode.",
     type=str,
 )
+@click.option(
+    "--dry-run",
+    "dry_run",
+    help="Dry runs the process of adding and claiming",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    type=str,
+)
 @click.version_option()
 @pass_context
-def mission_control(context, debug):
+def mission_control(context, debug, dry_run):
     """ Mission control module for the application"""
 
     context.debug = debug
     context.initial_msg = True
+    context.dry_run = True
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -101,13 +111,21 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name):
     if context.debug:
         debug_manager()
     if host_name is None:
-        click.secho(f"[!] Warning: No hostname provided! Serial number will be used as hostname", fg="yellow")
+        click.secho(
+            f"[!] Warning: No hostname provided! Serial number will be used as hostname",
+            fg="yellow",
+        )
         host_name = serial_number
     air_config = {
-        "serialNumber": serial_number,
-        "pid": product_id,
-        "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
-        "hostname": host_name,
+        "deviceInfo": {
+            "hostname": host_name,
+            "serialNumber": serial_number,
+            "pid": product_id,
+            "tags": {
+                "siteName": [site_name],
+                "rfProfile": ["TYPICAL"],
+            }
+        }
     }
     logging.info(f"Air Config: {air_config}")
     import_manager(inputs=air_config, import_type="single")

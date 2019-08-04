@@ -39,7 +39,6 @@ def generate_api_url(host=None, api_type=None):
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
             api_components = api_collection[api_type]
-            logging.info(f"API components: {api_components}")
         else:
             click.secho(f"[X] Read permission error", fg="red")
             sys.exit(1)
