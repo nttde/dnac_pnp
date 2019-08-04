@@ -9,9 +9,10 @@ import json
 import logging
 
 # Import external python libraries
-from wasabi import Printer
 import requests
+from requests.exceptions import HTTPError
 import click
+from wasabi import Printer
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -42,25 +43,35 @@ def call_api_endpoint(
 
     click.secho(f"[*] Checking payload.....", fg='cyan')
     try:
-        json_input = json.loads(data)
+        json_input = json.loads([data])
     except TypeError:
-        click.secho(f"[!] Warning: Input data stream is not valid JSON format!", fg="yellow")
+        click.secho(f"[!] Warning: Input data stream is not valid JSON!", fg="yellow")
         logging.debug(f"Input data is not valid JSON format")
         click.secho(f"[$] Trying to convert the input stream into JSON.....", fg="blue")
         try:
             json_input = json.dumps([data], indent=4, sort_keys=True)
-            logging.debug(f"JSON formatted input: {json_input}")
+            logging.debug(f"JSON formatted payload: {json_input}")
+            click.secho(f"[#] Payload converted into valid JSON!", fg="green")
         except Exception as err:
             logging.debug(f"Error: {err}")
             click.secho(f"Error! while creating json object", fg="red")
             sys.exit(1)
     click.secho(f"[$] Making API call.....", fg="blue")
-    response = requests.request(
-        method,
-        api_url,
-        data=json_input,
-        headers=api_headers,
-        params=parameters,
-        verify=False,
-    )
-    return response
+    try:
+        response = requests.request(
+            method,
+            api_url,
+            data=json_input,
+            headers=api_headers,
+            params=parameters,
+            verify=False,
+        )
+        response.raise_for_status()
+    except HTTPError as http_err:
+        click.secho(f"[X] HTTP Error! ERROR: {http_err}")
+        sys.exit(1)
+    except Exception as err:
+        click.secho(f"[x] ERROR: {err}")
+        sys.exit(1)
+    else:
+        return response
