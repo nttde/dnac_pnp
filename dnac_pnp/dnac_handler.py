@@ -17,7 +17,6 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Import builtin python libraries
 import sys
 import os
-import json
 import logging
 
 # import external python libraries
@@ -103,15 +102,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     click.secho(f"[*] Starting device management.....", fg="cyan")
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     if import_type == "single":
-        try:
-            json_input = json.loads(inputs)
-        except TypeError:
-            click.secho(f"[!] Warning: Input data stream is not valid JSON format!", fg="yellow")
-            logging.info(f"Input data is not valid JSON format")
-            click.secho(f"[$] Trying to convert the input stream into JSON.....", fg="blue")
-            json_input = json.dumps(inputs)
-            logging.info(f"JSON formatted input: {json.dumps(inputs, indent=4)}")
-        import_single_device(host=dnac_host, api_headers=dnac_api_headers, data=json_input)
+        import_single_device(host=dnac_host, api_headers=dnac_api_headers, data=inputs)
     elif import_type == "bulk":
         device_catalog_dir = os.path.join(all_configs["common"]["base_directory"], "catalog")
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
