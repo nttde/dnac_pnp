@@ -45,11 +45,11 @@ def call_api_endpoint(
         json_input = json.loads(data)
     except TypeError:
         click.secho(f"[!] Warning: Input data stream is not valid JSON format!", fg="yellow")
-        logging.info(f"Input data is not valid JSON format")
+        logging.debug(f"Input data is not valid JSON format")
         click.secho(f"[$] Trying to convert the input stream into JSON.....", fg="blue")
         try:
             json_input = json.dumps([data], indent=4, sort_keys=True)
-            logging.info(f"JSON formatted input: {json_input}")
+            logging.debug(f"JSON formatted input: {json_input}")
         except Exception as err:
             logging.debug(f"Error: {err}")
             click.secho(f"Error! while creating json object", fg="red")

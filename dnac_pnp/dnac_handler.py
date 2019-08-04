@@ -95,7 +95,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     except KeyError:
         click.secho(f"[x] Key Value pair missing in config file.", fg="red")
         sys.exit(1)
-    logging.info(f"Token from DNAc: {token}")
+    logging.debug(f"Token from DNAc: {token}")
     click.secho(f"[#] Token received!", fg="green")
     dnac_api_headers = get_headers(auth_token=token)
     msg.divider(f"Device management")

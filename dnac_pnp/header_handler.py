@@ -33,9 +33,9 @@ def get_headers(auth_token=None):
     if auth_token is None:
         return headers
     else:
-        logging.info(f"Token in header:{auth_token}")
+        logging.debug(f"Token in header:{auth_token}")
         click.secho(f"[$] Attaching authentication token to API header.....", fg="blue")
         headers["X-Auth-Token"] = auth_token
         click.secho(f"[#] Authentication token successfully attached to API header!", fg="green")
-        logging.info(f"Headers: {headers}")
+        logging.debug(f"Headers: {headers}")
         return headers

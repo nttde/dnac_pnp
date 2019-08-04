@@ -34,7 +34,7 @@ def import_single_device(host=None, api_headers=None, data=None):
 
     method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
 
-    logging.info(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
+    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     response = call_api_endpoint(
         method=method,
         api_url=api_url,
@@ -45,7 +45,7 @@ def import_single_device(host=None, api_headers=None, data=None):
     if response.status_code in accepted_status_codes:
         click.secho(f"[#] Device Add API call accepted!", fg="green")
     else:
-        logging.info(f"Response from server: {response.text}")
+        logging.debug(f"Response from server: {response.text}")
         click.secho(f"[x] Error: [{response.status_code}] ({response.reason})", fg="red")
         sys.exit(1)
 

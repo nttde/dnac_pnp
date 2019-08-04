@@ -32,7 +32,7 @@ def generate_api_url(host=None, api_type=None):
     api_collection = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
     )
-    logging.info(f"Endpoint file: {api_collection}")
+    logging.debug(f"Endpoint file: {api_collection}")
     if os.path.isfile(api_collection):
         if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
             click.secho("[$] Reading API collection.....", fg="blue")

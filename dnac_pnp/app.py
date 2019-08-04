@@ -136,7 +136,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, device
             "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
         }
     }
-    logging.info(f"Air Config: {air_config}")
+    logging.debug(f"Air Config: {air_config}")
     import_manager(inputs=air_config, import_type="single")
 
 
