@@ -90,7 +90,7 @@ def mission_control(context, debug, dry_run):
     "-b",
     "--site-name",
     "site_name",
-    help="Site name for the device with full hierarchy.",
+    help="Site name with full hierarchy.",
     required=True,
     type=str,
 )
@@ -102,8 +102,19 @@ def mission_control(context, debug, dry_run):
     required=False,
     type=str,
 )
+@click.option(
+    "-t",
+    "--device-type",
+    "device_type",
+    help="Device type.",
+    required=False,
+    default="Router",
+    show_default=True,
+    type=str,
+    callback=validate_alphanumeric,
+)
 @pass_context
-def acclaim_one(context, serial_number, product_id, site_name, host_name):
+def acclaim_one(context, serial_number, product_id, site_name, host_name, device_type):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
@@ -120,11 +131,9 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name):
         "deviceInfo": {
             "hostname": host_name,
             "serialNumber": serial_number,
+            "deviceType": device_type,
             "pid": product_id,
-            "tags": {
-                "siteName": [site_name],
-                "rfProfile": ["TYPICAL"],
-            }
+            "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
         }
     }
     logging.info(f"Air Config: {air_config}")
