@@ -28,7 +28,6 @@ from wasabi import Printer
 
 # Import custom (local) python packages
 from dnac_pnp.config_handler import config_files, load_config
-from dnac_pnp.header_handler import get_headers
 from dnac_pnp.device_import_handler import import_single_device, import_bulk_device
 
 # Initialize
@@ -97,17 +96,16 @@ def import_manager(inputs=None, import_type=None, **kwargs):
         sys.exit(1)
     logging.debug(f"Token from DNAc: {token}")
     click.secho(f"[#] Token received!", fg="green")
-    dnac_api_headers = get_headers(auth_token=token)
     msg.divider(f"Device management")
     click.secho(f"[*] Starting device management.....", fg="cyan")
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     if import_type == "single":
-        import_single_device(host=dnac_host, api_headers=dnac_api_headers, data=inputs)
+        import_single_device(host=dnac_host, dnac_token=token, data=inputs)
     elif import_type == "bulk":
         device_catalog_dir = os.path.join(all_configs["common"]["base_directory"], "catalog")
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
         click.secho(f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan")
-        import_bulk_device(api_headers=dnac_api_headers)
+        import_bulk_device(authentication_token=token)
     else:
         click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)

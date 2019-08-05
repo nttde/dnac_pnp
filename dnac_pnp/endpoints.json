@@ -15,5 +15,13 @@
         "protocol": "https",
         "api": "/api/v1/onboarding/pnp-device/",
         "parameters": {}
+    },
+    "get-device-info": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/onboarding/pnp-device",
+        "parameters": {
+            "serialNumber": ""
+        }
     }
 }
