@@ -50,4 +50,5 @@ def generate_api_url(host=None, api_type=None):
     method = api_components["method"]
     parameters = api_components["parameters"]
     api_url = f"{protocol}://{host}{api}"
+    click.secho(f"[#] API endpoint URL created!", fg="green")
     return method, api_url, parameters

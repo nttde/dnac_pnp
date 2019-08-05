@@ -96,6 +96,14 @@ def mission_control(context, debug, dry_run):
     type=str,
 )
 @click.option(
+    "-i",
+    "--image-name",
+    "image_name",
+    help="Image full name with extension.",
+    required=True,
+    type=str,
+)
+@click.option(
     "-h",
     "--host-name",
     "host_name",
@@ -115,7 +123,7 @@ def mission_control(context, debug, dry_run):
     callback=validate_alphanumeric,
 )
 @pass_context
-def acclaim_one(context, serial_number, product_id, site_name, host_name, device_type):
+def acclaim_one(context, serial_number, product_id, site_name, image_name, host_name, device_type):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
@@ -130,10 +138,11 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, device
         host_name = serial_number
     air_config = {
         "deviceInfo": {
-            "hostname": host_name,
+            "name": host_name,
             "serialNumber": serial_number,
             "deviceType": device_type,
             "pid": product_id,
+            "imageName": image_name,
             "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
         }
     }

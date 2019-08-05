@@ -23,5 +23,21 @@
         "parameters": {
             "serialNumber": ""
         }
+    },
+    "get-site-info": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/site",
+        "parameters": {
+            "name": ""
+        }
+    },
+    "get-image-info": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/image/importation",
+        "parameters": {
+            "name": ""
+        }
     }
 }
