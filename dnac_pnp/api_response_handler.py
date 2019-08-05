@@ -29,7 +29,7 @@ def handle_response(response=None):
     """
 
     if response.status_code in accepted_status_codes:
-        click.secho(f"[#] [{response.status_code}] API call accepted!", fg="green")
+        click.secho(f"[#] [{response.status_code}] API call accepted by the server!", fg="green")
         if response.headers["Content-Type"] == "application/json":
             json_response_body = json.dumps(response.json(), indent=4, sort_keys=True)
             logging.debug(f"Response content: {json_response_body}")

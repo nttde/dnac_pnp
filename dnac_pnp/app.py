@@ -16,6 +16,7 @@ from dnac_pnp._validators import (
     validate_alphanumeric,
     validate_file_extension,
     debug_manager,
+    validate_delete_input,
 )
 from dnac_pnp.dnac_handler import import_manager
 
@@ -164,3 +165,20 @@ def info(context):
     """This module prints information about the package"""
 
     show_info()
+
+
+@mission_control.command(short_help="Delete or more devices.")
+@click.option(
+    "-s",
+    "--serial-number",
+    "serial_number",
+    help="Comma separated serial numbers",
+    required=True,
+    type=str,
+    callback=validate_delete_input,
+)
+@pass_context
+def delete(context, serial_number):
+    """Add and claim multiple devices"""
+
+    print(serial_number)

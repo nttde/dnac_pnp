@@ -97,3 +97,15 @@ def debug_manager():
     requests_log = logging.getLogger("urllib3")
     requests_log.setLevel(logging.DEBUG)
     requests_log.propagate = True
+
+
+# Validate delete input
+def validate_delete_input(ctx, param, value):
+    """This function validates the device delete input"""
+
+    if not value.split(','):
+        click.secho(f"[x] Provided input is not supported!", fg="red")
+        click.secho(f"[*] Use comma separated values", fg="cyan")
+        ctx.abort()
+    else:
+        return value
