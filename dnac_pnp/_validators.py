@@ -6,6 +6,7 @@
 # Import builtin python libraries
 import sys
 import logging
+import re
 
 # Import external python libraries
 from wasabi import Printer
@@ -48,11 +49,24 @@ def show_info():
 
 
 # Validate input serial number
-def validate_alphanumeric(ctx, param, value):
-    """This function validates and allows only letters and numbers"""
+def validate_serial(ctx, param, value):
+    """This function validates serial number"""
 
     if not value.isalnum():
-        click.secho(f"[x] Invalid input!", fg="red")
+        click.secho(f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.", fg="red")
+        ctx.abort()
+    else:
+        if len(value) > 11:
+            click.secho(f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.")
+        else:
+            return value
+
+
+# Validate rest of the inputs
+def validate_input(ctx, param, value):
+    """This function validates other inputs. [alphanumeric and - and _]"""
+    if not re.match("^[A-Za-z0-9_-]*$", value):
+        click.secho(f"[x] Invalid input! No special character is accepted except [- and _]", fg="red")
         ctx.abort()
     else:
         return value
@@ -103,7 +117,7 @@ def debug_manager():
 def validate_delete_input(ctx, param, value):
     """This function validates the device delete input"""
 
-    if not value.split(','):
+    if not value.isalnum():
         click.secho(f"[x] Provided input is not supported!", fg="red")
         click.secho(f"[*] Use comma separated values", fg="cyan")
         ctx.abort()

@@ -13,10 +13,10 @@ import click
 from dnac_pnp._validators import (
     initial_message,
     show_info,
-    validate_alphanumeric,
+    validate_serial,
+    validate_input,
     validate_file_extension,
     debug_manager,
-    validate_delete_input,
 )
 from dnac_pnp.dnac_handler import import_manager
 
@@ -49,18 +49,9 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
     help="Turns on DEBUG mode.",
     type=str,
 )
-@click.option(
-    "--dry-run",
-    "dry_run",
-    help="Dry runs the process of adding and claiming",
-    is_flag=True,
-    default=False,
-    show_default=True,
-    type=str,
-)
 @click.version_option()
 @pass_context
-def mission_control(context, debug, dry_run):
+def mission_control(context, debug):
     """ Mission control module for the application"""
 
     context.debug = debug
@@ -76,7 +67,7 @@ def mission_control(context, debug, dry_run):
     help="Serial number of the device.",
     required=True,
     type=str,
-    callback=validate_alphanumeric,
+    callback=validate_serial,
 )
 @click.option(
     "-p",
@@ -85,7 +76,7 @@ def mission_control(context, debug, dry_run):
     help="Product ID of the device. (e.g. Cisco2690)",
     required=True,
     type=str,
-    callback=validate_alphanumeric,
+    callback=validate_input,
 )
 @click.option(
     "-b",
@@ -120,15 +111,24 @@ def mission_control(context, debug, dry_run):
     default="Router",
     show_default=True,
     type=str,
-    callback=validate_alphanumeric,
+    callback=validate_input,
+)
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
 )
 @pass_context
-def acclaim_one(context, serial_number, product_id, site_name, image_name, host_name, device_type):
+def acclaim_one(context, serial_number, product_id, site_name, image_name, host_name, device_type, sub_debug):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
         initial_message()
-    if context.debug:
+    if context.debug or sub_debug:
         debug_manager()
     if host_name is None:
         click.secho(
@@ -160,10 +160,23 @@ def acclaim_one(context, serial_number, product_id, site_name, image_name, host_
     type=click.Path(exists=True, dir_okay=False),
     callback=validate_file_extension,
 )
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
 @pass_context
-def acclaim_in_bulk(context, catalog_file):
+def acclaim_in_bulk(context, catalog_file, sub_debug):
     """Add and claim multiple devices"""
 
+    if context.initial_msg:
+        initial_message()
+    if context.debug or sub_debug:
+        debug_manager()
     print(catalog_file)
 
 
@@ -176,18 +189,27 @@ def info(context):
     show_info()
 
 
-@mission_control.command(short_help="Delete or more devices.")
+@mission_control.command(short_help="Delete [un-claim + remove] or more devices.")
 @click.option(
     "-s",
-    "--serial-number",
-    "serial_number",
-    help="Comma separated serial numbers",
+    "--serial-numbers",
+    "serial_numbers",
+    help="Comma separated serial numbers.",
     required=True,
     type=str,
-    callback=validate_delete_input,
+    callback=validate_serial,
+)
+@click.option(
+    "--dry-run",
+    "dry_run",
+    help="Dry runs the process.",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    type=str,
 )
 @pass_context
-def delete(context, serial_number):
+def delete(context, serial_numbers, dry_run):
     """Add and claim multiple devices"""
 
-    print(serial_number)
+    print(serial_numbers)
