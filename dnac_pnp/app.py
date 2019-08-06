@@ -143,7 +143,7 @@ def acclaim_one(context, serial_number, product_id, site_name, image_name, host_
             "deviceType": device_type,
             "pid": product_id,
             "imageName": image_name,
-            "tags": {"siteName": [site_name], "rfProfile": ["TYPICAL"]},
+            "siteName": site_name,
         }
     }
     logging.debug(f"Air Config: {air_config}")

@@ -5,19 +5,18 @@
 
 # Import builtin python libraries
 import sys
+import os
 import logging
 import re
+import json
 
 # Import external python libraries
-from wasabi import Printer
 import click
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
-# Initialize wasabi printer class
-msg = Printer()
 
 # Accepted status codes
 accepted_status_codes = [200]
@@ -28,24 +27,16 @@ def show_info():
     """This module prints information about the package on screen"""
 
     try:
-        from dnac_pnp import __package_name__ as package_name
-        from dnac_pnp import __version__ as version
-        from dnac_pnp import __license__ as package_license
-        from dnac_pnp import __author__ as maintainer
-        from dnac_pnp import __email__ as email
-    except ImportError:
-        click.secho(f"[x] Can't import information", fg="red")
+        pkg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "compatible_dnac_packages.json")
+        with open(pkg_file) as pkg_info:
+            data = json.load(pkg_info)
+        for key, value in data.items():
+            click.secho(f"{key}: ", fg="cyan", nl=False)
+            click.secho(f"{value}", fg="yellow")
+    except Exception as err:
+        click.secho(f"[x] Can not obtain compatible package information.", fg="red")
+        click.secho(f"[x] ERROR: {err}", fg="red")
         sys.exit(1)
-    click.secho(f"Package Name: ", fg="cyan", nl=False)
-    click.secho(f"{package_name}")
-    click.secho(f"Version: ", fg="cyan", nl=False)
-    click.secho(f"{version}")
-    click.secho(f"License: ", fg="cyan", nl=False)
-    click.secho(f"{package_license}")
-    click.secho(f"Maintainer: ", fg="cyan", nl=False)
-    click.secho(f"{maintainer}")
-    click.secho(f"Contact : ", fg="cyan", nl=False)
-    click.secho(f"{email}")
 
 
 # Validate input serial number
@@ -89,8 +80,8 @@ def initial_message():
     """This function shows the initialization message"""
 
     click.clear()
-    msg.divider("Initializing")
     click.secho(f"[*] Initializing.....", fg="cyan")
+    click.secho(f"[*] Please user 'dnac_pnp info' command to see supported version of Cisco DNA Center")
 
 
 # Turn on/off debugging

@@ -16,7 +16,7 @@ from dnac_pnp.api_endpoint_handler import generate_api_url
 from dnac_pnp.header_handler import get_headers
 from dnac_pnp.api_call_handler import call_api_endpoint
 from dnac_pnp.api_response_handler import handle_response
-from dnac_pnp.device_claim_handler import get_device_id, get_site_id, get_image_id
+from dnac_pnp.dnac_info_handler import get_device_id, get_site_id, get_image_id
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
