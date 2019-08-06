@@ -56,7 +56,9 @@ def claim_device(dnac_host=None, auth_token=None, device_id=None, site_id=None):
     :return: (object) Response object
     """
 
-    method, api_url, parameters = generate_api_url(host=dnac_host, api_type="claim-device")
+    method, api_url, parameters = generate_api_url(
+        host=dnac_host, api_type="claim-device"
+    )
     headers = get_headers(auth_token=auth_token)
     payload = _generate_claim_payload(device_id=device_id, site_id=site_id)
     api_response = call_api_endpoint(

@@ -38,8 +38,8 @@ def import_single_device(host=None, dnac_token=None, data=None):
     :returns: (int) Server response status code
     """
 
-    device_serial_number = data['deviceInfo']['serialNumber']
-    site_name = data['deviceInfo']['siteName']
+    device_serial_number = data["deviceInfo"]["serialNumber"]
+    site_name = data["deviceInfo"]["siteName"]
     # ========================== Add device to PnP list ===================================
     msg.divider(f"Add [{device_serial_number}]")
     method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
@@ -54,25 +54,41 @@ def import_single_device(host=None, dnac_token=None, data=None):
     )
     response_status, response_body = handle_response(response=api_response)
     # ======================== Claim device ==============================================
-    if response_status and response_body['successList']:
+    if response_status and response_body["successList"]:
         click.secho(f"[#] Device added!", fg="green")
         msg.divider(f"Claim [{device_serial_number}]")
-        click.secho(f"[*] Starting CLAIM process for serial [{device_serial_number}].....", fg="cyan")
-        device_id = get_device_id(dnac_host=host, authentication_token=dnac_token, serial_number=device_serial_number)
-        site_id = get_site_id(dnac_host=host, authentication_token=dnac_token, site_name=site_name)
+        click.secho(
+            f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
+            fg="cyan",
+        )
+        device_id = get_device_id(
+            dnac_host=host,
+            authentication_token=dnac_token,
+            serial_number=device_serial_number,
+        )
+        site_id = get_site_id(
+            dnac_host=host, authentication_token=dnac_token, site_name=site_name
+        )
         logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
         if device_id and site_id:
-            claim_status = claim_device(dnac_host=host, auth_token=dnac_token, device_id=device_id, site_id=site_id)
+            claim_status = claim_device(
+                dnac_host=host,
+                auth_token=dnac_token,
+                device_id=device_id,
+                site_id=site_id,
+            )
             if claim_status:
                 click.secho(f"[#] DONE!", fg="green")
         else:
             click.secho(f"[x] Required information still missing!")
             sys.exit(1)
     else:
-        click.secho(f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
-                    fg="red")
-        err_msg = response_body['failureList'][0]['msg']
-        err_serial = response_body['failureList'][0]['serialNum']
+        click.secho(
+            f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
+            fg="red",
+        )
+        err_msg = response_body["failureList"][0]["msg"]
+        err_serial = response_body["failureList"][0]["serialNum"]
         click.secho(f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red")
         sys.exit(1)
 

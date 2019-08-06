@@ -27,7 +27,9 @@ def show_info():
     """This module prints information about the package on screen"""
 
     try:
-        pkg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "compatible_dnac_packages.json")
+        pkg_file = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "compatible_dnac_packages.json"
+        )
         with open(pkg_file) as pkg_info:
             data = json.load(pkg_info)
         for key, value in data.items():
@@ -44,11 +46,16 @@ def validate_serial(ctx, param, value):
     """This function validates serial number"""
 
     if not value.isalnum():
-        click.secho(f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.", fg="red")
+        click.secho(
+            f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
+            fg="red",
+        )
         ctx.abort()
     else:
         if len(value) > 11:
-            click.secho(f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.")
+            click.secho(
+                f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less."
+            )
             ctx.abort()
         else:
             return value
@@ -58,7 +65,10 @@ def validate_serial(ctx, param, value):
 def validate_input(ctx, param, value):
     """This function validates other inputs. [alphanumeric and - and _]"""
     if not re.match("^[A-Za-z0-9_-]*$", value):
-        click.secho(f"[x] Invalid input! No special character is accepted except [- and _]", fg="red")
+        click.secho(
+            f"[x] Invalid input! No special character is accepted except [- and _]",
+            fg="red",
+        )
         ctx.abort()
     else:
         return value
@@ -82,7 +92,10 @@ def initial_message():
 
     click.clear()
     click.secho(f"[*] Initializing.....", fg="cyan")
-    click.secho(f"[*] Please use 'dnac_pnp info' command to see supported version of Cisco DNA Center", fg="cyan")
+    click.secho(
+        f"[*] Please use 'dnac_pnp info' command to see supported version of Cisco DNA Center",
+        fg="cyan",
+    )
 
 
 # Turn on/off debugging
@@ -96,7 +109,9 @@ def debug_manager():
         sys.exit(1)
     click.secho(f"[+] ", nl=False, fg="yellow")
     click.secho(f"DEBUG mode is ON", fg="black", bg="yellow")
-    debug_format = click.style("[+] %(levelname)s %(asctime)-15s %(message)s", fg="yellow")
+    debug_format = click.style(
+        "[+] %(levelname)s %(asctime)-15s %(message)s", fg="yellow"
+    )
     HTTPConnection.debuglevel = 4
     logging.basicConfig(format=debug_format)
     logging.getLogger().setLevel(logging.DEBUG)

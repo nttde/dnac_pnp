@@ -31,7 +31,9 @@ def get_device_id(dnac_host=None, authentication_token=None, serial_number=None)
     :returns: (str) device ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(host=dnac_host, api_type="get-device-info")
+    method, api_url, parameters = generate_api_url(
+        host=dnac_host, api_type="get-device-info"
+    )
     parameters["serialNumber"] = serial_number
     response_body = get_response(
         authentication_token=authentication_token,
@@ -60,7 +62,9 @@ def get_site_id(dnac_host=None, authentication_token=None, site_name=None):
     :return: (str) site ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(host=dnac_host, api_type="get-site-info")
+    method, api_url, parameters = generate_api_url(
+        host=dnac_host, api_type="get-site-info"
+    )
     parameters["name"] = site_name
     response_body = get_response(
         authentication_token=authentication_token,
@@ -70,8 +74,8 @@ def get_site_id(dnac_host=None, authentication_token=None, site_name=None):
     )
     try:
         logging.debug(f"Type: {type(response_body)}")
-        if response_body['status']:
-            site_id = response_body['response'][0]['id']
+        if response_body["status"]:
+            site_id = response_body["response"][0]["id"]
             logging.debug(f"Site ID: {site_id}")
             return site_id
         else:
@@ -94,7 +98,9 @@ def get_image_id(dnac_host=None, authentication_token=None, image_name=None):
     :return: (str) Image ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(host=dnac_host, api_type="get-image-info")
+    method, api_url, parameters = generate_api_url(
+        host=dnac_host, api_type="get-image-info"
+    )
     parameters["name"] = image_name
     response_body = get_response(
         authentication_token=authentication_token,
@@ -104,7 +110,7 @@ def get_image_id(dnac_host=None, authentication_token=None, image_name=None):
     )
     try:
         logging.debug(f"Type: {type(response_body)}")
-        image_id = response_body['response'][0]['imageUuid']
+        image_id = response_body["response"][0]["imageUuid"]
         logging.debug(f"Image ID: {image_id}")
         return image_id
     except KeyError as err:

@@ -62,7 +62,10 @@ def _dnac_login(host=None, username=None, password=None):
     if response.status_code == 200:
         return response.json()["Token"]
     else:
-        click.secho(f"[x] Server responded with [{response.status_code}] [{response.text}]", fg="red")
+        click.secho(
+            f"[x] Server responded with [{response.status_code}] [{response.text}]",
+            fg="red",
+        )
         sys.exit(1)
 
 
@@ -88,9 +91,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     click.secho(f"[*] Logging in to DNAC at [{dnac_host}].....", fg="cyan")
     try:
         token = _dnac_login(
-            host=dnac_host,
-            username=dnac_username,
-            password=dnac_password,
+            host=dnac_host, username=dnac_username, password=dnac_password
         )
     except KeyError:
         click.secho(f"[x] Key Value pair missing in config file.", fg="red")
@@ -102,9 +103,13 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     if import_type == "single":
         import_single_device(host=dnac_host, dnac_token=token, data=inputs)
     elif import_type == "bulk":
-        device_catalog_dir = os.path.join(all_configs["common"]["base_directory"], "catalog")
+        device_catalog_dir = os.path.join(
+            all_configs["common"]["base_directory"], "catalog"
+        )
         device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
-        click.secho(f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan")
+        click.secho(
+            f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan"
+        )
         import_bulk_device(authentication_token=token)
     else:
         click.secho(f"Invalid import type!", fg="red")

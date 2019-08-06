@@ -36,9 +36,13 @@ def _check_payload(payload=None, check=None):
             json_input = json.loads([payload])
             return json_input
         except TypeError:
-            click.secho(f"[!] Warning: Input data stream is not valid JSON!", fg="yellow")
+            click.secho(
+                f"[!] Warning: Input data stream is not valid JSON!", fg="yellow"
+            )
             logging.debug(f"Input data is not valid JSON format")
-            click.secho(f"[$] Trying to convert the input stream into JSON.....", fg="blue")
+            click.secho(
+                f"[$] Trying to convert the input stream into JSON.....", fg="blue"
+            )
             try:
                 json_input = json.dumps([payload], indent=4, sort_keys=True)
                 logging.debug(f"JSON formatted payload: {json_input}")
@@ -76,7 +80,7 @@ def call_api_endpoint(
 
     if data:
         if check_payload:
-            click.secho(f"[*] Checking payload.....", fg='cyan')
+            click.secho(f"[*] Checking payload.....", fg="cyan")
             json_input = _check_payload(payload=data, check=True)
         else:
             json_input = _check_payload(payload=data, check=False)
@@ -104,7 +108,9 @@ def call_api_endpoint(
 
 
 # API call control for device id, site id
-def get_response(authentication_token=None, method=None, endpoint_url=None, parameters=None):
+def get_response(
+    authentication_token=None, method=None, endpoint_url=None, parameters=None
+):
     """
     This private method returns response body as json (if applicable)
 
@@ -132,5 +138,7 @@ def get_response(authentication_token=None, method=None, endpoint_url=None, para
                 click.secho(f"[x] Error")
                 sys.exit(1)
         else:
-            click.secho("[!] Warning: Response from server is not valid JSON", fg="yellow")
+            click.secho(
+                "[!] Warning: Response from server is not valid JSON", fg="yellow"
+            )
             sys.exit(1)

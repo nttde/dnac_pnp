@@ -115,7 +115,9 @@ def mission_control(context, debug):
     type=str,
 )
 @pass_context
-def acclaim_one(context, serial_number, product_id, site_name, host_name, device_type, sub_debug):
+def acclaim_one(
+    context, serial_number, product_id, site_name, host_name, device_type, sub_debug
+):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
