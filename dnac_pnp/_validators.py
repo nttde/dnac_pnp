@@ -82,7 +82,7 @@ def initial_message():
 
     click.clear()
     click.secho(f"[*] Initializing.....", fg="cyan")
-    click.secho(f"[*] Please user 'dnac_pnp info' command to see supported version of Cisco DNA Center")
+    click.secho(f"[*] Please use 'dnac_pnp info' command to see supported version of Cisco DNA Center", fg="cyan")
 
 
 # Turn on/off debugging

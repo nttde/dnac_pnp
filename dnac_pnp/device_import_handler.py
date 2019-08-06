@@ -42,6 +42,7 @@ def import_single_device(host=None, dnac_token=None, data=None):
     image_name = data['deviceInfo']['imageName']
     site_name = data['deviceInfo']['siteName']
     # ========================== Add device to PnP list ===================================
+    msg.divider(f"Add [{device_serial_number}]")
     method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
     logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     dnac_api_headers = get_headers(auth_token=dnac_token)
@@ -55,7 +56,8 @@ def import_single_device(host=None, dnac_token=None, data=None):
     response_status, response_body = handle_response(response=api_response)
     # ======================== Claim device ==============================================
     if response_status and response_body['successList']:
-        msg.divider(f"Claiming [{device_serial_number}]")
+        click.secho(f"[#] Device added!", fg="green")
+        msg.divider(f"Claim [{device_serial_number}]")
         click.secho(f"[*] Starting CLAIM process for serial [{device_serial_number}].....", fg="cyan")
         device_id = get_device_id(dnac_host=host, authentication_token=dnac_token, serial_number=device_serial_number)
         site_id = get_site_id(dnac_host=host, authentication_token=dnac_token, site_name=site_name)

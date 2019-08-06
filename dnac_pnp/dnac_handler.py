@@ -97,7 +97,6 @@ def import_manager(inputs=None, import_type=None, **kwargs):
         sys.exit(1)
     logging.debug(f"Token from DNAc: {token}")
     click.secho(f"[#] Token received!", fg="green")
-    msg.divider(f"Device management")
     click.secho(f"[*] Starting device management.....", fg="cyan")
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     if import_type == "single":
