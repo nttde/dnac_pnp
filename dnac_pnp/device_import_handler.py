@@ -41,6 +41,7 @@ def import_single_device(host=None, dnac_token=None, data=None):
     device_serial_number = data['deviceInfo']['serialNumber']
     image_name = data['deviceInfo']['imageName']
     site_name = data['deviceInfo']['siteName']
+    # ========================== Add device to PnP list ===================================
     method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
     logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     dnac_api_headers = get_headers(auth_token=dnac_token)
@@ -51,8 +52,9 @@ def import_single_device(host=None, dnac_token=None, data=None):
         api_headers=dnac_api_headers,
         parameters=parameters,
     )
-    response_status = handle_response(response=api_response)
-    if response_status:
+    response_status, response_body = handle_response(response=api_response)
+    # ======================== Claim device ==============================================
+    if response_status and response_body['successList']:
         msg.divider(f"Claiming [{device_serial_number}]")
         click.secho(f"[*] Starting CLAIM process for serial [{device_serial_number}].....", fg="cyan")
         device_id = get_device_id(dnac_host=host, authentication_token=dnac_token, serial_number=device_serial_number)
@@ -67,6 +69,13 @@ def import_single_device(host=None, dnac_token=None, data=None):
         else:
             click.secho(f"[x] Required information still missing!")
             sys.exit(1)
+    else:
+        click.secho(f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
+                    fg="red")
+        err_msg = response_body['failureList'][0]['msg']
+        err_serial = response_body['failureList'][0]['serialNum']
+        click.secho(f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red")
+        sys.exit(1)
 
 
 # Bulk device import
