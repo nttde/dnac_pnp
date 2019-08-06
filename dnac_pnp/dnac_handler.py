@@ -109,3 +109,15 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     else:
         click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)
+
+
+# DNA center device deletion
+def delete_devices(serials=None):
+    """
+    This function deletes one or more devices form DNAC PnP"
+
+    :param serials: (str) comma separated string of serial numbers
+    :return: (str) delete status on the screen
+    """
+
+    pass

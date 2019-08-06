@@ -87,14 +87,6 @@ def mission_control(context, debug):
     type=str,
 )
 @click.option(
-    "-i",
-    "--image-name",
-    "image_name",
-    help="Image full name with extension.",
-    required=True,
-    type=str,
-)
-@click.option(
     "-h",
     "--host-name",
     "host_name",
@@ -123,7 +115,7 @@ def mission_control(context, debug):
     type=str,
 )
 @pass_context
-def acclaim_one(context, serial_number, product_id, site_name, image_name, host_name, device_type, sub_debug):
+def acclaim_one(context, serial_number, product_id, site_name, host_name, device_type, sub_debug):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
@@ -142,7 +134,6 @@ def acclaim_one(context, serial_number, product_id, site_name, image_name, host_
             "serialNumber": serial_number,
             "deviceType": device_type,
             "pid": product_id,
-            "imageName": image_name,
             "siteName": site_name,
         }
     }
