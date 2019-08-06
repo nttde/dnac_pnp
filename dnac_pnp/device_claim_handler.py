@@ -37,7 +37,7 @@ def _generate_claim_payload(device_id=None, site_id=None, image_id=None):
         "siteId": site_id,
         "deviceId": device_id,
         "type": "Default",
-        "imageInfo": {"imageId": image_id, "skip": False},
+        "imageInfo": {"imageId": "", "skip": False},
         "configInfo": {},
     }
 
@@ -45,7 +45,7 @@ def _generate_claim_payload(device_id=None, site_id=None, image_id=None):
 
 
 # Claim device
-def claim_device(dnac_host=None, auth_token=None, device_id=None, site_id=None, image_id=None):
+def claim_device(dnac_host=None, auth_token=None, device_id=None, site_id=None):
     """
     This function claims device according to device ID
 
@@ -53,13 +53,12 @@ def claim_device(dnac_host=None, auth_token=None, device_id=None, site_id=None, 
     :param auth_token: (str) DNA center authentication token
     :param device_id: (str) Device ID obtained form DNAC against serial number
     :param site_id: (str) Site ID obtained form DNAC against site name
-    :param image_id: (str) Image ID obtained form DNAC against image full name
     :return: (object) Response object
     """
 
     method, api_url, parameters = generate_api_url(host=dnac_host, api_type="claim-device")
     headers = get_headers(auth_token=auth_token)
-    payload = _generate_claim_payload(device_id=device_id, site_id=site_id, image_id=image_id)
+    payload = _generate_claim_payload(device_id=device_id, site_id=site_id)
     api_response = call_api_endpoint(
         method=method,
         api_url=api_url,
