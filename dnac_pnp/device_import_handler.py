@@ -17,6 +17,7 @@ from dnac_pnp.header_handler import get_headers
 from dnac_pnp.api_call_handler import call_api_endpoint
 from dnac_pnp.api_response_handler import handle_response
 from dnac_pnp.dnac_info_handler import get_device_id, get_site_id, get_image_id
+from dnac_pnp.device_claim_handler import claim_device
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -39,6 +40,7 @@ def import_single_device(host=None, dnac_token=None, data=None):
 
     device_serial_number = data['deviceInfo']['serialNumber']
     image_name = data['deviceInfo']['imageName']
+    site_name = data['deviceInfo']['siteName']
     method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
     logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     dnac_api_headers = get_headers(auth_token=dnac_token)
@@ -54,9 +56,17 @@ def import_single_device(host=None, dnac_token=None, data=None):
         msg.divider(f"Claiming [{device_serial_number}]")
         click.secho(f"[*] Starting CLAIM process for serial [{device_serial_number}].....", fg="cyan")
         device_id = get_device_id(dnac_host=host, authentication_token=dnac_token, serial_number=device_serial_number)
-        site_id = get_site_id(dnac_host=host, authentication_token=dnac_token, site_name="Global/Demo_DE/B1/F3")
+        site_id = get_site_id(dnac_host=host, authentication_token=dnac_token, site_name=site_name)
         image_id = get_image_id(dnac_host=host, authentication_token=dnac_token, image_name=image_name)
         logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}, ImageID: {image_id}")
+        if device_id and site_id and image_id:
+            claim_status = claim_device(dnac_host=host, auth_token=dnac_token, device_id=device_id,
+                                        site_id=site_id, image_id=image_id)
+            if claim_status:
+                click.secho(f"[#] DONE!", fg="green")
+        else:
+            click.secho(f"[x] Required information still missing!")
+            sys.exit(1)
 
 
 # Bulk device import

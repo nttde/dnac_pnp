@@ -45,6 +45,7 @@ def _dnac_login(host=None, username=None, password=None):
     :param host: (str) DNAC host IP
     :param username: (str) DNAC login username
     :param password: (str) DNAC login password
+    :returns (str) Authentication token
     """
 
     url = "https://{}/dna/system/api/v1/auth/token".format(host)

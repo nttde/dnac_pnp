@@ -49,6 +49,7 @@ def validate_serial(ctx, param, value):
     else:
         if len(value) > 11:
             click.secho(f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.")
+            ctx.abort()
         else:
             return value
 

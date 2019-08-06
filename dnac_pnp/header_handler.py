@@ -8,10 +8,6 @@ import logging
 
 # import external python libraries
 import click
-from wasabi import Printer
-
-# Initialize
-msg = Printer()
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -26,7 +22,6 @@ def get_headers(auth_token=None):
     :param auth_token: (str) Authentication token
     :return: (dict) A python dictionary of headers
     """
-    msg.divider("API header management")
     click.secho(f"[*] Generating API headers.....", fg="cyan")
     click.secho(f"[$] Setting API headers.....", fg="blue")
     headers = {"Content-Type": "application/json"}
