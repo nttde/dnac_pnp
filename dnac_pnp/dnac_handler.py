@@ -30,7 +30,7 @@ from dnac_pnp.config_handler import config_files, load_config
 from dnac_pnp.api_call_handler import call_api_endpoint
 from dnac_pnp.api_endpoint_handler import generate_api_url
 from dnac_pnp.api_response_handler import handle_response
-from dnac_pnp.device_import_handler import import_bulk_device, import_single_device
+from dnac_pnp.device_import_handler import import_single_device, device_import_in_bulk
 from dnac_pnp._validators import divider
 
 # Disable SSL warning
@@ -122,7 +122,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
                 f"[#] Using device import catalog file from: [{device_catalog_file}]",
                 fg="green",
             )
-        import_bulk_device(host=dnac_host, import_file=device_catalog_file)
+        device_import_in_bulk(host=dnac_host, import_file=device_catalog_file)
     else:
         click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)

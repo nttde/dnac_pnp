@@ -113,7 +113,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
         debug_manager()
     if host_name is None:
         click.secho(
-            f"[!] Warning: No hostname provided! Serial number will be used as hostname",
+            f"[!] Warning: No hostname provided! Serial number will be used as device name",
             fg="yellow",
         )
         host_name = serial_number

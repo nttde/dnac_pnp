@@ -4,7 +4,9 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
+from collections import OrderedDict
 import csv
+import json
 import sys
 import logging
 
@@ -94,8 +96,8 @@ def import_single_device(host=None, dnac_token=None, data=None):
         sys.exit(1)
 
 
-# Bulk device import
-def import_bulk_device(host=None, import_file=None):
+# Device import in bulk
+def device_import_in_bulk(host=None, import_file=None):
     """
     This module imports devices in bulk
 
@@ -105,7 +107,36 @@ def import_bulk_device(host=None, import_file=None):
     """
 
     # ============================ Parse CSV ============================================
+    logging.debug(f"Reading csv from [{import_file}]")
+    click.secho(f"[$] Reading CSV file.....", fg="blue")
+    csv_rows = []
     with open(import_file) as csv_import_file:
-        data = csv.reader(csv_import_file)
-        for row in data:
-            print(row)
+        reader = csv.DictReader(csv_import_file)
+        title = [item.strip() for item in reader.fieldnames]
+        logging.debug(f"CSV headers: {title}")
+        for r_row in reader:
+            logging.debug(f"Raw input row from file: {r_row}")
+            try:
+                row = OrderedDict(
+                    [(key.strip(), value.strip()) for key, value in r_row.items()]
+                )
+            except AttributeError:
+                logging.error(f"AttributeError: An attribute error has occurred!")
+                logging.debug(f"Skipping row: {r_row}")
+                continue
+            logging.debug(f"Stripped row: {row}")
+            csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
+        click.secho(f"[$] Converting CSV to JSON.....", fg="blue")
+        print(type(csv_rows))
+        json_data = json.dumps(
+            csv_rows,
+            sort_keys=False,
+            indent=4,
+            separators=(",", ": "),
+            ensure_ascii=False,
+        )
+    logging.debug(f"CSV file converted into JSON")
+    logging.debug(f"JSON data: {json_data}")
+    # ========================== Create air config ======================================
+    click.secho(f"[#] CSV data has been converted into JSON!", fg="green")
+    print(type(json_data))
