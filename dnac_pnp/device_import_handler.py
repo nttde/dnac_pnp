@@ -94,6 +94,6 @@ def import_single_device(host=None, dnac_token=None, data=None):
 
 
 # Bulk device import
-def import_bulk_device(host=None, authentication_token=None, data=None):
+def import_bulk_device(host=None, authentication_token=None, import_file=None):
     """This module imports devices in bulk"""
-    pass
+    print(f"reached here")

@@ -149,7 +149,7 @@ def acclaim_one(
     "--catalog-file",
     "catalog_file",
     help="Device catalog file path '.csv' format.",
-    required=True,
+    required=False,
     type=click.Path(exists=True, dir_okay=False),
     callback=validate_file_extension,
 )
@@ -170,16 +170,36 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
         initial_message()
     if context.debug or sub_debug:
         debug_manager()
-    print(catalog_file)
+    if catalog_file:
+        logging.debug(f"Catalog file: {catalog_file}")
+        click.secho(
+            f"[!] warning: Device import catalog detected at input!", fg="yellow"
+        )
+        click.secho(f"[*] Device Import file location: [{catalog_file}]")
+        import_manager(import_type="bulk", device_catalog=catalog_file)
+    else:
+        import_manager(import_type="bulk")
 
 
 @mission_control.command(short_help="Shows package information.")
+@click.option(
+    "--all",
+    "all_info",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Shows full information.",
+    type=str,
+)
 @pass_context
 # Information about this package
-def info(context):
+def info(context, all_info):
     """This module prints information about the package"""
 
-    show_info()
+    if all_info:
+        show_info(view_type="more")
+    else:
+        show_info(view_type="less")
 
 
 @mission_control.command(short_help="Delete [un-claim + remove] or more devices.")

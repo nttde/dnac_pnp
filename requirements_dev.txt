@@ -7,3 +7,4 @@ coverage==4.5.1
 Sphinx==1.8.5
 twine==1.12.1
 wasabi==0.2.2
+isort==4.3.21

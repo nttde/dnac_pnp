@@ -15,23 +15,20 @@ __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 # Import builtin python libraries
-import sys
-import os
 import logging
+import os
+import sys
 
 # import external python libraries
-import requests
-from requests.auth import HTTPBasicAuth
-import urllib3
 import click
-from wasabi import Printer
+import requests
+import urllib3
+from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
 from dnac_pnp.config_handler import config_files, load_config
-from dnac_pnp.device_import_handler import import_single_device, import_bulk_device
-
-# Initialize
-msg = Printer()
+from dnac_pnp.device_import_handler import import_bulk_device, import_single_device
+from dnac_pnp._validators import divider
 
 # Disable SSL warning
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -80,14 +77,14 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     :returns: (str) import status
     """
 
-    msg.divider("Configurations")
+    divider("Configurations")
     all_configs = load_config(config_files)
     dnac_configs = all_configs["dnac"]
     dnac_host = dnac_configs["host"]
     dnac_username = dnac_configs["username"]
     dnac_password = dnac_configs["password"]
 
-    msg.divider("DNAc login/Token creation")
+    divider("DNAc login/Token creation")
     click.secho(f"[*] Logging in to DNAC at [{dnac_host}].....", fg="cyan")
     try:
         token = _dnac_login(
@@ -103,14 +100,22 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     if import_type == "single":
         import_single_device(host=dnac_host, dnac_token=token, data=inputs)
     elif import_type == "bulk":
-        device_catalog_dir = os.path.join(
-            all_configs["common"]["base_directory"], "catalog"
-        )
-        device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
-        click.secho(
-            f"[*] Looking for device catalog in [{device_catalog_file}].....", fg="cyan"
-        )
-        import_bulk_device(authentication_token=token)
+        if "device_catalog" not in kwargs:
+            device_catalog_dir = os.path.join(
+                all_configs["common"]["base_directory"], "catalog"
+            )
+            device_catalog_file = os.path.join(device_catalog_dir, "DeviceImport.csv")
+            click.secho(
+                f"[*] Looking for device catalog file in [{device_catalog_file}].....",
+                fg="cyan",
+            )
+        else:
+            device_catalog_file = kwargs.get("device_catalog")
+            click.secho(
+                f"[#] Using device import catalog file from: [{device_catalog_file}]",
+                fg="green",
+            )
+        import_bulk_device(authentication_token=token, import_file=device_catalog_file)
     else:
         click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)
