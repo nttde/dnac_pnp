@@ -4,6 +4,7 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
+import csv
 import sys
 import logging
 
@@ -35,7 +36,7 @@ def import_single_device(host=None, dnac_token=None, data=None):
     :param host: (str) DNAc IP or FQDN
     :param dnac_token: (str) Authentication token
     :param data: (dict) API body data
-    :returns: (int) Server response status code
+    :returns: (stdout) output to the screen
     """
 
     device_serial_number = data["deviceInfo"]["serialNumber"]
@@ -94,6 +95,17 @@ def import_single_device(host=None, dnac_token=None, data=None):
 
 
 # Bulk device import
-def import_bulk_device(host=None, authentication_token=None, import_file=None):
-    """This module imports devices in bulk"""
-    print(f"reached here")
+def import_bulk_device(host=None, import_file=None):
+    """
+    This module imports devices in bulk
+
+    :param host: (str) DNAc IP or FQDN
+    :param import_file: (path) Full device list file path with extension
+    :returns: (stdout) Output to the screen
+    """
+
+    # ============================ Parse CSV ============================================
+    with open(import_file) as csv_import_file:
+        data = csv.reader(csv_import_file)
+        for row in data:
+            print(row)

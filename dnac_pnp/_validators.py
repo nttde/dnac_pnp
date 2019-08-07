@@ -19,7 +19,8 @@ from dnac_pnp import (
     __author__ as maintainer,
     __email__ as contact_email,
     __version__ as version,
-    __license__ as license,
+    __license__ as package_license,
+    __coffee__ as coffee,
 )
 
 # Source code meta data
@@ -41,7 +42,7 @@ def _show_pkg_info():
         "Version": version,
         "Maintainer": maintainer,
         "Contact": contact_email,
-        "License": license,
+        "License": package_license,
     }
     for key, value in pkg_info.items():
         click.secho(f"{key}: ", fg="cyan", nl=False)
@@ -83,6 +84,7 @@ def show_info(view_type=None):
 
     if view_type == "less":
         _show_pkg_info()
+    divider(coffee)
 
 
 # Validate input serial number

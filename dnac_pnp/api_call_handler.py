@@ -64,6 +64,7 @@ def call_api_endpoint(
     data=None,
     api_headers=None,
     parameters=None,
+    auth=None,
     check_payload=True,
 ):
     """
@@ -74,6 +75,7 @@ def call_api_endpoint(
     :param data: (str) API call payload body [should be JSON]
     :param api_headers: (dict) API headers to be appended to the call
     :param parameters: (dict) Querystring for the API call
+    :param auth: (base64) Authentication string
     :param check_payload: (boolean) whether to check the payload or not
     :returns: (response) Python requests response
     """
@@ -93,6 +95,7 @@ def call_api_endpoint(
             api_url,
             data=json_input,
             headers=api_headers,
+            auth=auth,
             params=parameters,
             verify=False,
         )

@@ -27,6 +27,9 @@ from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
 from dnac_pnp.config_handler import config_files, load_config
+from dnac_pnp.api_call_handler import call_api_endpoint
+from dnac_pnp.api_endpoint_handler import generate_api_url
+from dnac_pnp.api_response_handler import handle_response
 from dnac_pnp.device_import_handler import import_bulk_device, import_single_device
 from dnac_pnp._validators import divider
 
@@ -35,7 +38,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 # Login to DNAC
-def _dnac_login(host=None, username=None, password=None):
+def dnac_token_generator(host=None, username=None, password=None):
     """
     This function logs into DNAC
 
@@ -45,22 +48,31 @@ def _dnac_login(host=None, username=None, password=None):
     :returns (str) Authentication token
     """
 
-    url = "https://{}/dna/system/api/v1/auth/token".format(host)
     headers = {"content-type": "application/json"}
+    method, api_url, parameters = generate_api_url(host=host, api_type="generate-token")
+    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     click.secho(f"[$] Generating authentication token.....", fg="blue")
-    response = requests.request(
-        "POST",
-        url,
+    api_response = call_api_endpoint(
+        method=method,
+        api_url=api_url,
+        api_headers=headers,
         auth=HTTPBasicAuth(username, password),
-        headers=headers,
-        verify=False,
     )
-
-    if response.status_code == 200:
-        return response.json()["Token"]
+    response_status, response_body = handle_response(response=api_response)
+    if response_status:
+        token = response_body["Token"]
     else:
         click.secho(
-            f"[x] Server responded with [{response.status_code}] [{response.text}]",
+            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
+            fg="red",
+        )
+        sys.exit(1)
+    if token:
+        click.secho(f"[#] Token received!", fg="green")
+        return token
+    else:
+        click.secho(
+            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
             fg="red",
         )
         sys.exit(1)
@@ -84,21 +96,16 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     dnac_username = dnac_configs["username"]
     dnac_password = dnac_configs["password"]
 
-    divider("DNAc login/Token creation")
-    click.secho(f"[*] Logging in to DNAC at [{dnac_host}].....", fg="cyan")
-    try:
-        token = _dnac_login(
-            host=dnac_host, username=dnac_username, password=dnac_password
-        )
-    except KeyError:
-        click.secho(f"[x] Key Value pair missing in config file.", fg="red")
-        sys.exit(1)
-    logging.debug(f"Token from DNAc: {token}")
-    click.secho(f"[#] Token received!", fg="green")
+    divider("Device Management")
     click.secho(f"[*] Starting device management.....", fg="cyan")
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
+    # ==================== SINGLE DEVICE IMPORT ===========================================
     if import_type == "single":
+        token = dnac_token_generator(
+            host=dnac_host, username=dnac_username, password=dnac_password
+        )
         import_single_device(host=dnac_host, dnac_token=token, data=inputs)
+    # =================== IMPORT  IN BULK =================================================
     elif import_type == "bulk":
         if "device_catalog" not in kwargs:
             device_catalog_dir = os.path.join(
@@ -115,7 +122,7 @@ def import_manager(inputs=None, import_type=None, **kwargs):
                 f"[#] Using device import catalog file from: [{device_catalog_file}]",
                 fg="green",
             )
-        import_bulk_device(authentication_token=token, import_file=device_catalog_file)
+        import_bulk_device(host=dnac_host, import_file=device_catalog_file)
     else:
         click.secho(f"Invalid import type!", fg="red")
         sys.exit(1)

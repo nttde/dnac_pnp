@@ -1,0 +1,14 @@
+# Example CSV file for DNAC device add and claim in bulk
+# File name MUST be - DeviceImport.csv
+# If the DEVICE NAME is not provided, SERIAL NUMBER will be used as DEVICE NAME
+# SITE should have the name with full hierarchy e.g. Global/Germany/HQ/Building1/Floor3
+# Valid Comment should start with a '#'
+# =====================================================================================
+# Required Fields are : SERIAL NUMBER, PRODUCT ID, SITE
+# File header MUST start with "SERIAL NUMBER"
+# Please make sure there are no special characters in SERIAL NUMBER, PRODUCT ID
+# =====================================================================================
+SERIAL NUMBER, PRODUCT ID, DEVICE NAME, SITE
+FOC1849Z2JL,WSC2960C,MainRouter,Global/Test/Test
+AAA1111K3MX,C891FK9,HallwaySwitch,Global/Test/Test
+FOC1849Z2KK,WSC2960C,MainRouter2,Global/Demo_DE/B1

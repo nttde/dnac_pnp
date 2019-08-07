@@ -75,11 +75,11 @@ def load_config(config_file_paths=None):
     permission_flag = 0
 
     for path in config_file_paths:
-        click.secho(f"[*] Searching config in: [{path}].....", fg="cyan")
+        click.secho(f"[*] Searching configs in: [{path}].....", fg="cyan")
         if os.path.exists(path) and os.path.isfile(path):
             file_flag = 1
             if os.access(path, os.F_OK) and os.access(path, os.R_OK):
-                click.secho(f"[#] Using config from: [{path}]", fg="green")
+                click.secho(f"[#] Using configs from: [{path}]", fg="green")
                 default_config = path
                 if os.path.exists(default_config) and os.path.isfile(default_config):
                     permission_flag = 1

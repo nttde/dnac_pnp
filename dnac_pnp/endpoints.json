@@ -1,4 +1,10 @@
 {
+    "generate-token": {
+        "method": "POST",
+        "protocol": "https",
+        "api": "/dna/system/api/v1/auth/token",
+        "parameters":{}
+    },
     "import-device": {
         "method": "POST",
         "protocol": "https",

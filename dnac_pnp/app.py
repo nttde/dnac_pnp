@@ -95,17 +95,6 @@ def mission_control(context, debug):
     type=str,
 )
 @click.option(
-    "-t",
-    "--device-type",
-    "device_type",
-    help="Device type.",
-    required=False,
-    default="Router",
-    show_default=True,
-    type=str,
-    callback=validate_input,
-)
-@click.option(
     "--debug",
     "sub_debug",
     is_flag=True,
@@ -115,9 +104,7 @@ def mission_control(context, debug):
     type=str,
 )
 @pass_context
-def acclaim_one(
-    context, serial_number, product_id, site_name, host_name, device_type, sub_debug
-):
+def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_debug):
     """This module is the entry-point for single device add and claim"""
 
     if context.initial_msg:
@@ -134,7 +121,6 @@ def acclaim_one(
         "deviceInfo": {
             "name": host_name,
             "serialNumber": serial_number,
-            "deviceType": device_type,
             "pid": product_id,
             "siteName": site_name,
         }
@@ -175,7 +161,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
         click.secho(
             f"[!] warning: Device import catalog detected at input!", fg="yellow"
         )
-        click.secho(f"[*] Device Import file location: [{catalog_file}]")
+        click.secho(f"[*] Device Import file location: [{catalog_file}]", fg="cyan")
         import_manager(import_type="bulk", device_catalog=catalog_file)
     else:
         import_manager(import_type="bulk")
