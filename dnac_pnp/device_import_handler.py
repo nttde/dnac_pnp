@@ -22,7 +22,7 @@ from dnac_pnp.api_call_handler import call_api_endpoint
 from dnac_pnp.api_response_handler import handle_response
 from dnac_pnp.dnac_info_handler import get_device_id, get_site_id
 from dnac_pnp.device_claim_handler import claim
-from dnac_pnp._validators import check_csv_header, check_csv_cell_name, divider
+from dnac_pnp._validators import check_csv_header, check_csv_cell_name, divider, goodbye
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -86,7 +86,6 @@ def add_device(dnac_configs=None, dnac_api_headers=None, payload_data=None):
     :return: (obj) Requests response object
     """
     # ========================== Add device to PnP list ===================================
-    host = dnac_configs["host"]
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
     divider(f"Add [{device_serial_number}]")
     method, api_url, parameters = generate_api_url(api_type="import-device")
@@ -152,7 +151,7 @@ def import_single_device(configs=None, data=None):
         click.secho(f"[#] Device added!", fg="green")
         claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
         if claim_status:
-            click.secho(f"[#] DONE!", fg="green")
+            goodbye()
         else:
             click.secho(f"[X] Claim status: {claim_status}")
             sys.exit(1)

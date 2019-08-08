@@ -27,6 +27,11 @@ from dnac_pnp.config_handler import config_files, load_config
 from dnac_pnp.device_import_handler import import_single_device, device_import_in_bulk
 from dnac_pnp._validators import divider
 
+# Setting global host variable
+all_configs = {}
+dnac_configs = {}
+host = ""
+
 
 # Import one or more devices
 def import_manager(inputs=None, import_type=None, **kwargs):
@@ -39,9 +44,16 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     :returns: (str) import status
     """
 
+    # Using the defined global variables
+    global all_configs
+    global dnac_configs
+    global host
+
     divider("Configurations")
-    all_configs = load_config(config_files)
-    dnac_configs = all_configs["dnac"]
+    if not all_configs:
+        all_configs = load_config(config_files)
+        dnac_configs = all_configs["dnac"]
+        host = dnac_configs["host"]
 
     divider("Device Management")
     click.secho(f"[*] Starting device management.....", fg="cyan")

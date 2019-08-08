@@ -14,7 +14,7 @@ import logging
 import click
 
 # Import custom (local) python packages
-from dnac_pnp.config_handler import config_files, load_config
+import dnac_pnp.dnac_handler as dnac
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -29,10 +29,6 @@ def generate_api_url(api_type=None):
     :param api_type: (str) API call type (name) e.g. deploy-vm, nfv-status
     :return: (str) API endpoint
     """
-
-    all_configs = load_config(config_files)
-    dnac_configs = all_configs["dnac"]
-    host = dnac_configs["host"]
 
     api_collection = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
@@ -54,6 +50,6 @@ def generate_api_url(api_type=None):
     api = api_components["api"]
     method = api_components["method"]
     parameters = api_components["parameters"]
-    api_url = f"{protocol}://{host}{api}"
+    api_url = f"{protocol}://{dnac.host}{api}"
     click.secho(f"[#] API endpoint URL created!", fg="green")
     return method, api_url, parameters

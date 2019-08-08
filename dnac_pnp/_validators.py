@@ -21,7 +21,6 @@ from dnac_pnp import (
     __email__ as contact_email,
     __version__ as version,
     __license__ as package_license,
-    __coffee__ as coffee,
 )
 
 # Source code meta data
@@ -247,7 +246,7 @@ def check_csv_cell_name(cell_name=None):
         valid_cell_name = "pid"
     else:
         valid_cell_name = do_camel_case(cell_name)
-    return  valid_cell_name
+    return valid_cell_name
 
 
 # Check CSV headers
@@ -272,3 +271,10 @@ def check_csv_header(file_headers=None):
         click.secho(f"[*] Retrieved headers from file: {file_headers}", fg="cyan")
         click.secho(f"[*] Accepted headers: {accepted_csv_headers}", fg="cyan")
         sys.exit(1)
+
+
+def goodbye():
+    """This function shows goodbye message"""
+
+    click.secho(f"[#] DONE!", fg="green")
+    divider("Goodbye!")

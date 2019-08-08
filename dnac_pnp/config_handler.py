@@ -69,11 +69,12 @@ def load_config(config_file_paths=None):
     :return: (dict) Merged configurations
     """
 
-    logging.debug(f"Default lookup paths: {config_file_paths}")
+    if config_file_paths is None:
+        config_file_paths = config_files
+    logging.debug(f"Default lookup paths: {config_files}")
     # Config finder flag
     file_flag = 0
     permission_flag = 0
-
     for path in config_file_paths:
         click.secho(f"[*] Searching configs in: [{path}].....", fg="cyan")
         if os.path.exists(path) and os.path.isfile(path):
