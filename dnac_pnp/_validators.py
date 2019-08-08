@@ -4,6 +4,7 @@
 """Validation module for dnac_pnp"""
 
 # Import builtin python libraries
+import collections
 import sys
 import os
 import logging
@@ -28,8 +29,9 @@ __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 
-# Accepted status codes
+# Accepted values
 accepted_status_codes = [200]
+accepted_csv_headers = ["serialNumber", "pid", "siteName", "name"]
 
 
 # Show only package info
@@ -209,3 +211,64 @@ def divider(text="", char="="):
     if len(text) < line_max:
         text = text + char * (line_max - len(text))
     click.secho(text, fg="magenta")
+
+
+# Create camelCase strings
+def do_camel_case(input_string=None):
+    """
+    This function creates camelCased strings
+
+    .. warning::
+
+       Can't handle already camelCased string and unicode strings
+
+    :param input_string: (str) string to be camel cased
+    :returns: (str) Camel cased string
+    """
+
+    word_regex_pattern = re.compile("[^A-Za-z]+")
+    words = word_regex_pattern.split(input_string)
+    camel_cased_string = "".join(w.lower() if i is 0 else w.title() for i, w in enumerate(words))
+    return camel_cased_string
+
+
+# Check cell name
+def check_csv_cell_name(cell_name=None):
+    """
+    This function checks validity of single CSV cell name
+
+    :param cell_name: (str) Cell name form file
+    :return: (str) Valid cell name
+    """
+
+    invalid_entry = re.match("^[pP]roduct.*$", cell_name)
+    if invalid_entry:
+        logging.debug(f"Found invalid header [{cell_name}] in CSV, converting.....")
+        valid_cell_name = "pid"
+    else:
+        valid_cell_name = do_camel_case(cell_name)
+    return  valid_cell_name
+
+
+# Check CSV headers
+def check_csv_header(file_headers=None):
+    """
+    This function checks the csv headers against accepted headers
+
+    :param file_headers: (list) A list of headers retrieved from CSV file
+    :return: (list) A list (subset or equal) of headers that has been checked
+    """
+
+    ret_headers = []
+    for cell in file_headers:
+        valid_cell_name = check_csv_cell_name(cell_name=cell)
+        ret_headers.append(valid_cell_name)
+    logging.debug(f"camelCased headers: {ret_headers}")
+    if collections.Counter(accepted_csv_headers) == collections.Counter(ret_headers):
+        click.secho(f"[#] The list of headers is accepted!", fg="green")
+        return ret_headers
+    else:
+        click.secho(f"[x] The list of headers does not match with accepted headers!", fg="red")
+        click.secho(f"[*] Retrieved headers from file: {file_headers}", fg="cyan")
+        click.secho(f"[*] Accepted headers: {accepted_csv_headers}", fg="cyan")
+        sys.exit(1)
