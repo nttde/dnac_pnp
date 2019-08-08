@@ -85,7 +85,7 @@ def show_info(view_type=None):
 
     if view_type == "less":
         _show_pkg_info()
-    divider(coffee)
+    goodbye()
 
 
 # Validate input serial number
