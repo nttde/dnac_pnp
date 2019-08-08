@@ -21,8 +21,8 @@ from dnac_pnp.header_handler import get_headers
 from dnac_pnp.api_call_handler import call_api_endpoint
 from dnac_pnp.api_response_handler import handle_response
 from dnac_pnp.dnac_info_handler import get_device_id, get_site_id
-from dnac_pnp.device_claim_handler import claim_device
-from dnac_pnp._validators import check_csv_header, check_csv_cell_name
+from dnac_pnp.device_claim_handler import claim
+from dnac_pnp._validators import check_csv_header, check_csv_cell_name, divider
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -42,12 +42,11 @@ def dnac_token_generator(configs=None):
     :returns (str) Authentication token
     """
 
-    dnac_host = configs["host"]
     dnac_username = configs["username"]
     dnac_password = configs["password"]
 
-    headers = {"content-type": "application/json"}
-    method, api_url, parameters = generate_api_url(host=dnac_host, api_type="generate-token")
+    headers = get_headers()
+    method, api_url, parameters = generate_api_url(api_type="generate-token")
     logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     click.secho(f"[$] Generating authentication token.....", fg="blue")
     api_response = call_api_endpoint(
@@ -76,6 +75,63 @@ def dnac_token_generator(configs=None):
         sys.exit(1)
 
 
+# Add a device
+def add_device(dnac_configs=None, dnac_api_headers=None, payload_data=None):
+    """
+    This function adds a device
+
+    :param dnac_configs: (dict) Configurations for DNAC
+    :param dnac_api_headers: (dict) API headers
+    :param payload_data: (dict) Payload data for adding a device
+    :return: (obj) Requests response object
+    """
+    # ========================== Add device to PnP list ===================================
+    host = dnac_configs["host"]
+    device_serial_number = payload_data["deviceInfo"]["serialNumber"]
+    divider(f"Add [{device_serial_number}]")
+    method, api_url, parameters = generate_api_url(api_type="import-device")
+    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
+    api_response = call_api_endpoint(
+        method=method,
+        api_url=api_url,
+        data=payload_data,
+        api_headers=dnac_api_headers,
+        parameters=parameters,
+    )
+    return api_response
+
+
+# Claim a device
+def claim_device(dnac_api_headers=None, payload_data=None):
+    """
+    This function claims a device
+
+    :param dnac_api_headers: (dict) API headers
+    :param payload_data: (dict) Payload data for adding a device
+    :return: (obj) Requests response object
+    """
+    device_serial_number = payload_data["deviceInfo"]["serialNumber"]
+    site_name = payload_data["deviceInfo"]["siteName"]
+    divider(f"Claim [{device_serial_number}]")
+    click.secho(
+        f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
+        fg="cyan",
+    )
+    device_id = get_device_id(serial_number=device_serial_number, dnac_api_headers=dnac_api_headers)
+    site_id = get_site_id(dnac_api_headers=dnac_api_headers, site_name=site_name)
+    logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
+    if device_id and site_id:
+        claim_status = claim(
+            headers=dnac_api_headers,
+            device_id=device_id,
+            site_id=site_id,
+        )
+        return claim_status
+    else:
+        click.secho(f"[x] Required information still missing!")
+        sys.exit(1)
+
+
 # Single device import
 def import_single_device(configs=None, data=None):
     """
@@ -86,52 +142,19 @@ def import_single_device(configs=None, data=None):
     :returns: (stdout) output to the screen
     """
 
-    # ========================== Generate authentication token ============================
-    host = configs["host"]
-    dnac_token = dnac_token_generator(configs=configs)
-    # ========================== Add device to PnP list ===================================
-    device_serial_number = data["deviceInfo"]["serialNumber"]
-    site_name = data["deviceInfo"]["siteName"]
-    msg.divider(f"Add [{device_serial_number}]")
-    method, api_url, parameters = generate_api_url(host=host, api_type="import-device")
-    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
-    dnac_api_headers = get_headers(auth_token=dnac_token)
-    api_response = call_api_endpoint(
-        method=method,
-        api_url=api_url,
-        data=data,
-        api_headers=dnac_api_headers,
-        parameters=parameters,
-    )
+    # ========================== Add device ==============================================
+    token = dnac_token_generator(configs=configs)
+    api_headers = get_headers(auth_token=token)
+    api_response = add_device(dnac_configs=configs, dnac_api_headers=api_headers, payload_data=data)
     response_status, response_body = handle_response(response=api_response)
     # ======================== Claim device ==============================================
     if response_status and response_body["successList"]:
         click.secho(f"[#] Device added!", fg="green")
-        msg.divider(f"Claim [{device_serial_number}]")
-        click.secho(
-            f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
-            fg="cyan",
-        )
-        device_id = get_device_id(
-            dnac_host=host,
-            authentication_token=dnac_token,
-            serial_number=device_serial_number,
-        )
-        site_id = get_site_id(
-            dnac_host=host, authentication_token=dnac_token, site_name=site_name
-        )
-        logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
-        if device_id and site_id:
-            claim_status = claim_device(
-                dnac_host=host,
-                auth_token=dnac_token,
-                device_id=device_id,
-                site_id=site_id,
-            )
-            if claim_status:
-                click.secho(f"[#] DONE!", fg="green")
+        claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
+        if claim_status:
+            click.secho(f"[#] DONE!", fg="green")
         else:
-            click.secho(f"[x] Required information still missing!")
+            click.secho(f"[X] Claim status: {claim_status}")
             sys.exit(1)
     else:
         click.secho(
@@ -177,8 +200,6 @@ def device_import_in_bulk(configs=None, import_file=None):
             csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
     click.secho(f"[#] Primary input check successful!", fg="green")
     # ========================== Execute add + claim ============================================
-    dnac_host = configs["host"]
-    dnac_auth_token = dnac_token_generator(configs=configs)
     for row in csv_rows:
         air_config = {"deviceInfo": row}
         logging.debug(json.dumps(air_config, indent=4, sort_keys=True))

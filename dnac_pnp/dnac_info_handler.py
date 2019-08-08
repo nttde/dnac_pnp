@@ -21,21 +21,20 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 
 # Retrieve device ID
-def get_device_id(dnac_host=None, authentication_token=None, serial_number=None):
+def get_device_id(authentication_token=None, dnac_api_headers=None, serial_number=None):
     """
     This module retrieves the device id by serial number
 
-    :param dnac_host: (str) IP or FQDN for DNAc
-    :param authentication_token: (str) Authentication token for X-Auth-Token header
+    :param authentication_token: (str) Authentication token
+    :param dnac_api_headers: (dict) API headers
     :param serial_number: (str) Device serial number
     :returns: (str) device ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(
-        host=dnac_host, api_type="get-device-info"
-    )
+    method, api_url, parameters = generate_api_url(api_type="get-device-info")
     parameters["serialNumber"] = serial_number
     response_body = get_response(
+        headers=dnac_api_headers,
         authentication_token=authentication_token,
         method=method,
         endpoint_url=api_url,
@@ -52,22 +51,21 @@ def get_device_id(dnac_host=None, authentication_token=None, serial_number=None)
 
 
 # Retrieve site ID
-def get_site_id(dnac_host=None, authentication_token=None, site_name=None):
+def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None):
     """
     This module retrieves site id based on site name
 
-    :param dnac_host: (str) IP or FQDN for DNAc
-    :param authentication_token: (str) Authentication token for X-Auth-Token header
+    :param authentication_token: (str) Authentication token
+    :param dnac_api_headers: (dict) DNAC api headers
     :param site_name: (str) Site name with full hierarchy
     :return: (str) site ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(
-        host=dnac_host, api_type="get-site-info"
-    )
+    method, api_url, parameters = generate_api_url(api_type="get-site-info")
     parameters["name"] = site_name
     response_body = get_response(
         authentication_token=authentication_token,
+        headers=dnac_api_headers,
         method=method,
         endpoint_url=api_url,
         parameters=parameters,
@@ -88,22 +86,21 @@ def get_site_id(dnac_host=None, authentication_token=None, site_name=None):
 
 
 # Retrieve image ID
-def get_image_id(dnac_host=None, authentication_token=None, image_name=None):
+def get_image_id(authentication_token=None, dnac_api_headers=None, image_name=None):
     """
     This module retrieves site id based on site name
 
-    :param dnac_host: (str) IP or FQDN for DNAc
-    :param authentication_token: (str) Authentication token for X-Auth-Token header
+    :param authentication_token: (str) Authentication token
+    :param dnac_api_headers: (dict) DNAC api headers
     :param image_name: (str) Full image name with extension
     :return: (str) Image ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(
-        host=dnac_host, api_type="get-image-info"
-    )
+    method, api_url, parameters = generate_api_url(api_type="get-image-info")
     parameters["name"] = image_name
     response_body = get_response(
         authentication_token=authentication_token,
+        headers=dnac_api_headers,
         method=method,
         endpoint_url=api_url,
         parameters=parameters,

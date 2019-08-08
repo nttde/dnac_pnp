@@ -13,29 +13,34 @@ import logging
 # Import external python libraries
 import click
 
+# Import custom (local) python packages
+from dnac_pnp.config_handler import config_files, load_config
+
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 
 # Define API URL generator
-def generate_api_url(host=None, api_type=None):
+def generate_api_url(api_type=None):
     """
     This function creates appropriate API URL based on vendor and api call type
 
-    :param host: (str) IP address or FQDN
     :param api_type: (str) API call type (name) e.g. deploy-vm, nfv-status
     :return: (str) API endpoint
     """
 
-    # Check if the collection fine is available or not
+    all_configs = load_config(config_files)
+    dnac_configs = all_configs["dnac"]
+    host = dnac_configs["host"]
+
     api_collection = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
     )
     logging.debug(f"Endpoint file: {api_collection}")
     if os.path.isfile(api_collection):
         if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
-            click.secho("[$] Reading API collection.....", fg="blue")
+            click.secho(f"[$] Reading API collection for [{api_type}].....", fg="blue")
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
             api_components = api_collection[api_type]

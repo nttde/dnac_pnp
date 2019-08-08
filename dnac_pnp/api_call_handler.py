@@ -112,7 +112,7 @@ def call_api_endpoint(
 
 # API call control for device id, site id
 def get_response(
-    authentication_token=None, method=None, endpoint_url=None, parameters=None
+    authentication_token=None, method=None, endpoint_url=None, headers=None, parameters=None
 ):
     """
     This private method returns response body as json (if applicable)
@@ -120,11 +120,13 @@ def get_response(
     :param authentication_token:  (str) Authentication token for X-Auth-Token header
     :param method: (str) http/https
     :param endpoint_url: (str) API call endpoint
+    :param headers: (dict) API headers
     :param parameters: (dict) API call parameters
     :return: (json) Response body
     """
 
-    headers = get_headers(auth_token=authentication_token)
+    if headers is None:
+        headers = get_headers(auth_token=authentication_token)
     api_response = call_api_endpoint(
         method=method, api_url=endpoint_url, api_headers=headers, parameters=parameters
     )
