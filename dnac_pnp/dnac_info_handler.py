@@ -43,6 +43,7 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
     try:
         device_id = response_body[0]["id"]
         logging.debug(f"Device ID: {device_id}")
+        click.secho(f"[#] Device ID received!", fg="green")
         return device_id
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
@@ -75,6 +76,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
         if response_body["status"]:
             site_id = response_body["response"][0]["id"]
             logging.debug(f"Site ID: {site_id}")
+            click.secho(f"[#] Site ID received!", fg="green")
             return site_id
         else:
             click.secho(f"[x] {response_body['message']} ")
@@ -109,6 +111,7 @@ def get_image_id(authentication_token=None, dnac_api_headers=None, image_name=No
         logging.debug(f"Type: {type(response_body)}")
         image_id = response_body["response"][0]["imageUuid"]
         logging.debug(f"Image ID: {image_id}")
+        click.secho(f"[#] Image ID received!", fg="green")
         return image_id
     except KeyError as err:
         logging.debug(f"Error: {err}")

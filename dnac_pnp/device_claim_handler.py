@@ -5,8 +5,6 @@
 
 # Import builtin python libraries
 import sys
-import logging
-import json
 
 # Import external python libraries
 import click
