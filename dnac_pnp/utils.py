@@ -227,7 +227,9 @@ def do_camel_case(input_string=None):
 
     word_regex_pattern = re.compile("[^A-Za-z]+")
     words = word_regex_pattern.split(input_string)
-    camel_cased_string = "".join(w.lower() if i is 0 else w.title() for i, w in enumerate(words))
+    camel_cased_string = "".join(
+        w.lower() if i is 0 else w.title() for i, w in enumerate(words)
+    )
     return camel_cased_string
 
 
@@ -267,9 +269,22 @@ def check_csv_header(file_headers=None):
         click.secho(f"[#] The list of headers is accepted!", fg="green")
         return ret_headers
     else:
-        click.secho(f"[x] The list of headers does not match with accepted headers!", fg="red")
+        click.secho(
+            f"[x] The list of headers does not match with accepted headers!", fg="red"
+        )
         click.secho(f"[*] Retrieved headers from file: {file_headers}", fg="cyan")
-        click.secho(f"[*] Accepted headers: {accepted_csv_headers}", fg="cyan")
+        click.secho(
+            f"[!] Warning! Camel cased (camelCased) headers and unicode headers are not accepted!",
+            fg="yellow",
+        )
+        click.secho(
+            f"[!] Warning! Underscore(_), Dash/Hyphen(-), Single Space ( ) are accepted between words",
+            fg="yellow",
+        )
+        click.secho(
+            f"[*] Accepted header syntax: Some_Thing, Other-Thing, Another Thing",
+            fg="cyan",
+        )
         sys.exit(1)
 
 
@@ -294,7 +309,10 @@ def parse_csv(file_to_parse=None):
             logging.debug(f"Raw input row from file: {r_row}")
             try:
                 row = collections.OrderedDict(
-                    [(check_csv_cell_name(key.strip()), value.strip()) for key, value in r_row.items()]
+                    [
+                        (check_csv_cell_name(key.strip()), value.strip())
+                        for key, value in r_row.items()
+                    ]
                 )
             except AttributeError:
                 logging.debug(f"AttributeError: An attribute error has occurred!")
