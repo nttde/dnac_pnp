@@ -5,15 +5,21 @@
 
 # Import builtin python libraries
 import logging
+import sys
 
 # Import external python libraries
 import click
 
 # Import custom (local) python libraries
-from .utils import (debug_manager, initial_message, show_info,
-                    validate_file_extension, validate_input,
-                    validate_serial)
-from .dnac_handler import import_manager
+from .utils import (
+    debug_manager,
+    initial_message,
+    show_info,
+    validate_file_extension,
+    validate_input,
+    validate_serial,
+)
+from .dnac_handler import import_manager, delete_manager
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -129,7 +135,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
     "-f",
     "--catalog-file",
     "catalog_file",
-    help="Device catalog file path '.csv' format.",
+    help="Device catalog full file path",
     required=False,
     type=click.Path(exists=True, dir_okay=False),
     callback=validate_file_extension,
@@ -189,9 +195,17 @@ def info(context, all_info):
     "--serial-numbers",
     "serial_numbers",
     help="Comma separated serial numbers.",
-    required=True,
+    required=False,
     type=str,
-    callback=validate_serial,
+)
+@click.option(
+    "-f",
+    "--delete-from-file",
+    "delete_entries",
+    help="Device delete full file path.",
+    required=False,
+    type=click.Path(exists=True, dir_okay=False),
+    callback=validate_file_extension,
 )
 @click.option(
     "--dry-run",
@@ -202,8 +216,32 @@ def info(context, all_info):
     show_default=True,
     type=str,
 )
+@click.option(
+    "--debug",
+    "delete_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
 @pass_context
-def delete(context, serial_numbers, dry_run):
-    """Add and claim multiple devices"""
+def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
+    """Delete one or multiple devices"""
 
-    print(serial_numbers)
+    if context.initial_msg:
+        initial_message()
+    if context.debug or delete_debug:
+        debug_manager()
+    if delete_entries:
+        logging.debug(f"Catalog file: {delete_entries}")
+        click.secho(
+            f"[!] warning: Devices will be deleted according to the serial numbers in file", fg="yellow"
+        )
+        click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
+        delete_manager(delete_from_file=delete_entries, dry_run=dry_run)
+    elif serial_numbers:
+        delete_manager(serials=serial_numbers, dry_run=dry_run)
+    else:
+        click.secho(f"[x] Provide at least one option! See --help for more!", fg="red")
+        sys.exit(1)

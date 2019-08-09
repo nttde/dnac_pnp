@@ -48,6 +48,10 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
         click.secho(f"[x] Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
         sys.exit(1)
+    except IndexError as err:
+        click.secho(f"[!] Index error! Device might not be available in PnP", fg="yellow")
+        logging.debug(f"Error: {err}")
+        return False
 
 
 # Retrieve site ID

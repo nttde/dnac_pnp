@@ -92,20 +92,24 @@ def show_info(view_type=None):
 def validate_serial(ctx, param, value):
     """This function validates serial number"""
 
-    if not value.isalnum():
-        click.secho(
-            f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
-            fg="red",
-        )
-        ctx.abort()
-    else:
-        if len(value) > 11:
+    if value:
+        if not value.isalnum():
             click.secho(
-                f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less."
+                f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
+                fg="red",
             )
             ctx.abort()
         else:
-            return value
+            if len(value) > 11:
+                click.secho(
+                    f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
+                    fg="red"
+                )
+                ctx.abort()
+            else:
+                return value
+    else:
+        return False
 
 
 # Validate rest of the inputs
@@ -125,7 +129,7 @@ def validate_input(ctx, param, value):
 def validate_file_extension(ctx, param, value):
     """This function validates file extensions"""
 
-    allowed_extensions = ["csv"]
+    allowed_extensions = ["csv", "txt"]
     if value:
         try:
             ext = value.rsplit(".", 1)[1]
@@ -322,6 +326,20 @@ def parse_csv(file_to_parse=None):
             csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
     click.secho(f"[#] Primary input check successful!", fg="green")
     return csv_rows
+
+
+# Parse txt file to delete serials
+def parse_txt(serials_file_path=None):
+    """
+    This function parses a text file line by line and returns a list of serials
+    :param serials_file_path: (str) Full path to serials to delete file
+    :return: (list) A list of serials
+    """
+
+    with open(serials_file_path) as serials_file:
+        serials_to_delete_crlf = serials_file.readlines()
+        serials_to_delete = [serial.strip() for serial in serials_to_delete_crlf]
+    return serials_to_delete
 
 
 # Goodbye
