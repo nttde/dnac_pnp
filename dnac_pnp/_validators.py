@@ -5,23 +5,21 @@
 
 # Import builtin python libraries
 import collections
-import sys
-import os
-import logging
-import re
 import json
+import logging
+import os
+import re
+import sys
 
 # Import external python libraries
 import click
 
 # Import custom (local) python packages
-from dnac_pnp import (
-    __package_name__ as package_name,
-    __author__ as maintainer,
-    __email__ as contact_email,
-    __version__ as version,
-    __license__ as package_license,
-)
+from . import __author__ as maintainer
+from . import __email__ as contact_email
+from . import __license__ as package_license
+from . import __package_name__ as package_name
+from . import __version__ as version
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -46,7 +44,7 @@ def _show_pkg_info():
         "License": package_license,
     }
     for key, value in pkg_info.items():
-        click.secho(f"{key}: ", fg="cyan", nl=False)
+        click.secho(f"[*] {key}: ", fg="cyan", nl=False)
         click.secho(f"{value}", fg="yellow")
 
 
@@ -62,7 +60,7 @@ def _show_dnac_dependencies():
             data = json.load(pkg_info)
             divider("DNA Center Dependency Information")
         for key, value in data.items():
-            click.secho(f"{key}: ", fg="cyan", nl=False)
+            click.secho(f"[*] {key}: ", fg="cyan", nl=False)
             click.secho(f"{value}", fg="yellow")
     except Exception as err:
         click.secho(f"[x] Can not obtain compatible package information.", fg="red")
@@ -79,6 +77,7 @@ def show_info(view_type=None):
     :returns: (stdout) output to the screen
     """
 
+    click.clear()
     if view_type == "more":
         _show_pkg_info()
         _show_dnac_dependencies()
@@ -276,5 +275,4 @@ def check_csv_header(file_headers=None):
 def goodbye():
     """This function shows goodbye message"""
 
-    click.secho(f"[#] DONE!", fg="green")
     divider("Goodbye!")

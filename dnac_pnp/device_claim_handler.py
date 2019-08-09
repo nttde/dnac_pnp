@@ -10,10 +10,10 @@ import sys
 import click
 
 # Import custom (local) python packages
-from dnac_pnp.api_endpoint_handler import generate_api_url
-from dnac_pnp.header_handler import get_headers
-from dnac_pnp.api_call_handler import call_api_endpoint
-from dnac_pnp.api_response_handler import handle_response
+from .api_call_handler import call_api_endpoint
+from .api_endpoint_handler import generate_api_url
+from .api_response_handler import handle_response
+from .header_handler import get_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"

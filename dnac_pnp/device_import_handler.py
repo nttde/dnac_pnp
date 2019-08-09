@@ -4,11 +4,11 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
-from collections import OrderedDict
 import csv
 import json
-import sys
 import logging
+import sys
+from collections import OrderedDict
 
 # Import external python libraries
 import click
@@ -16,13 +16,14 @@ import urllib3
 from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
-from dnac_pnp.api_endpoint_handler import generate_api_url
-from dnac_pnp.header_handler import get_headers
-from dnac_pnp.api_call_handler import call_api_endpoint
-from dnac_pnp.api_response_handler import handle_response
-from dnac_pnp.dnac_info_handler import get_device_id, get_site_id
-from dnac_pnp.device_claim_handler import claim
-from dnac_pnp._validators import check_csv_header, check_csv_cell_name, divider, goodbye
+from ._validators import (check_csv_cell_name, check_csv_header, divider,
+                          goodbye)
+from .api_call_handler import call_api_endpoint
+from .api_endpoint_handler import generate_api_url
+from .api_response_handler import handle_response
+from .device_claim_handler import claim
+from .dnac_info_handler import get_device_id, get_site_id
+from .header_handler import get_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -151,6 +152,7 @@ def import_single_device(configs=None, data=None):
         click.secho(f"[#] Device added!", fg="green")
         claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
         if claim_status:
+            click.secho(f"[#] DONE!", fg="green")
             goodbye()
         else:
             click.secho(f"[X] Claim status: {claim_status}")

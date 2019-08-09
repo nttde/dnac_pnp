@@ -3,18 +3,17 @@
 
 """This module handles the URL creation for API call"""
 
-
 # Import builtin python libraries
-import os
-import sys
 import json
 import logging
+import os
+import sys
 
 # Import external python libraries
 import click
 
 # Import custom (local) python packages
-import dnac_pnp.dnac_handler as dnac
+from . import dnac_handler as dnac
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -22,14 +21,17 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 
 # Define API URL generator
-def generate_api_url(api_type=None):
+def generate_api_url(host=None, api_type=None):
     """
     This function creates appropriate API URL based on vendor and api call type
 
+    :param host: (str) IP or FQDN of DNAC
     :param api_type: (str) API call type (name) e.g. deploy-vm, nfv-status
     :return: (str) API endpoint
     """
 
+    if host is None:
+        host = dnac.host
     api_collection = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "endpoints.json"
     )
@@ -50,6 +52,6 @@ def generate_api_url(api_type=None):
     api = api_components["api"]
     method = api_components["method"]
     parameters = api_components["parameters"]
-    api_url = f"{protocol}://{dnac.host}{api}"
+    api_url = f"{protocol}://{host}{api}"
     click.secho(f"[#] API endpoint URL created!", fg="green")
     return method, api_url, parameters

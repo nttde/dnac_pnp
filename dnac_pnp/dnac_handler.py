@@ -21,11 +21,10 @@ import sys
 # import external python libraries
 import click
 
-
 # Import custom (local) python packages
-from dnac_pnp.config_handler import config_files, load_config
-from dnac_pnp.device_import_handler import import_single_device, device_import_in_bulk
-from dnac_pnp._validators import divider
+from ._validators import divider
+from .config_handler import config_files, load_config
+from .device_import_handler import device_import_in_bulk, import_single_device
 
 # Setting global host variable
 all_configs = {}

@@ -6,7 +6,7 @@
 # Import builtin python libraries
 import logging
 
-# import external python libraries
+# Import external python libraries
 import click
 
 # Source code meta data

@@ -4,18 +4,18 @@
 """This module handles the API calls"""
 
 # Import builtin python libraries
-import sys
 import json
 import logging
+import sys
 
 # Import external python libraries
+import click
 import requests
 from requests.exceptions import HTTPError
-import click
 
 # Import custom (local) python packages
-from dnac_pnp.header_handler import get_headers
-from dnac_pnp.api_response_handler import handle_response
+from .api_response_handler import handle_response
+from .header_handler import get_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"

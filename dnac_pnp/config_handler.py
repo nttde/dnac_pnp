@@ -3,19 +3,18 @@
 
 """This module loads the different configurations"""
 
-
 # Import builtin python libraries
+import logging
 import os
 import sys
 from pathlib import Path
-import logging
 
 # Import external python libraries
-import yaml
 import click
+import yaml
 
 # Import custom python libraries
-from dnac_pnp import __package_name__ as package_name
+from . import __package_name__ as package_name
 
 # Source code meta data
 __author__ = "Dalwar Hossain"

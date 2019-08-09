@@ -10,15 +10,10 @@ import logging
 import click
 
 # Import custom (local) python libraries
-from dnac_pnp._validators import (
-    initial_message,
-    show_info,
-    validate_serial,
-    validate_input,
-    validate_file_extension,
-    debug_manager,
-)
-from dnac_pnp.dnac_handler import import_manager
+from ._validators import (debug_manager, initial_message, show_info,
+                          validate_file_extension, validate_input,
+                          validate_serial)
+from .dnac_handler import import_manager
 
 # Source code meta data
 __author__ = "Dalwar Hossain"

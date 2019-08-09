@@ -4,15 +4,15 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
-import sys
-import logging
 import json
+import logging
+import sys
 
 # Import external python libraries
 import click
 
 # Import custom (local) python packages
-from dnac_pnp._validators import accepted_status_codes
+from ._validators import accepted_status_codes
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
