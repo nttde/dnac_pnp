@@ -4,11 +4,9 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
-import csv
 import json
 import logging
 import sys
-from collections import OrderedDict
 
 # Import external python libraries
 import click
@@ -16,14 +14,13 @@ import urllib3
 from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
-from ._validators import (check_csv_cell_name, check_csv_header, divider,
-                          goodbye)
 from .api_call_handler import call_api_endpoint
 from .api_endpoint_handler import generate_api_url
 from .api_response_handler import handle_response
 from .device_claim_handler import claim
 from .dnac_info_handler import get_device_id, get_site_id
 from .header_handler import get_headers
+from .utils import parse_csv, divider, goodbye
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -37,7 +34,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Login to DNAC
 def dnac_token_generator(configs=None):
     """
-    This function logs into DNAC
+    This function logs into DNAC and generates authentication token
 
     :param configs: (dict) DNAC configurations
     :returns (str) Authentication token
@@ -77,11 +74,10 @@ def dnac_token_generator(configs=None):
 
 
 # Add a device
-def add_device(dnac_configs=None, dnac_api_headers=None, payload_data=None):
+def add_device(dnac_api_headers=None, payload_data=None):
     """
     This function adds a device
 
-    :param dnac_configs: (dict) Configurations for DNAC
     :param dnac_api_headers: (dict) API headers
     :param payload_data: (dict) Payload data for adding a device
     :return: (obj) Requests response object
@@ -132,20 +128,18 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         sys.exit(1)
 
 
-# Single device import
-def import_single_device(configs=None, data=None):
+# Acclaim device
+def acclaim_device(api_headers=None, data=None, device_state=None):
     """
-    This module imports single device into dnac
+    This function add and claim devices based on device state
 
-    :param configs: (dict) DNAC configurations
-    :param data: (dict) API body data
-    :returns: (stdout) output to the screen
+    :param api_headers: (dict) API headers
+    :param data: (dict) Payload data for api calls
+    :param device_state: (str) state of the device
+    :return:
     """
-
     # ========================== Add device ==============================================
-    token = dnac_token_generator(configs=configs)
-    api_headers = get_headers(auth_token=token)
-    api_response = add_device(dnac_configs=configs, dnac_api_headers=api_headers, payload_data=data)
+    api_response = add_device(dnac_api_headers=api_headers, payload_data=data)
     response_status, response_body = handle_response(response=api_response)
     # ======================== Claim device ==============================================
     if response_status and response_body["successList"]:
@@ -153,7 +147,6 @@ def import_single_device(configs=None, data=None):
         claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
         if claim_status:
             click.secho(f"[#] DONE!", fg="green")
-            goodbye()
         else:
             click.secho(f"[X] Claim status: {claim_status}")
             sys.exit(1)
@@ -168,6 +161,22 @@ def import_single_device(configs=None, data=None):
         sys.exit(1)
 
 
+# Single device import
+def import_single_device(configs=None, data=None):
+    """
+    This module imports single device into dnac
+
+    :param configs: (dict) DNAC configurations
+    :param data: (dict) API body data
+    :returns: (stdout) output to the screen
+    """
+
+    token = dnac_token_generator(configs=configs)
+    headers = get_headers(auth_token=token)
+    acclaim_device(api_headers=headers, data=data)
+    goodbye()
+
+
 # Device import in bulk
 def device_import_in_bulk(configs=None, import_file=None):
     """
@@ -178,29 +187,12 @@ def device_import_in_bulk(configs=None, import_file=None):
     :returns: (stdout) Output to the screen
     """
 
-    # ============================ Parse CSV ============================================
-    logging.debug(f"Reading csv from [{import_file}]")
-    click.secho(f"[$] Reading CSV file.....", fg="blue")
-    csv_rows = []
-    with open(import_file) as csv_import_file:
-        reader = csv.DictReader(csv_import_file)
-        r_title = [item.strip() for item in reader.fieldnames]
-        logging.debug(f"CSV file headers: {r_title}")
-        title = check_csv_header(file_headers=r_title)
-        for r_row in reader:
-            logging.debug(f"Raw input row from file: {r_row}")
-            try:
-                row = OrderedDict(
-                    [(check_csv_cell_name(key.strip()), value.strip()) for key, value in r_row.items()]
-                )
-            except AttributeError:
-                logging.debug(f"AttributeError: An attribute error has occurred!")
-                logging.debug(f"Skipping row: {r_row}")
-                continue
-            logging.debug(f"Stripped row: {row}")
-            csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
-    click.secho(f"[#] Primary input check successful!", fg="green")
-    # ========================== Execute add + claim ============================================
-    for row in csv_rows:
-        air_config = {"deviceInfo": row}
-        logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
+    csv_rows = parse_csv(file_to_parse=import_file)
+    if csv_rows:
+        token = dnac_token_generator(configs=configs)
+        headers = get_headers(auth_token=token)
+        for row in csv_rows:
+            air_config = {"deviceInfo": row}
+            logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
+            acclaim_device(api_headers=headers, data=air_config)
+    goodbye()

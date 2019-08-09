@@ -4,6 +4,7 @@
 """Validation module for dnac_pnp"""
 
 # Import builtin python libraries
+import csv
 import collections
 import json
 import logging
@@ -272,6 +273,40 @@ def check_csv_header(file_headers=None):
         sys.exit(1)
 
 
+# Parse CSV input
+def parse_csv(file_to_parse=None):
+    """
+    This function parses CSV for device import
+
+    :param file_to_parse: (str) Full path of CSV file
+    :returns: (list) of dictionaries with each row as an item
+    """
+
+    logging.debug(f"Reading csv from [{file_to_parse}]")
+    click.secho(f"[$] Reading CSV file.....", fg="blue")
+    csv_rows = []
+    with open(file_to_parse) as csv_import_file:
+        reader = csv.DictReader(csv_import_file)
+        r_title = [item.strip() for item in reader.fieldnames]
+        logging.debug(f"CSV file headers: {r_title}")
+        title = check_csv_header(file_headers=r_title)
+        for r_row in reader:
+            logging.debug(f"Raw input row from file: {r_row}")
+            try:
+                row = collections.OrderedDict(
+                    [(check_csv_cell_name(key.strip()), value.strip()) for key, value in r_row.items()]
+                )
+            except AttributeError:
+                logging.debug(f"AttributeError: An attribute error has occurred!")
+                logging.debug(f"Skipping row: {r_row}")
+                continue
+            logging.debug(f"Stripped row: {row}")
+            csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
+    click.secho(f"[#] Primary input check successful!", fg="green")
+    return csv_rows
+
+
+# Goodbye
 def goodbye():
     """This function shows goodbye message"""
 

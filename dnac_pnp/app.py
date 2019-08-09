@@ -10,9 +10,9 @@ import logging
 import click
 
 # Import custom (local) python libraries
-from ._validators import (debug_manager, initial_message, show_info,
-                          validate_file_extension, validate_input,
-                          validate_serial)
+from .utils import (debug_manager, initial_message, show_info,
+                    validate_file_extension, validate_input,
+                    validate_serial)
 from .dnac_handler import import_manager
 
 # Source code meta data

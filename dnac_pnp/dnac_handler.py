@@ -22,7 +22,7 @@ import sys
 import click
 
 # Import custom (local) python packages
-from ._validators import divider
+from .utils import divider
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
 

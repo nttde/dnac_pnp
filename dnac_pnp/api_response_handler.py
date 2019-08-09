@@ -12,7 +12,7 @@ import sys
 import click
 
 # Import custom (local) python packages
-from ._validators import accepted_status_codes
+from .utils import accepted_status_codes
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
