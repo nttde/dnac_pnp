@@ -115,12 +115,17 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
         delete_serials_file_path = delete_from_file
         serials_to_delete = parse_txt(serials_file_path=delete_serials_file_path)
     else:
-        click.secho(f"[@] We are not that sure what you are trying to do. Please make up your mind!", fg="red")
+        click.secho(
+            f"[@] We are not that sure what you are trying to do. Please make up your mind!",
+            fg="red",
+        )
         sys.exit(1)
     if dry_run is None:
         if click.confirm(text=f"[-] Are you sure you want to delete {len(serials_to_delete)} devices?", abort=True):
             populate_config()
-            logging.debug(f"User confirmed deletion of [{len(serials_to_delete)}]devices")
+            logging.debug(
+                f"User confirmed deletion of [{len(serials_to_delete)}]devices"
+            )
             divider("Deleting devices")
             click.secho(f"[*] Starting device deletion engine.....", fg="cyan")
             remove_devices(configs=dnac_configs, serials=serials_to_delete)

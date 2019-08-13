@@ -338,7 +338,7 @@ def parse_txt(serials_file_path=None):
 
     with open(serials_file_path) as serials_file:
         serials_to_delete_crlf = serials_file.readlines()
-        serials_to_delete = [serial.strip() for serial in serials_to_delete_crlf]
+        serials_to_delete = [serial.strip() for serial in serials_to_delete_crlf if serial.strip()]
     return serials_to_delete
 
 
