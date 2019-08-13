@@ -53,7 +53,7 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
 @click.version_option()
 @pass_context
 def mission_control(context, debug):
-    """ Mission control module for the application"""
+    """Mission control module"""
 
     context.debug = debug
     context.initial_msg = True

@@ -55,7 +55,7 @@ activate virtual environment -
 
    venv\Scripts\activate.bat
 
-Once the ``virtual environment`` is active run the following command -
+Once the ``virtual environment`` is active, run the following command -
 
 .. code-block:: shell
 
@@ -66,6 +66,34 @@ Once the installation is finished, check out all the available options with -
 .. code-block:: shell
 
    dnac_pnp --help
+
+This should give an output like below -
+
+.. code-block:: batch
+
+   (venv) C:\Users\user.name\folder\dnac-pnp>dnac_pnp --help
+   Usage: dnac_pnp [OPTIONS] COMMAND [ARGS]...
+
+   Mission control module
+
+   Options:
+     --debug    Turns on DEBUG mode.  [default: False]
+     --version  Show the version and exit.
+     --help     Show this message and exit.
+
+   Commands:
+     acclaim-in-bulk  Add and claim multiple devices.
+     acclaim-one      Add and claim a single device.
+     delete           Delete [un-claim + remove] or more devices.
+     info             Shows package information.
+
+To see the individual option for any of the ``commands`` use ``--help``
+flag after the command.
+
+.. code-block:: batch
+
+   (venv) C:\Users\user.name\folder\dnac-pnp>dnac_pnp acclaim-in-bulk --help
+
 
 **To use this package without any errors/bugs please alway activate the virtual environment first**
 
