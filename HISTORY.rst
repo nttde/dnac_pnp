@@ -6,6 +6,7 @@ History
 ------------------
 
 * Fixed device delete bug (Issue #15)
+* Updated Readme
 
 0.2.1 (2019-08-08)
 ------------------
