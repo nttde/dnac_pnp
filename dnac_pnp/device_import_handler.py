@@ -113,14 +113,14 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
         fg="cyan",
     )
-    device_id = get_device_id(serial_number=device_serial_number, dnac_api_headers=dnac_api_headers)
+    device_id = get_device_id(
+        serial_number=device_serial_number, dnac_api_headers=dnac_api_headers
+    )
     site_id = get_site_id(dnac_api_headers=dnac_api_headers, site_name=site_name)
     logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
     if device_id and site_id:
         claim_status = claim(
-            headers=dnac_api_headers,
-            device_id=device_id,
-            site_id=site_id,
+            headers=dnac_api_headers, device_id=device_id, site_id=site_id
         )
         return claim_status
     else:
