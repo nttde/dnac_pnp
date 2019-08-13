@@ -87,7 +87,7 @@ This should give an output like below -
      delete           Delete [un-claim + remove] or more devices.
      info             Shows package information.
 
-To see the individual option for any of the ``commands`` use ``--help``
+To see the individual options for any of the ``commands`` use ``--help``
 flag after the command.
 
 .. code-block:: batch
