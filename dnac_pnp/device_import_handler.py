@@ -13,9 +13,8 @@ import click
 from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
-from .api_call_handler import call_api_endpoint
+from .api_call_handler import call_api_endpoint, get_response
 from .api_endpoint_handler import generate_api_url
-from .api_response_handler import handle_response
 from .device_claim_handler import claim
 from .dnac_info_handler import get_device_id, get_site_id
 from .header_handler import get_headers
@@ -48,7 +47,7 @@ def dnac_token_generator(configs=None):
         api_headers=headers,
         auth=HTTPBasicAuth(dnac_username, dnac_password),
     )
-    response_status, response_body = handle_response(response=api_response)
+    response_status, response_body = get_response(response=api_response)
     if response_status:
         token = response_body["Token"]
     else:
@@ -136,7 +135,7 @@ def acclaim_device(api_headers=None, data=None, device_state=None):
 
     # ========================== Add device ==============================================
     api_response = add_device(dnac_api_headers=api_headers, payload_data=data)
-    response_status, response_body = handle_response(response=api_response)
+    response_status, response_body = get_response(response=api_response)
     if response_status and response_body["successList"]:
         click.secho(f"[#] Device added!", fg="green")
         ready_to_claim = True
@@ -171,7 +170,16 @@ def import_single_device(configs=None, data=None):
 
     token = dnac_token_generator(configs=configs)
     headers = get_headers(auth_token=token)
-    acclaim_device(api_headers=headers, data=data)
+    dnac_site_name = data['deviceInfo']['siteName']
+    site_id = get_site_id(dnac_api_headers=headers, site_name=dnac_site_name)
+    if site_id:
+        logging.debug(f"Site ID: {site_id}")
+        data['deviceInfo']["siteId"] = site_id
+        acclaim_device(api_headers=headers, data=data)
+    else:
+        click.secho(f"[x] Site name [{dnac_site_name}] is not valid!", fg="red")
+        click.secho(f"[$] Exiting.....", fg="blue")
+        sys.exit(1)
     goodbye()
 
 

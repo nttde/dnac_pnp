@@ -191,7 +191,7 @@ def debug_manager():
     click.secho(f"[+] ", nl=False, fg="yellow")
     click.secho(f"DEBUG mode is ON", fg="black", bg="yellow")
     debug_format = click.style(
-        "[+] %(levelname)s %(asctime)-15s %(message)s", fg="yellow"
+        "[+] %(levelname)s %(asctime)-15s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s", fg="yellow"
     )
     HTTPConnection.debuglevel = 4
     logging.basicConfig(format=debug_format)

@@ -4,6 +4,7 @@
 """Main module for dnac-pnp"""
 
 # Import builtin python libraries
+import json
 import logging
 import sys
 
@@ -32,7 +33,7 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
 
     method, api_url, parameters = generate_api_url(api_type="get-device-info")
     parameters["serialNumber"] = serial_number
-    response_body = get_response(
+    _, response_body = get_response(
         headers=dnac_api_headers,
         authentication_token=authentication_token,
         method=method,
@@ -67,7 +68,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
 
     method, api_url, parameters = generate_api_url(api_type="get-site-info")
     parameters["name"] = site_name
-    response_body = get_response(
+    _, response_body = get_response(
         authentication_token=authentication_token,
         headers=dnac_api_headers,
         method=method,
@@ -76,13 +77,15 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
     )
     try:
         logging.debug(f"Type: {type(response_body)}")
-        if response_body["status"]:
-            site_id = response_body["response"][0]["id"]
+        response_json = json.loads(response_body)
+        if response_json["status"]:
+            site_id = response_json["response"][0]["id"]
             logging.debug(f"Site ID: {site_id}")
             click.secho(f"[#] Site ID received!", fg="green")
             return site_id
         else:
-            click.secho(f"[x] {response_body['message']} ")
+            err_msg = response_json['message'][0]
+            click.secho(f"[*] Message: {err_msg}", fg="cyan")
             return False
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
@@ -103,7 +106,7 @@ def get_image_id(authentication_token=None, dnac_api_headers=None, image_name=No
 
     method, api_url, parameters = generate_api_url(api_type="get-image-info")
     parameters["name"] = image_name
-    response_body = get_response(
+    _, response_body = get_response(
         authentication_token=authentication_token,
         headers=dnac_api_headers,
         method=method,

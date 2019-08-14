@@ -13,7 +13,7 @@ import urllib3
 # Import custom (local) python packages
 from .api_call_handler import call_api_endpoint
 from .api_endpoint_handler import generate_api_url
-from .api_response_handler import handle_response
+from .api_call_handler import get_response
 from .device_import_handler import dnac_token_generator
 from .dnac_info_handler import get_device_id
 from .header_handler import get_headers
@@ -71,7 +71,7 @@ def remove_devices(configs=None, serials=None):
             divider(f"Removing [{serial}]")
             api_response = delete_device(api_headers=headers, device_serial=serial)
             if api_response:
-                response_status, _ = handle_response(response=api_response)
+                response_status, _ = get_response(response=api_response)
                 if response_status:
                     click.secho(f"[#] Device removed!", fg="green")
             else:

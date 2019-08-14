@@ -11,15 +11,32 @@ import sys
 # Import external python libraries
 import click
 import requests
-from requests.exceptions import HTTPError
 
 # Import custom (local) python packages
-from .api_response_handler import handle_response
 from .header_handler import get_headers
+from .utils import accepted_status_codes
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
+
+
+# Content type check
+def _content_type_check(response=None):
+    """This private function checks response content type"""
+
+    if "application/json" in response.headers["Content-Type"]:
+        response_body = response.json()
+        response_body_logging = json.dumps(
+            response.json(), indent=4, sort_keys=True
+        )
+        logging.debug(f"{type(response_body_logging)}")
+        logging.debug(f"JSON response content: {response_body_logging}")
+    else:
+        response_body = response.text
+        logging.debug(f"Text response content: {response_body}")
+    logging.debug(f"{type(response_body)}")
+    return response_body
 
 
 # Check payload and convert if required
@@ -99,10 +116,6 @@ def call_api_endpoint(
             params=parameters,
             verify=False,
         )
-        response.raise_for_status()
-    except HTTPError as http_err:
-        click.secho(f"[X] HTTP Error! ERROR: {http_err}", fg="red")
-        sys.exit(1)
     except Exception as err:
         click.secho(f"[x] ERROR: {err}", fg="red")
         sys.exit(1)
@@ -112,7 +125,7 @@ def call_api_endpoint(
 
 # API call control for device id, site id
 def get_response(
-    authentication_token=None, method=None, endpoint_url=None, headers=None, parameters=None
+    authentication_token=None, method=None, endpoint_url=None, headers=None, parameters=None, response=None,
 ):
     """
     This private method returns response body as json (if applicable)
@@ -122,28 +135,26 @@ def get_response(
     :param endpoint_url: (str) API call endpoint
     :param headers: (dict) API headers
     :param parameters: (dict) API call parameters
+    :param response: (object) Python requests response object
     :return: (json) Response body
     """
 
     if headers is None:
         headers = get_headers(auth_token=authentication_token)
-    api_response = call_api_endpoint(
-        method=method, api_url=endpoint_url, api_headers=headers, parameters=parameters
-    )
-    response_status = handle_response(response=api_response)
-    if response_status:
-        if "application/json" in api_response.headers["content-type"]:
-            response_body = api_response.json()
-            return response_body
-        if "text/plain" in api_response.headers["content-type"]:
-            try:
-                response_body = json.loads(api_response.text)
-                return response_body
-            except TypeError:
-                click.secho(f"[x] Error")
-                sys.exit(1)
-        else:
-            click.secho(
-                "[!] Warning: Response from server is not valid JSON", fg="yellow"
-            )
-            sys.exit(1)
+    if response is None:
+        response = call_api_endpoint(
+            method=method, api_url=endpoint_url, api_headers=headers, parameters=parameters
+        )
+    if response.status_code in accepted_status_codes:
+        response_status = True
+        click.secho(
+            f"[#] [{response.status_code}] API call accepted by the server!", fg="green"
+        )
+        response_body = _content_type_check(response=response)
+    else:
+        response_status = False
+        response_body = _content_type_check(response=response)
+        click.secho(
+            f"[x] Status: [{response.status_code}] ({response.reason})", fg="red"
+        )
+    return response_status, response_body

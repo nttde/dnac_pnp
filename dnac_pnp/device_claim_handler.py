@@ -10,9 +10,8 @@ import sys
 import click
 
 # Import custom (local) python packages
-from .api_call_handler import call_api_endpoint
+from .api_call_handler import call_api_endpoint, get_response
 from .api_endpoint_handler import generate_api_url
-from .api_response_handler import handle_response
 from .header_handler import get_headers
 
 # Source code meta data
@@ -66,7 +65,7 @@ def claim(auth_token=None, headers=None, device_id=None, site_id=None):
         parameters=parameters,
         check_payload=False,
     )
-    response_status = handle_response(response=api_response)
+    response_status = get_response(response=api_response)
     if response_status:
         click.secho(f"[#] Device claimed!", fg="green")
         return True
