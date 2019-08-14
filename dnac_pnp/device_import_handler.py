@@ -25,6 +25,28 @@ __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 
+# Site name check
+def _check_site_name(headers=None, data=None):
+    """
+    This private function checks the site name validity
+
+    :param headers: (dict) DNAC api headers
+    :param data: (dict) This is same as payload data / air-config
+    :return: (boolean, dict) Site status and data
+    """
+
+    dnac_site_name = data['deviceInfo']['siteName']
+    site_id = get_site_id(dnac_api_headers=headers, site_name=dnac_site_name)
+    if site_id:
+        logging.debug(f"Site ID: {site_id}")
+        site_status = True
+        data['deviceInfo']["siteId"] = site_id
+    else:
+        logging.debug(f"Site not found!")
+        site_status = False
+    return site_status, data
+
+
 # Login to DNAC
 def dnac_token_generator(configs=None):
     """
@@ -101,7 +123,6 @@ def claim_device(dnac_api_headers=None, payload_data=None):
     :return: (obj) Requests response object
     """
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
-    site_name = payload_data["deviceInfo"]["siteName"]
     divider(f"Claim [{device_serial_number}]")
     click.secho(
         f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
@@ -110,7 +131,7 @@ def claim_device(dnac_api_headers=None, payload_data=None):
     device_id = get_device_id(
         serial_number=device_serial_number, dnac_api_headers=dnac_api_headers
     )
-    site_id = get_site_id(dnac_api_headers=dnac_api_headers, site_name=site_name)
+    site_id = payload_data['deviceInfo']['siteId']
     logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
     if device_id and site_id:
         claim_status = claim(
@@ -170,14 +191,14 @@ def import_single_device(configs=None, data=None):
 
     token = dnac_token_generator(configs=configs)
     headers = get_headers(auth_token=token)
-    dnac_site_name = data['deviceInfo']['siteName']
-    site_id = get_site_id(dnac_api_headers=headers, site_name=dnac_site_name)
-    if site_id:
-        logging.debug(f"Site ID: {site_id}")
-        data['deviceInfo']["siteId"] = site_id
+    site_name = data['deviceInfo']['siteName']
+    serial_number = data['deviceInfo']['serialNumber']
+    divider(f"Site [{site_name}] validation for [{serial_number}]")
+    site_status, data = _check_site_name(headers=headers, data=data)
+    if site_status:
         acclaim_device(api_headers=headers, data=data)
     else:
-        click.secho(f"[x] Site name [{dnac_site_name}] is not valid!", fg="red")
+        click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
         click.secho(f"[$] Exiting.....", fg="blue")
         sys.exit(1)
     goodbye()
@@ -197,8 +218,20 @@ def device_import_in_bulk(configs=None, import_file=None):
     if csv_rows:
         token = dnac_token_generator(configs=configs)
         headers = get_headers(auth_token=token)
+        skip_tracer = {}
+        skipped = []
         for row in csv_rows:
             air_config = {"deviceInfo": row}
             logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
-            acclaim_device(api_headers=headers, data=air_config)
-    goodbye()
+            divider(f"Site [{row['siteName']}] validation for [{row['serialNumber']}]")
+            site_status, data = _check_site_name(headers=headers, data=air_config)
+            if site_status:
+                acclaim_device(api_headers=headers, data=air_config)
+            else:
+                site_name = data['deviceInfo']['siteName']
+                serial_number = data['deviceInfo']['serialNumber']
+                click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
+                click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+                skipped.append(serial_number)
+        skip_tracer['skippedSerials'] = skipped
+    goodbye(before=True, data=skip_tracer)

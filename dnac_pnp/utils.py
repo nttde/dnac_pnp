@@ -365,7 +365,20 @@ def parse_txt(serials_file_path=None):
 
 
 # Goodbye
-def goodbye():
-    """This function shows goodbye message"""
+def goodbye(before=False, data=None):
+    """
+    This function shows goodbye message
 
-    divider("Goodbye!")
+    :param before: (boolean) Whether to show a message before goodbye or not (default: False)
+    :param data: (dict)
+    """
+
+    if before:
+        if data:
+            divider("Before we leave, Please note the following: ")
+            for key, value in data.items():
+                click.secho(f"[*] {key}: ", fg="cyan", nl=False)
+                click.secho(f"{value}", fg="yellow")
+        divider("Goodbye!")
+    else:
+        divider("Goodbye!")
