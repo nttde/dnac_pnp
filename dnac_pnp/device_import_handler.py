@@ -10,7 +10,6 @@ import sys
 
 # Import external python libraries
 import click
-import urllib3
 from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
@@ -25,10 +24,6 @@ from .utils import parse_csv, divider, goodbye
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
-
-
-# Disable SSL warning
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 # Login to DNAC

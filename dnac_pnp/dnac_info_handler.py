@@ -83,7 +83,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
             return site_id
         else:
             click.secho(f"[x] {response_body['message']} ")
-            sys.exit(1)
+            return False
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
