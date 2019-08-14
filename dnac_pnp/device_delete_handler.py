@@ -38,7 +38,7 @@ def delete_device(api_headers=None, device_serial=None):
     :return: (obj) Response object
     """
 
-    device_id = get_device_id(dnac_api_headers=api_headers, serial_number=device_serial)
+    device_id, _ = get_device_id(dnac_api_headers=api_headers, serial_number=device_serial)
     if device_id:
         method, api_url, parameters = generate_api_url(api_type="remove-device")
         logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")

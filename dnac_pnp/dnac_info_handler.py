@@ -42,9 +42,10 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
     )
     try:
         device_id = response_body[0]["id"]
+        device_state = response_body[0]["deviceInfo"]["state"]
         logging.debug(f"Device ID: {device_id}")
         click.secho(f"[#] Device ID received!", fg="green")
-        return device_id
+        return device_id, device_state
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
@@ -52,7 +53,8 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
     except IndexError as err:
         click.secho(f"[!] Index error! Device might not be available in PnP", fg="yellow")
         logging.debug(f"Error: {err}")
-        return False
+        device_state = "Unavailable"
+        return False, device_state
 
 
 # Retrieve site ID
