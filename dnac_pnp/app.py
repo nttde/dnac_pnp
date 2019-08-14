@@ -178,15 +178,27 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
     help="Shows full information.",
     type=str,
 )
+@click.option(
+    "--author",
+    "author",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Shows author information.",
+    type=str,
+    hidden=True,
+)
 @pass_context
 # Information about this package
-def info(context, all_info):
+def info(context, all_info, author):
     """This module prints information about the package"""
 
     if all_info:
         show_info(view_type="more")
     else:
         show_info(view_type="less")
+    if author:
+        show_info(view_type="author")
 
 
 @mission_control.command(short_help="Delete [un-claim + remove] or more devices.")

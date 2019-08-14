@@ -21,6 +21,9 @@ from . import __maintainer_email__ as contact_email
 from . import __license__ as package_license
 from . import __package_name__ as package_name
 from . import __version__ as version
+from . import __author__ as author
+from . import __author_email as author_email
+from . import __copyright__ as copy_right
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -30,6 +33,23 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Accepted values
 accepted_status_codes = [200]
 accepted_csv_headers = ["serialNumber", "pid", "siteName", "name"]
+
+
+# Show only package info
+def _show_author_info():
+    """This private function shows author information"""
+
+    divider("Author Information")
+    author_info = {
+        "Package Name": package_name,
+        "Version": version,
+        "Author": author,
+        "Contact": author_email,
+        "Copyright": copy_right,
+    }
+    for key, value in author_info.items():
+        click.secho(f"[*] {key}: ", fg="cyan", nl=False)
+        click.secho(f"{value}", fg="yellow")
 
 
 # Show only package info
@@ -85,6 +105,8 @@ def show_info(view_type=None):
 
     if view_type == "less":
         _show_pkg_info()
+    if view_type == "author":
+        _show_author_info()
     goodbye()
 
 
