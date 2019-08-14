@@ -138,18 +138,13 @@ def acclaim_device(api_headers=None, data=None, device_state=None):
     :param device_state: (str) state of the device
     :return:
     """
+
     # ========================== Add device ==============================================
     api_response = add_device(dnac_api_headers=api_headers, payload_data=data)
     response_status, response_body = handle_response(response=api_response)
-    # ======================== Claim device ==============================================
     if response_status and response_body["successList"]:
         click.secho(f"[#] Device added!", fg="green")
-        claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
-        if claim_status:
-            click.secho(f"[#] DONE!", fg="green")
-        else:
-            click.secho(f"[X] Claim status: {claim_status}")
-            sys.exit(1)
+        ready_to_claim = True
     else:
         click.secho(
             f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
@@ -159,6 +154,14 @@ def acclaim_device(api_headers=None, data=None, device_state=None):
         err_serial = response_body["failureList"][0]["serialNum"]
         click.secho(f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red")
         sys.exit(1)
+    # ======================== Claim device ==============================================
+    if ready_to_claim:
+        claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
+        if claim_status:
+            click.secho(f"[#] DONE!", fg="green")
+        else:
+            click.secho(f"[X] Claim status: {claim_status}")
+            sys.exit(1)
 
 
 # Single device import
