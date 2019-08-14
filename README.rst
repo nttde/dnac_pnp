@@ -38,7 +38,7 @@ file, please use -
 
 **Windows**
 
-Windows system by default doesn't let you create ``.`` prefixed directory, so use the following -
+Windows system by default doesn't allow creation of ``.`` prefixed directory from GUI, so use the following -
 
 - Open `cmd` and change the directory to the ``home`` folder of the user
 - Run ``mkdir .dnac_pnp``
@@ -82,12 +82,10 @@ While importing in bulk, a device catalog file can be put inside the ``catalog``
 
    .dnac_pnp/catalog/DeviceImport.csv
 
-.. note::
+**Note**
 
-   Samples files are available, in the ``data`` directory of this repo.
-
-
-the location of the catalog file can be provided with ``-f`` flag also
+Samples files are available, in the ``data`` directory of this repo.
+The location of the catalog file can be provided with ``-f`` flag also
 
 Usage
 -----
