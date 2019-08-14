@@ -16,8 +16,8 @@ import sys
 import click
 
 # Import custom (local) python packages
-from . import __author__ as maintainer
-from . import __email__ as contact_email
+from . import __maintainer__ as maintainer
+from . import __maintainer_email__ as contact_email
 from . import __license__ as package_license
 from . import __package_name__ as package_name
 from . import __version__ as version
