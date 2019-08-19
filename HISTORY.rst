@@ -2,6 +2,18 @@
 History
 =======
 
+0.2.4 (2019-08-19)
+------------------
+
+* Adding Jenkinsfile for auto build
+* Adding jfrog-spec.json for artifact management
+
+0.2.3 (2019-08-14)
+------------------
+
+* Updated issue #13
+* Ready for testing
+
 0.2.2 (2019-08-13)
 ------------------
 
