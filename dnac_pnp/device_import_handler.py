@@ -35,12 +35,14 @@ def _check_device(headers=None, data=None):
     :return: (boolean, dict) Site status and data
     """
 
-    device_serial_number = data['deviceInfo']['serialNumber']
-    device_id, device_state = get_device_id(dnac_api_headers=headers, serial_number=device_serial_number)
+    device_serial_number = data["deviceInfo"]["serialNumber"]
+    device_id, device_state = get_device_id(
+        dnac_api_headers=headers, serial_number=device_serial_number
+    )
     if device_id:
         logging.debug(f"Device ID: {device_id}")
         device_status = True
-        data['deviceInfo']["deviceId"] = device_id
+        data["deviceInfo"]["deviceId"] = device_id
     else:
         logging.debug(f"Device not available in DNAC!")
         device_status = False
@@ -57,12 +59,12 @@ def _check_site_name(headers=None, data=None):
     :return: (boolean, dict) Site status and data
     """
 
-    dnac_site_name = data['deviceInfo']['siteName']
+    dnac_site_name = data["deviceInfo"]["siteName"]
     site_id = get_site_id(dnac_api_headers=headers, site_name=dnac_site_name)
     if site_id:
         logging.debug(f"Site ID: {site_id}")
         site_status = True
-        data['deviceInfo']["siteId"] = site_id
+        data["deviceInfo"]["siteId"] = site_id
     else:
         logging.debug(f"Site not found!")
         site_status = False
@@ -153,7 +155,7 @@ def claim_device(dnac_api_headers=None, payload_data=None):
     device_id, _ = get_device_id(
         serial_number=device_serial_number, dnac_api_headers=dnac_api_headers
     )
-    site_id = payload_data['deviceInfo']['siteId']
+    site_id = payload_data["deviceInfo"]["siteId"]
     logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
     if device_id and site_id:
         claim_status = claim(
@@ -178,10 +180,12 @@ def acclaim_device(api_headers=None, data=None):
     # ========================== Check device state ======================================
     ready_to_add = False
     ready_to_claim = False
-    serial_number = data['deviceInfo']['serialNumber']
+    serial_number = data["deviceInfo"]["serialNumber"]
     divider(f"Device state validation for [{serial_number}]")
     device_attached, device_state, data = _check_device(headers=api_headers, data=data)
-    logging.debug(f"Device attached?: {device_attached}, Device State: {device_state}, Data={data}")
+    logging.debug(
+        f"Device attached?: {device_attached}, Device State: {device_state}, Data={data}"
+    )
     if device_attached and device_state == "Unclaimed":
         ready_to_claim = True
     elif device_attached and device_state == "Planned":
@@ -203,7 +207,9 @@ def acclaim_device(api_headers=None, data=None):
             )
             err_msg = response_body["failureList"][0]["msg"]
             err_serial = response_body["failureList"][0]["serialNum"]
-            click.secho(f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red")
+            click.secho(
+                f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red"
+            )
             sys.exit(1)
     # ======================== Claim device ==============================================
     if ready_to_claim:
@@ -227,8 +233,8 @@ def import_single_device(configs=None, data=None):
 
     token = dnac_token_generator(configs=configs)
     headers = get_headers(auth_token=token)
-    site_name = data['deviceInfo']['siteName']
-    serial_number = data['deviceInfo']['serialNumber']
+    site_name = data["deviceInfo"]["siteName"]
+    serial_number = data["deviceInfo"]["serialNumber"]
     divider(f"Site [{site_name}] validation for [{serial_number}]")
     site_status, data = _check_site_name(headers=headers, data=data)
     if site_status:
@@ -264,10 +270,12 @@ def device_import_in_bulk(configs=None, import_file=None):
             if site_status:
                 acclaim_device(api_headers=headers, data=air_config)
             else:
-                site_name = data['deviceInfo']['siteName']
-                serial_number = data['deviceInfo']['serialNumber']
+                site_name = data["deviceInfo"]["siteName"]
+                serial_number = data["deviceInfo"]["serialNumber"]
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
-                click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+                click.secho(
+                    f"[!] Warning: Skipping [{serial_number}].....", fg="yellow"
+                )
                 skipped.append(serial_number)
-        skip_tracer['skippedSerials'] = skipped
+        skip_tracer["skippedSerials"] = skipped
     goodbye(before=True, data=skip_tracer)

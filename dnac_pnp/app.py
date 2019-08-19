@@ -248,7 +248,8 @@ def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
     if delete_entries:
         logging.debug(f"Catalog file: {delete_entries}")
         click.secho(
-            f"[!] warning: Devices will be deleted according to the serial numbers in file", fg="yellow"
+            f"[!] warning: Devices will be deleted according to the serial numbers in file",
+            fg="yellow",
         )
         click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
         delete_manager(delete_from_file=delete_entries, dry_run=dry_run)

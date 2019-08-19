@@ -51,7 +51,9 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
         logging.debug(f"Error: {err}")
         sys.exit(1)
     except IndexError as err:
-        click.secho(f"[!] Index error! Device might not be available in PnP", fg="yellow")
+        click.secho(
+            f"[!] Index error! Device might not be available in PnP", fg="yellow"
+        )
         logging.debug(f"Error: {err}")
         device_state = "Unavailable"
         return False, device_state
@@ -86,7 +88,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
             click.secho(f"[#] Site ID received!", fg="green")
             return site_id
         else:
-            err_msg = response_json['message'][0]
+            err_msg = response_json["message"][0]
             click.secho(f"[*] Message: {err_msg}", fg="cyan")
             return False
     except KeyError as err:

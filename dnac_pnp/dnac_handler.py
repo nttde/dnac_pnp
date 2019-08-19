@@ -121,7 +121,10 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
         )
         sys.exit(1)
     if dry_run is None:
-        if click.confirm(text=f"[-] Are you sure you want to delete {len(serials_to_delete)} devices?", abort=True):
+        if click.confirm(
+            text=f"[-] Are you sure you want to delete {len(serials_to_delete)} devices?",
+            abort=True,
+        ):
             populate_config()
             logging.debug(
                 f"User confirmed deletion of [{len(serials_to_delete)}]devices"

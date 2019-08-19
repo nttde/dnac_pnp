@@ -27,9 +27,7 @@ def _content_type_check(response=None):
 
     if "application/json" in response.headers["Content-Type"]:
         response_body = response.json()
-        response_body_logging = json.dumps(
-            response.json(), indent=4, sort_keys=True
-        )
+        response_body_logging = json.dumps(response.json(), indent=4, sort_keys=True)
         logging.debug(f"{type(response_body_logging)}")
         logging.debug(f"JSON response content: {response_body_logging}")
     else:
@@ -125,7 +123,12 @@ def call_api_endpoint(
 
 # API call control for device id, site id
 def get_response(
-    authentication_token=None, method=None, endpoint_url=None, headers=None, parameters=None, response=None,
+    authentication_token=None,
+    method=None,
+    endpoint_url=None,
+    headers=None,
+    parameters=None,
+    response=None,
 ):
     """
     This private method returns response body as json (if applicable)
@@ -143,7 +146,10 @@ def get_response(
         headers = get_headers(auth_token=authentication_token)
     if response is None:
         response = call_api_endpoint(
-            method=method, api_url=endpoint_url, api_headers=headers, parameters=parameters
+            method=method,
+            api_url=endpoint_url,
+            api_headers=headers,
+            parameters=parameters,
         )
     if response.status_code in accepted_status_codes:
         response_status = True

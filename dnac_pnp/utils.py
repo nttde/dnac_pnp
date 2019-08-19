@@ -125,7 +125,7 @@ def validate_serial(ctx, param, value):
             if len(value) > 11:
                 click.secho(
                     f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
-                    fg="red"
+                    fg="red",
                 )
                 ctx.abort()
             else:
@@ -191,7 +191,8 @@ def debug_manager():
     click.secho(f"[+] ", nl=False, fg="yellow")
     click.secho(f"DEBUG mode is ON", fg="black", bg="yellow")
     debug_format = click.style(
-        "[+] %(levelname)s %(asctime)-15s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s", fg="yellow"
+        "[+] %(levelname)s %(asctime)-15s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s",
+        fg="yellow",
     )
     HTTPConnection.debuglevel = 4
     logging.basicConfig(format=debug_format)
@@ -360,7 +361,9 @@ def parse_txt(serials_file_path=None):
 
     with open(serials_file_path) as serials_file:
         serials_to_delete_crlf = serials_file.readlines()
-        serials_to_delete = [serial.strip() for serial in serials_to_delete_crlf if serial.strip()]
+        serials_to_delete = [
+            serial.strip() for serial in serials_to_delete_crlf if serial.strip()
+        ]
     return serials_to_delete
 
 

@@ -38,19 +38,22 @@ def delete_device(api_headers=None, device_serial=None):
     :return: (obj) Response object
     """
 
-    device_id, _ = get_device_id(dnac_api_headers=api_headers, serial_number=device_serial)
+    device_id, _ = get_device_id(
+        dnac_api_headers=api_headers, serial_number=device_serial
+    )
     if device_id:
         method, api_url, parameters = generate_api_url(api_type="remove-device")
         logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
         delete_api_url = f"{api_url}{device_id}"
         api_response = call_api_endpoint(
-            method=method,
-            api_url=delete_api_url,
-            api_headers=api_headers,
+            method=method, api_url=delete_api_url, api_headers=api_headers
         )
         return api_response
     else:
-        click.secho(f"[!] Warning: Device ID not found. SKIPPING serial [{device_serial}].....", fg="yellow")
+        click.secho(
+            f"[!] Warning: Device ID not found. SKIPPING serial [{device_serial}].....",
+            fg="yellow",
+        )
         return False
 
 
@@ -77,5 +80,3 @@ def remove_devices(configs=None, serials=None):
             else:
                 continue
         goodbye()
-
-

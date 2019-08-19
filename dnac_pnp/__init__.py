@@ -18,9 +18,8 @@ from .__version__ import __maintainer__, __maintainer_email__
 from .__version__ import __copyright__, __license__
 
 # urllib3's DependencyWarnings, InsecureRequestWarning should be silenced.
-warnings.simplefilter('ignore', DependencyWarning)
-warnings.simplefilter('ignore', InsecureRequestWarning)
+warnings.simplefilter("ignore", DependencyWarning)
+warnings.simplefilter("ignore", InsecureRequestWarning)
 
 # Set default logging handler to avoid "No handler found" warnings
 logging.getLogger(__name__).addHandler(NullHandler())
-
