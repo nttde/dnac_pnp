@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-First Edit
-----------
-
-First Edit Author: Kamlesh Koladiya
-
-Email: kamlesh.koladiya@dimensiondata.com
-"""
-
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"

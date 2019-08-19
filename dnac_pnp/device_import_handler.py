@@ -77,7 +77,7 @@ def dnac_token_generator(configs=None):
     This function logs into DNAC and generates authentication token
 
     :param configs: (dict) DNAC configurations
-    :returns (str) Authentication token
+    :returns: (str) Authentication token
     """
 
     dnac_username = configs["username"]
@@ -174,7 +174,7 @@ def acclaim_device(api_headers=None, data=None):
 
     :param api_headers: (dict) API headers
     :param data: (dict) Payload data for api calls
-    :return:
+    :return: (stdout) On screen output
     """
 
     # ========================== Check device state ======================================

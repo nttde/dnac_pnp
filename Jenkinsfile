@@ -16,7 +16,7 @@ pipeline {
             notifyFailure: true, notifyNotBuilt: true, notifyRepeatedFailure: true,
             notifySuccess: true, notifyUnstable: true, url: "${MSTEAMS_WEBHOOK_CARNIVAL}"
         ]])
-        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '1'))
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '1'))
     }
     stages {
         stage ('Sanity Check') {
