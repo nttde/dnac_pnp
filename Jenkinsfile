@@ -8,6 +8,8 @@ pipeline {
     agent any
     environment {
         PYTHON_INTERPRETER = "python3.7"
+        PYHTON_PKG_DEPENDENCY = "requirements.txt"
+        PYTHON_DEV_DEPENDENCY = "requirements_dev.txt"
         REPOSITORY_NAME = sh (script: 'echo $(echo `git config --get remote.origin.url` | rev | cut -d "/" -f 1 | cut -d "." -f 2 | rev)', returnStdout: true).trim()
     }
     options {
@@ -77,7 +79,7 @@ pipeline {
                 sh "virtualenv --always-copy -p ${PYTHON_INTERPRETER} venv"
                 sh '''
                 source venv/bin/activate
-                pip install --upgrade pip
+                pip install --upgrade pip setuptools wheel twine
                 pip --version
                 '''
             }
@@ -87,14 +89,13 @@ pipeline {
                 stage ('Dev Dependencies') {
                     when {
                         expression {
-                            fileExists('requirements_dev.txt')
+                            fileExists("${PYTHON_DEV_DEPENDENCY}")
                         }
                     }
                     steps {
                         sh '''
                         source venv/bin/activate
-                        pip install --upgrade setuptools wheel twine
-                        pip install -r requirements_dev.txt
+                        pip install -r "${PYTHON_DEV_DEPENDENCY}"
                         deactivate
                         '''
                     }
@@ -102,13 +103,13 @@ pipeline {
                 stage ('Pkg Dependencies') {
                     when {
                         expression {
-                            fileExists('requirements.txt')
+                            fileExists("${PYHTON_PKG_DEPENDENCY}")
                         }
                     }
                     steps {
                         sh '''
                         source venv/bin/activate
-                        pip install -r requirements.txt
+                        pip install -r "${PYHTON_PKG_DEPENDENCY}"
                         deactivate
                         '''
                     }
@@ -179,19 +180,19 @@ pipeline {
                 }
             }
         }
-        stage ('Create Artifacts') {
-            environment {
-                PROJECT_VERSION = sh (script: 'python3 setup.py --version', returnStdout: true).trim()
-            }
-            steps {
-                sh '''
-                if [[ -d "${WORKSPACE}/docs/build/html/" ]]; then
-                    cd "${WORKSPACE}/docs/build/html/"
-                    tar -vczf "${WORKSPACE}/${REPOSITORY_NAME}-${BRANCH_NAME}-${PROJECT_VERSION}-${BUILD_NUMBER}.tar.gz" *
-                fi
-                '''
-            }
-        }
+        // stage ('Create Artifacts') {
+        //     environment {
+        //         PROJECT_VERSION = sh (script: 'python3 setup.py --version', returnStdout: true).trim()
+        //     }
+        //     steps {
+        //         sh '''
+        //         if [[ -d "${WORKSPACE}/docs/build/html/" ]]; then
+        //             cd "${WORKSPACE}/docs/build/html/"
+        //             tar -vczf "${WORKSPACE}/${REPOSITORY_NAME}-${BRANCH_NAME}-${PROJECT_VERSION}-${BUILD_NUMBER}.tar.gz" *
+        //         fi
+        //         '''
+        //     }
+        // }
         stage ('Manage Artifacts') {
             parallel {
                 stage ('Archive Artifacts - Packages') {
@@ -199,12 +200,12 @@ pipeline {
                         archiveArtifacts artifacts: 'dist/*'
                     }
                 }
-                stage ('Archive Artifacts - tarball') {
-                    steps {
-                        archiveArtifacts artifacts: '*.gz ',
-                        onlyIfSuccessful: true
-                    }
-                }
+                // stage ('Archive Artifacts - tarball') {
+                //     steps {
+                //         archiveArtifacts artifacts: '*.gz ',
+                //         onlyIfSuccessful: true
+                //     }
+                // }
                 stage ('Archive Artifacts - pdf') {
                     steps {
                         archiveArtifacts artifacts: 'docs/build/latex/*.pdf',
