@@ -1,7 +1,7 @@
 /*
 File: Jenkinsfile
 Author: Dalwar Hossain (dalwar.hossain@dimensiondata.com)
-Copyright: Dimensiondata Germany AG & Co. KG
+Copyright: Dalwar Hossain, Dimensiondata Germany AG & Co. KG
 */
 
 pipeline {
