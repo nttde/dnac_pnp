@@ -55,10 +55,10 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     divider("Device Management")
     click.secho(f"[*] Starting device management.....", fg="cyan")
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
-    # ==================== SINGLE DEVICE IMPORT ===========================================
+    # ==================== SINGLE DEVICE IMPORT ========================================
     if import_type == "single":
         import_single_device(configs=dnac_configs, data=inputs)
-    # =================== IMPORT  IN BULK =================================================
+    # =================== IMPORT  IN BULK ==============================================
     elif import_type == "bulk":
         if "device_catalog" not in kwargs:
             device_catalog_dir = os.path.join(
@@ -107,14 +107,13 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
         serials_to_delete = parse_txt(serials_file_path=delete_serials_file_path)
     else:
         click.secho(
-            f"[@] We are not that sure what you are trying to do. Please make up your mind!",
+            f"[@] We are not that sure what you are trying to do. Make up your mind!",
             fg="red",
         )
         sys.exit(1)
     if dry_run is None:
         if click.confirm(
-            text=f"[-] Are you sure you want to delete {len(serials_to_delete)} devices?",
-            abort=True,
+            text=f"[-] Delete {len(serials_to_delete)} devices?", abort=True
         ):
             populate_config()
             logging.debug(
@@ -125,3 +124,7 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
             remove_devices(configs=dnac_configs, serials=serials_to_delete)
     else:
         print("this is a dry run")
+
+
+if __name__ == "__main__":
+    populate_config()

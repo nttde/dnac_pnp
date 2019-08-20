@@ -2,7 +2,7 @@
 dnac-pnp
 ========
 
-Cisco DNA center device claim and delete functionalities
+Cisco DNA center device claim and delete automation
 
 
 Features
