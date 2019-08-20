@@ -94,7 +94,7 @@ pipeline {
                         sh '''
                         source venv/bin/activate
                         pip install --upgrade setuptools wheel twine
-                        pip install -r requirements-dev.txt
+                        pip install -r requirements_dev.txt
                         deactivate
                         '''
                     }
