@@ -180,19 +180,19 @@ pipeline {
                 }
             }
         }
-        stage ('Create Artifacts') {
-            environment {
-                PROJECT_VERSION = sh (script: 'python3 setup.py --version', returnStdout: true).trim()
-            }
-            steps {
-                sh '''
-                if [[ -d "${WORKSPACE}/docs/build/html/" ]]; then
-                    cd "${WORKSPACE}/docs/build/html/"
-                    tar -vczf "${WORKSPACE}/${REPOSITORY_NAME}-${BRANCH_NAME}-${PROJECT_VERSION}-${BUILD_NUMBER}.tar.gz" *
-                fi
-                '''
-            }
-        }
+        // stage ('Create Artifacts') {
+        //     environment {
+        //         PROJECT_VERSION = sh (script: 'python3 setup.py --version', returnStdout: true).trim()
+        //     }
+        //     steps {
+        //         sh '''
+        //         if [[ -d "${WORKSPACE}/docs/build/html/" ]]; then
+        //             cd "${WORKSPACE}/docs/build/html/"
+        //             tar -vczf "${WORKSPACE}/${REPOSITORY_NAME}-${BRANCH_NAME}-${PROJECT_VERSION}-${BUILD_NUMBER}.tar.gz" *
+        //         fi
+        //         '''
+        //     }
+        // }
         stage ('Manage Artifacts') {
             parallel {
                 stage ('Archive Artifacts - Packages') {
@@ -200,12 +200,12 @@ pipeline {
                         archiveArtifacts artifacts: 'dist/*'
                     }
                 }
-                stage ('Archive Artifacts - tarball') {
-                    steps {
-                        archiveArtifacts artifacts: '*.gz ',
-                        onlyIfSuccessful: true
-                    }
-                }
+                // stage ('Archive Artifacts - tarball') {
+                //     steps {
+                //         archiveArtifacts artifacts: '*.gz ',
+                //         onlyIfSuccessful: true
+                //     }
+                // }
                 stage ('Archive Artifacts - pdf') {
                     steps {
                         archiveArtifacts artifacts: 'docs/build/latex/*.pdf',
