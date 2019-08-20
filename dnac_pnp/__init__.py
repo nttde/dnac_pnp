@@ -16,6 +16,7 @@ from .__version__ import __package_name__, __version__
 from .__version__ import __author__, __author_email
 from .__version__ import __maintainer__, __maintainer_email__
 from .__version__ import __copyright__, __license__
+from . import dnac_handler
 
 # urllib3's DependencyWarnings, InsecureRequestWarning should be silenced.
 warnings.simplefilter("ignore", DependencyWarning)

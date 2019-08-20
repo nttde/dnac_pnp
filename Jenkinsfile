@@ -1,7 +1,7 @@
 /*
 File: Jenkinsfile
 Author: Dalwar Hossain (dalwar.hossain@dimensiondata.com)
-Copyright: Dimensiondata Germany AG & Co. KG
+Copyright: Dalwar Hossain, Dimensiondata Germany AG & Co. KG
 */
 
 pipeline {
@@ -87,14 +87,14 @@ pipeline {
                 stage ('Dev Dependencies') {
                     when {
                         expression {
-                            fileExists('requirements-dev.txt')
+                            fileExists('requirements_dev.txt')
                         }
                     }
                     steps {
                         sh '''
                         source venv/bin/activate
                         pip install --upgrade setuptools wheel twine
-                        pip install -r requirements-dev.txt
+                        pip install -r requirements_dev.txt
                         deactivate
                         '''
                     }

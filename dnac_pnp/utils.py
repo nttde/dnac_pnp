@@ -117,15 +117,14 @@ def validate_serial(ctx, param, value):
     if value:
         if not value.isalnum():
             click.secho(
-                f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
+                f"[x] Serial Number must be alphanumeric and less than 11 characters",
                 fg="red",
             )
             ctx.abort()
         else:
             if len(value) > 11:
                 click.secho(
-                    f"[x] Serial Number must be alphanumeric and must be 11 characters in length or less.",
-                    fg="red",
+                    f"[x] Serial Number must be less than 11 characters", fg="red"
                 )
                 ctx.abort()
             else:
@@ -174,7 +173,7 @@ def initial_message():
     divider(f"Initializing [{package_name}]")
     click.secho(f"[*] Initializing.....", fg="cyan")
     click.secho(
-        f"[*] Please use 'dnac_pnp info' command to see supported version of Cisco DNA Center",
+        f"[*] Please use 'dnac_pnp info' to see supported version of Cisco DNA Center",
         fg="cyan",
     )
 
@@ -191,7 +190,8 @@ def debug_manager():
     click.secho(f"[+] ", nl=False, fg="yellow")
     click.secho(f"DEBUG mode is ON", fg="black", bg="yellow")
     debug_format = click.style(
-        "[+] %(levelname)s %(asctime)-15s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s",
+        "[+] %(levelname)s %(asctime)-15s [%(filename)s:%(lineno)s - %(funcName)20s() ]"
+        " %(message)s",
         fg="yellow",
     )
     HTTPConnection.debuglevel = 4
@@ -221,7 +221,7 @@ def divider(text="", char="="):
 
     :param text: (unicode) Headline text. If empty, only the line is printed.
     :param char: (unicode) Line character to repeat, e.g. =.
-    :returns: (stdout) on screen
+    :return: (stdout) on screen
     """
 
     pretty = True
@@ -355,6 +355,7 @@ def parse_csv(file_to_parse=None):
 def parse_txt(serials_file_path=None):
     """
     This function parses a text file line by line and returns a list of serials
+
     :param serials_file_path: (str) Full path to serials to delete file
     :return: (list) A list of serials
     """
@@ -370,10 +371,11 @@ def parse_txt(serials_file_path=None):
 # Goodbye
 def goodbye(before=False, data=None):
     """
-    This function shows goodbye message
+    Shows goodbye message
 
-    :param before: (boolean) Whether to show a message before goodbye or not (default: False)
-    :param data: (dict)
+    :param before: (boolean) Whether to show a message before goodbye
+    :param data: (dict) skipped information
+    :return: (stdout) On screen output
     """
 
     if before:

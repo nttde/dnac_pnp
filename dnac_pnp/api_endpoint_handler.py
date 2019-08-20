@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""This module handles the URL creation for API call"""
+"""This module handles API endpoints"""
 
 # Import builtin python libraries
 import json
@@ -26,7 +26,7 @@ def generate_api_url(host=None, api_type=None):
     This function creates appropriate API URL based on vendor and api call type
 
     :param host: (str) IP or FQDN of DNAC
-    :param api_type: (str) API call type (name) e.g. deploy-vm, nfv-status
+    :param api_type: (str) API call type (name) e.g. generate-token, import-device
     :return: (str) API endpoint
     """
 
