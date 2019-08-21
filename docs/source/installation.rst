@@ -4,27 +4,31 @@ Installation
 Dependencies
 ------------
 
-This package requires a configuration file in either ``.yaml`` or ``yml`` format. The look up priority for
-the configuration file is as following-
+This package requires a configuration file in either ``.yaml`` or ``yml`` format. The
+look up priority for the configuration file is as following-
 
 1. <user_home_directory>/.<package_name>/configs/config.yaml (``Window/Linux/MacOS``)
 2. <current_working_directory>/.<package_name>/configs/config.yaml (``Windows/Linux/MacOS``)
 3. /etc/<package_name>/configs/config.yaml (``Linux/MacOS``)
 
-If ``config.yaml`` doesn't exists in one of these locations, the program will NOT run. So, to create the configuration
-file, please use -
+If ``config.yaml`` doesn't exists in one of these locations, the program will NOT run.
+So, to create the configuration file, please use -
 
 **Windows**
 
-Windows system by default doesn't allow creation of ``.`` prefixed directory from GUI, so use the following -
+Windows system by default doesn't allow creation of ``.`` prefixed directory from GUI,
+so use the following -
 
 - Open `cmd` and change the directory to the ``home`` folder of the user
 - Run ``mkdir .dnac_pnp``
 - Run ``cd .dnac_pnp``
 - Run ``mkdir configs``
+- Run ``mkdir catalog``
+- Run ``cd configs``
 
-Now that the ``.`` prefixed directory is created, use the GUI to add a file in ``configs`` directory named
-``config.yaml``. Once the file is created, open the file and add the following lines according to your preference -
+Now that the ``.`` prefixed directory is created, use the GUI to add a file in
+``configs`` directory named ``config.yaml``. Once the file is created, open the file
+and add the following lines according to your preference -
 
 .. code-block:: yaml
 
@@ -36,7 +40,8 @@ Now that the ``.`` prefixed directory is created, use the GUI to add a file in `
 
 **Linux/MacOS**
 
-- Open a terminal and ``cd`` into the home directory or any other directory form the above dependency list.
+- Open a terminal and ``cd`` into the home directory or any other directory form the
+  above dependency list.
 - Run ``mkdir -p .dnac_pnp/{catalog, configs}``
 - Run ``cd .dnac_pnp/configs/``
 - Run ``nano config.yaml``
@@ -45,8 +50,9 @@ Now that the ``.`` prefixed directory is created, use the GUI to add a file in `
 Bulk Import Dependency
 ----------------------
 
-While importing in bulk, a device catalog file can be put inside the ``catalog`` folder under ``.dnac_pnp`` with
-``DeviceImport.csv`` name at the program will automatically read this file.
+While importing in bulk, a device catalog file can be put inside the ``catalog``
+folder under ``.dnac_pnp`` with ``DeviceImport.csv`` name at the program will
+automatically read this file.
 
 **Windows**
 
@@ -60,10 +66,10 @@ While importing in bulk, a device catalog file can be put inside the ``catalog``
 
    .dnac_pnp/catalog/DeviceImport.csv
 
-**Note**
+.. note::
 
-Samples files are available, in the ``data`` directory of this repo.
-The location of the catalog file can be provided with ``-f`` flag also
+   Samples files are available, in the ``data`` directory of this repo.
+   The location of the catalog file can be provided with ``-f`` flag also
 
 Installation
 ------------
@@ -71,20 +77,25 @@ Installation
 Installing Virtual Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is highly recommended to use ``virtual environment`` for this package. To know how to setup
-the virtual environment please visit `this page <https://virtualenv.pypa.io/en/stable/installation/>`_.
+It is highly recommended to use ``virtual environment`` for this package. To know how
+to setup the virtual environment
+please visit`this page <https://virtualenv.pypa.io/en/stable/installation/>`_.
 
 Installing the package
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Once you have virtual environment installed, clone this repository and move into the ``root``
-directory of the project.
+Once you have virtual environment installed, clone this repository and move into
+the ``root`` directory of the project.
 
 Now, crate a virtual environment.
 
 .. code-block:: shell
 
-   virtualenv --always-copy -p python3 venv
+   ~/dnac-pnp/$ virtualenv --always-copy -p python3 venv
+
+.. code-block:: batch
+
+   C:\Users\user.name\folder\dnac-pnp> virtualenv --always-copy -p python3 venv
 
 activate virtual environment -
 
@@ -92,13 +103,13 @@ activate virtual environment -
 
 .. code-block:: shell
 
-   source venv/bin/activate
+   ~/dnac-pnp/$ source venv/bin/activate
 
 **Windows**
 
 .. code-block:: batch
 
-   venv\Scripts\activate.bat
+   C:\Users\user.name\folder\dnac-pnp> venv\Scripts\activate.bat
 
 Once the ``virtual environment`` is active, run the following command -
 
