@@ -114,7 +114,8 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
         debug_manager()
     if host_name is None:
         click.secho(
-            f"[!] Warning: No hostname provided! Serial number will be used as device name",
+            f"[!] Warning: No hostname provided! Serial number will be"
+            f" used as device name",
             fg="yellow",
         )
         host_name = serial_number
@@ -201,15 +202,14 @@ def info(context, all_info, author):
         show_info(view_type="author")
 
 
-@mission_control.command(short_help="Delete [un-claim + remove] or more devices.")
+@mission_control.command(short_help="Delete [un-claim + remove] one or more devices.")
 @click.option(
     "-d",
     "--delete-from",
     "delete_from",
-    type=click.Choice(["pnp", "inventory"]),
+    type=click.Choice(["pnp", "inv"]),
     help="Delete device from PnP or Inventory.",
     required=True,
-    default="pnp",
     show_default=True,
 )
 @click.option(
@@ -262,8 +262,9 @@ def delete(context, delete_from, serial_numbers, delete_entries, dry_run, delete
             fg="yellow",
         )
         click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
-        delete_manager(delete_from=delete_from, delete_file=delete_entries,
-                       dry_run=dry_run)
+        delete_manager(
+            delete_from=delete_from, delete_file=delete_entries, dry_run=dry_run
+        )
     elif serial_numbers:
         delete_manager(delete_from=delete_from, serials=serial_numbers, dry_run=dry_run)
     else:
