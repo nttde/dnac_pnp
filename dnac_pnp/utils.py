@@ -92,7 +92,7 @@ def _show_dnac_dependencies():
 # Show information about the package
 def show_info(view_type=None):
     """
-    This module prints information about the package on screen
+    This function prints information about the package on screen
 
     :param view_type: (boolean) To show more or less info
     :returns: (stdout) output to the screen

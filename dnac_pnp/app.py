@@ -203,6 +203,16 @@ def info(context, all_info, author):
 
 @mission_control.command(short_help="Delete [un-claim + remove] or more devices.")
 @click.option(
+    "-d",
+    "--delete-from",
+    "delete_from",
+    type=click.Choice(["pnp", "inventory"]),
+    help="Delete device from PnP or Inventory.",
+    required=True,
+    default="pnp",
+    show_default=True,
+)
+@click.option(
     "-s",
     "--serial-numbers",
     "serial_numbers",
@@ -212,7 +222,7 @@ def info(context, all_info, author):
 )
 @click.option(
     "-f",
-    "--delete-from-file",
+    "--delete-file",
     "delete_entries",
     help="Device delete full file path.",
     required=False,
@@ -238,7 +248,7 @@ def info(context, all_info, author):
     type=str,
 )
 @pass_context
-def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
+def delete(context, delete_from, serial_numbers, delete_entries, dry_run, delete_debug):
     """Delete one or multiple devices"""
 
     if context.initial_msg:
@@ -248,13 +258,14 @@ def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
     if delete_entries:
         logging.debug(f"Catalog file: {delete_entries}")
         click.secho(
-            f"[!] warning: Devices will be deleted according to the serial numbers in file",
+            f"[!] warning: Devices will be deleted according to serial numbers in file",
             fg="yellow",
         )
         click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
-        delete_manager(delete_from_file=delete_entries, dry_run=dry_run)
+        delete_manager(delete_from=delete_from, delete_file=delete_entries,
+                       dry_run=dry_run)
     elif serial_numbers:
-        delete_manager(serials=serial_numbers, dry_run=dry_run)
+        delete_manager(delete_from=delete_from, serials=serial_numbers, dry_run=dry_run)
     else:
         click.secho(f"[x] Provide at least one option! See --help for more!", fg="red")
         sys.exit(1)

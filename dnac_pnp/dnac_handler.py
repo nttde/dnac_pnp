@@ -27,7 +27,8 @@ host = ""
 
 # Populate configurations
 def populate_config():
-    """This function get the configurations for DNA center"""
+    """This function loads the configurations for DNA center"""
+
     # Using the defined global variables
     global all_configs
     global dnac_configs
@@ -82,12 +83,13 @@ def import_manager(inputs=None, import_type=None, **kwargs):
 
 
 # DNA center device deletion
-def delete_manager(serials=None, delete_from_file=None, dry_run=None):
+def delete_manager(delete_from=None, serials=None, delete_file=None, dry_run=None):
     """
-    This function deletes one or more devices form DNAC PnP"
+    This function deletes one or more devices form DNA Center
 
+    :param delete_from: (str) Where to delete from "PnP" or "inventory" of DNA center
     :param serials: (str) comma separated string of serial numbers
-    :param delete_from_file: (str) Full file path with serial numbers that needed to be deleted
+    :param delete_file: (str) Full file path with serial numbers
     :param dry_run: (boolean) True or False, to just show what serials will be deleted
     :return: (str) delete status on the screen
     """
@@ -101,9 +103,9 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
             click.secho(f"[x] Can't parse the input properly!", fg="red")
             click.secho(f"[x] ERROR: {err}")
             sys.exit(1)
-    elif delete_from_file:
-        logging.debug(f"File path: [{delete_from_file}]")
-        delete_serials_file_path = delete_from_file
+    elif delete_file:
+        logging.debug(f"File path: [{delete_file}]")
+        delete_serials_file_path = delete_file
         serials_to_delete = parse_txt(serials_file_path=delete_serials_file_path)
     else:
         click.secho(
@@ -123,8 +125,6 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
             click.secho(f"[*] Starting device deletion engine.....", fg="cyan")
             remove_devices(configs=dnac_configs, serials=serials_to_delete)
     else:
-        print("this is a dry run")
-
-
-if __name__ == "__main__":
-    populate_config()
+        for serial in serials_to_delete:
+            click.secho(f"[*] Device with serial number [{serial}] will "
+                        f"be deleted from [{delete_from}].", fg="cyan")
