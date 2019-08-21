@@ -268,5 +268,6 @@ def delete(context, delete_from, serial_numbers, delete_entries, dry_run, delete
     elif serial_numbers:
         delete_manager(delete_from=delete_from, serials=serial_numbers, dry_run=dry_run)
     else:
-        click.secho(f"[x] Provide at least one option! See --help for more!", fg="red")
+        click.secho(f"[x] Provide at least one option (-s/-f)[ARGS]! "
+                    f"See --help for more!", fg="red")
         sys.exit(1)

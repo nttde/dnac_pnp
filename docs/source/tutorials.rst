@@ -235,8 +235,49 @@ As usual, let's take a look at the ``--help`` section of this sub-command.
    Delete one or multiple devices
 
    Options:
+     -d, --delete-from [pnp|inv]  Delete device from PnP or Inventory.
+                               [required]
      -s, --serial-numbers TEXT    Comma separated serial numbers.
-     -f, --delete-from-file FILE  Device delete full file path.
+     -f, --delete-file FILE       Device delete full file path.
      --dry-run                    Dry runs the process.  [default: False]
      --debug                      Turns on DEBUG mode.  [default: False]
      --help                       Show this message and exit.
+
+Options explained
+^^^^^^^^^^^^^^^^^
+
+- ``-d`` or ``--delete-from`` is a ``required`` option, this determines
+  from where the devices associated with the provided serial numbers will
+  be deleted. Only to valid choices for this option ``pnp`` which stands
+  for ``plug and play`` and ``inv`` which elaborates to ``inventory``.
+
+- ``-s`` or ``--serial-number`` is a list of comma separated serial numbers.
+  The idea behind this option is to have the flexibility to delete one or
+  more devices from the commandline.
+
+  .. note::
+
+     Serial numbers must be in comma separated format. e.g. xxxxx, yyyy etc.
+     and all the serial number should be valid serial with 11 character or
+     less in length
+
+- ``-f`` or ``--delete-file`` is a full file path to a (preferably ``.txt``)
+  file with serial numbers that needs to be deleted. One serial number per
+  line. A sample ``delete_device.txt`` looks like below
+
+  .. code-block:: ini
+
+     FOC1849Z2JL
+     AAA1111K3MX
+     FOC1849Z2KK
+
+  .. warning::
+
+     Please do not put any header in ``delete`` file
+
+- ``--dry-run`` does exactly what it says. It will only show what will be
+  deleted and from where.
+
+- ``--debug`` turns on the debug mode.
+
+- ``--help`` shows the help options and saves the day.
