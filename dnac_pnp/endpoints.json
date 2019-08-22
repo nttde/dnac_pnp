@@ -17,16 +17,18 @@
         "api": "/api/v1/onboarding/pnp-device/site-claim",
         "parameters": {}
     },
-    "remove-device": {
-        "method": "DELETE",
-        "protocol": "https",
-        "api": "/api/v1/onboarding/pnp-device/",
-        "parameters": {}
-    },
-    "get-device-info": {
+    "get-pnp-device-info": {
         "method": "GET",
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device",
+        "parameters": {
+            "serialNumber": ""
+        }
+    },
+    "get-inventory-device-info": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/network-device",
         "parameters": {
             "serialNumber": ""
         }
@@ -45,6 +47,20 @@
         "api": "/dna/intent/api/v1/image/importation",
         "parameters": {
             "name": ""
+        }
+    },
+    "remove-device-pnp": {
+        "method": "DELETE",
+        "protocol": "https",
+        "api": "/api/v1/onboarding/pnp-device/",
+        "parameters": {}
+    },
+    "remove-device-inventory": {
+        "method": "DELETE",
+        "protocol": "https",
+        "api": "/api/v1/network-device/",
+        "parameters": {
+            "cleanConfig": "false"
         }
     }
 }

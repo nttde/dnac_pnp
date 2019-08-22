@@ -142,9 +142,9 @@ def get_response(
     :return: (json) Response body
     """
 
-    if headers is None:
-        headers = get_headers(auth_token=authentication_token)
     if response is None:
+        if headers is None:
+            headers = get_headers(auth_token=authentication_token)
         response = call_api_endpoint(
             method=method,
             api_url=endpoint_url,
@@ -152,12 +152,14 @@ def get_response(
             parameters=parameters,
         )
     if response.status_code in accepted_status_codes:
+        logging.debug(f"Response status code found in accepted codes!")
         response_status = True
         click.secho(
             f"[#] [{response.status_code}] API call accepted by the server!", fg="green"
         )
         response_body = _content_type_check(response=response)
     else:
+        logging.debug(f"Response status code not found in accepted codes!")
         response_status = False
         response_body = _content_type_check(response=response)
         click.secho(
