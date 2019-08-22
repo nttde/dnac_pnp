@@ -21,17 +21,26 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 
 # Retrieve device ID
-def get_device_id(authentication_token=None, dnac_api_headers=None, serial_number=None):
+def get_device_id(
+    authentication_token=None, dnac_api_headers=None, serial_number=None, dnac_tab=None
+):
     """
     This module retrieves the device id by serial number
 
     :param authentication_token: (str) Authentication token
     :param dnac_api_headers: (dict) API headers
     :param serial_number: (str) Device serial number
+    :param dnac_tab: (str) Where to look for the device info (PnP or Inventory)
     :returns: (str) device ID from DNAC
     """
 
-    method, api_url, parameters = generate_api_url(api_type="get-device-info")
+    if dnac_tab == "pnp":
+        dnac_api_type = "get-pnp-device-info"
+    elif dnac_tab == "inventory":
+        dnac_api_type = "get-inventory-device-info"
+    else:
+        dnac_api_type = "get-pnp-device-info"
+    method, api_url, parameters = generate_api_url(api_type=dnac_api_type)
     parameters["serialNumber"] = serial_number
     _, response_body = get_response(
         headers=dnac_api_headers,
@@ -41,9 +50,14 @@ def get_device_id(authentication_token=None, dnac_api_headers=None, serial_numbe
         parameters=parameters,
     )
     try:
-        device_id = response_body[0]["id"]
-        device_state = response_body[0]["deviceInfo"]["state"]
-        logging.debug(f"Device ID: {device_id}")
+        if dnac_tab == "pnp":
+            device_id = response_body[0]["id"]
+            device_state = response_body[0]["deviceInfo"]["state"]
+            logging.debug(f"Device ID: {device_id}")
+        if dnac_tab == "inventory":
+            device_id = response_body["response"][0]["id"]
+            device_state = response_body["response"][0]["collectionStatus"]
+            logging.debug(f"Device ID: {device_id}")
         click.secho(f"[#] Device ID received!", fg="green")
         return device_id, device_state
     except KeyError as err:
