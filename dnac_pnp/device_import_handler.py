@@ -37,7 +37,7 @@ def _check_device(headers=None, data=None):
 
     device_serial_number = data["deviceInfo"]["serialNumber"]
     device_id, device_state = get_device_id(
-        dnac_api_headers=headers, serial_number=device_serial_number
+        dnac_api_headers=headers, serial_number=device_serial_number, dnac_tab="pnp"
     )
     if device_id:
         logging.debug(f"Device ID: {device_id}")
@@ -98,7 +98,7 @@ def dnac_token_generator(configs=None):
         token = response_body["Token"]
     else:
         click.secho(
-            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
+            f"[x] Server response [{api_response.status_code}] [{api_response.text}]",
             fg="red",
         )
         sys.exit(1)
@@ -107,7 +107,7 @@ def dnac_token_generator(configs=None):
         return token
     else:
         click.secho(
-            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
+            f"[x] Server response [{api_response.status_code}] [{api_response.text}]",
             fg="red",
         )
         sys.exit(1)
@@ -122,7 +122,7 @@ def add_device(dnac_api_headers=None, payload_data=None):
     :param payload_data: (dict) Payload data for adding a device
     :return: (obj) Requests response object
     """
-    # ========================== Add device to PnP list ===================================
+    # ========================== Add device to PnP list ================================
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
     divider(f"Add [{device_serial_number}]")
     method, api_url, parameters = generate_api_url(api_type="import-device")
@@ -153,7 +153,9 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         fg="cyan",
     )
     device_id, _ = get_device_id(
-        serial_number=device_serial_number, dnac_api_headers=dnac_api_headers
+        serial_number=device_serial_number,
+        dnac_api_headers=dnac_api_headers,
+        dnac_tab="pnp",
     )
     site_id = payload_data["deviceInfo"]["siteId"]
     logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
@@ -177,23 +179,28 @@ def acclaim_device(api_headers=None, data=None):
     :return: (stdout) On screen output
     """
 
-    # ========================== Check device state ======================================
+    # ========================== Check device state ====================================
+    non_claimable_states = ["Planned", "Onboarding", "Provisioned"]
     ready_to_add = False
     ready_to_claim = False
     serial_number = data["deviceInfo"]["serialNumber"]
     divider(f"Device state validation for [{serial_number}]")
     device_attached, device_state, data = _check_device(headers=api_headers, data=data)
     logging.debug(
-        f"Device attached?: {device_attached}, Device State: {device_state}, Data={data}"
+        f"Device attached?: {device_attached}, State: {device_state}, Data={data}"
     )
-    if device_attached and device_state == "Unclaimed":
-        ready_to_claim = True
-    elif device_attached and device_state == "Planned":
-        click.secho(f"[!] Device [{serial_number}] already claimed!", fg="yellow")
-        click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+    if device_attached:
+        if device_state == "Unclaimed":
+            ready_to_claim = True
+        elif device_state in non_claimable_states:
+            click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+            click.secho(
+                f"[!] Reason: Device [{serial_number}] State: [{device_state}]",
+                fg="yellow",
+            )
     else:
         ready_to_add = True
-    # ========================== Add device ==============================================
+    # ========================== Add device ============================================
     if ready_to_add:
         api_response = add_device(dnac_api_headers=api_headers, payload_data=data)
         response_status, response_body = get_response(response=api_response)
@@ -202,7 +209,8 @@ def acclaim_device(api_headers=None, data=None):
             ready_to_claim = True
         else:
             click.secho(
-                f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
+                f"[x] Server responded with status code [{api_response.status_code}] "
+                f"but with a FAILED response",
                 fg="red",
             )
             err_msg = response_body["failureList"][0]["msg"]
@@ -211,7 +219,7 @@ def acclaim_device(api_headers=None, data=None):
                 f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red"
             )
             sys.exit(1)
-    # ======================== Claim device ==============================================
+    # ======================== Claim device ============================================
     if ready_to_claim:
         claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
         if claim_status:

@@ -34,8 +34,28 @@ def _generate_claim_payload(device_id=None, site_id=None, image_id=None):
         "siteId": site_id,
         "deviceId": device_id,
         "type": "Default",
-        "imageInfo": {"imageId": "", "skip": False},
-        "configInfo": {},
+        "imageInfo": {"imageId": "", "skip": "false"},
+        "configInfo": {
+            "configId": "02b16fef-2fdf-47d3-be72-b24b7455719b",
+            "configParameters": [
+                {
+                    "key": "hostname",
+                    "value": "switch-1"
+                },
+                {
+                    "key": "vtp_domain",
+                    "value": "random name"
+                },
+                {
+                    "key": "vtp_version",
+                    "value": "1"
+                },
+                {
+                    "key": "vlan_48_name",
+                    "value": "testVlan48"
+                }
+            ]
+        },
     }
 
     return dict_payload
