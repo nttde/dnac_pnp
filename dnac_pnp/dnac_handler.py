@@ -83,11 +83,10 @@ def import_manager(inputs=None, import_type=None, **kwargs):
 
 
 # DNA center device deletion
-def delete_manager(delete_from=None, serials=None, delete_file=None, dry_run=None):
+def delete_manager(serials=None, delete_file=None, dry_run=None):
     """
     This function deletes one or more devices form DNA Center
 
-    :param delete_from: (str) Where to delete from "PnP" or "inventory" of DNA center
     :param serials: (str) comma separated string of serial numbers
     :param delete_file: (str) Full file path with serial numbers
     :param dry_run: (boolean) True or False, to just show what serials will be deleted

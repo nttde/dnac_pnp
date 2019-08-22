@@ -26,6 +26,22 @@ __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 
+# Alias group class
+class AliasedGroup(click.Group):
+    def get_command(self, ctx, cmd_name):
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        elif len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        matched_commands = ", ".join(sorted(matches))
+        print(matched_commands)
+        ctx.fail(f"Too many matches: {matched_commands}")
+
+
 # Click context manager class
 class Context(object):
     """Click context manager class"""
@@ -40,7 +56,7 @@ class Context(object):
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
 
-@click.group()
+@click.group(cls=AliasedGroup)
 @click.option(
     "--debug",
     "debug",
@@ -204,15 +220,6 @@ def info(context, all_info, author):
 
 @mission_control.command(short_help="Delete [un-claim + remove] one or more devices.")
 @click.option(
-    "-d",
-    "--delete-from",
-    "delete_from",
-    type=click.Choice(["pnp", "inv"]),
-    help="Delete device from PnP or Inventory.",
-    required=True,
-    show_default=True,
-)
-@click.option(
     "-s",
     "--serial-numbers",
     "serial_numbers",
@@ -248,7 +255,7 @@ def info(context, all_info, author):
     type=str,
 )
 @pass_context
-def delete(context, delete_from, serial_numbers, delete_entries, dry_run, delete_debug):
+def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
     """Delete one or multiple devices"""
 
     if context.initial_msg:
@@ -262,12 +269,12 @@ def delete(context, delete_from, serial_numbers, delete_entries, dry_run, delete
             fg="yellow",
         )
         click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
-        delete_manager(
-            delete_from=delete_from, delete_file=delete_entries, dry_run=dry_run
-        )
+        delete_manager(delete_file=delete_entries, dry_run=dry_run)
     elif serial_numbers:
-        delete_manager(delete_from=delete_from, serials=serial_numbers, dry_run=dry_run)
+        delete_manager(serials=serial_numbers, dry_run=dry_run)
     else:
-        click.secho(f"[x] Provide at least one option (-s/-f)[ARGS]! "
-                    f"See --help for more!", fg="red")
+        click.secho(
+            f"[x] Provide at least one option (-s/-f)[ARGS]! " f"See --help for more!",
+            fg="red",
+        )
         sys.exit(1)

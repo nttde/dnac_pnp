@@ -31,7 +31,7 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 
 # Accepted values
-accepted_status_codes = [200]
+accepted_status_codes = [200, 202]
 accepted_csv_headers = ["serialNumber", "pid", "siteName", "name"]
 
 
