@@ -19,11 +19,48 @@ from .device_claim_handler import claim
 from .dnac_info_handler import get_device_id, get_site_id
 from .header_handler import get_headers
 from .template_handler import get_template_id, get_template_parameters
-from .utils import parse_csv, divider, goodbye
+from .utils import compare_lists, divider, goodbye, parse_csv
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
+
+
+# Template parameter check
+def _check_template_parameters(dnac_api_headers=None, data=None):
+    """
+    This private function checks day0 template parameters
+
+    :param dnac_api_headers: (dict) DNA center api headers
+    :param data: (dict) Input data, This is same as payload data / air-config
+    :return: (boolean) True if input is consistent, False, otherwise
+    """
+
+    # Template variable validation
+    # Template ID == Config ID
+    template_name = data["deviceInfo"]["template_name"]
+
+    config_id = get_template_id(api_headers=dnac_api_headers, config_data=data)
+    if config_id:
+        click.secho(f"[#] Configuration ID received!", fg="green")
+        logging.debug(f"Configuration ID: [{config_id}]")
+        template_parameters = get_template_parameters(
+            api_headers=dnac_api_headers, config_id=config_id
+        )
+        if template_parameters:
+            click.secho(f"[#] Template parameters received!", fg="green")
+            click.secho(f"[$] Validating input parameters against "
+                        f"DNA center template parameters.....", fg="blue")
+            ret = compare_lists(list_one=template_parameters,
+                                list_two=list(data["deviceInfo"].keys()))
+            template_parameter_status = ret
+        else:
+            template_parameter_status = False
+    else:
+        click.secho(f"[x] Template Name [{template_name}] is not present")
+        template_parameter_status = False
+
+    return template_parameter_status
 
 
 # Site name check
@@ -281,20 +318,15 @@ def device_import_in_bulk(configs=None, import_file=None):
             serial_number = data["deviceInfo"]["serialNumber"]
             template_name = data["deviceInfo"]["template_name"]
             if site_status:
-                # Template variable validation
-                # Template ID == Config ID
-                config_id = get_template_id(api_headers=headers, config_data=air_config)
-                if config_id:
-                    click.secho(f"[#] Configuration ID received!", fg="green")
-                    logging.debug(f"Configuration ID: [{config_id}]")
-                    template_parameters = get_template_parameters(
-                        api_headers=headers, config_id=config_id
-                    )
-                    if template_parameters:
-                        click.secho(f"[#] Template parameters received!", fg="green")
-                        acclaim_device(api_headers=headers, data=air_config)
+                divider(f"Day0 template validation for [{template_name}]")
+                template_parameter_status = _check_template_parameters(
+                    dnac_api_headers=headers, data=air_config
+                )
+                print(template_parameter_status)
+                if template_parameter_status:
+                    print("PASSED")
+                    # acclaim_device(api_headers=headers, data=air_config)
                 else:
-                    click.secho(f"[x] Template Name [{template_name}] is not present")
                     skipped.append(serial_number)
             else:
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")

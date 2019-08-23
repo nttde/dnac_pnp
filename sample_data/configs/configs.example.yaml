@@ -3,3 +3,8 @@ dnac:
   host: sandboxdnac.cisco.com
   username: devnetuser
   password: Cisco123!
+  encrypted_auth: wIWSwR6cphiSQkyJW2ug_zsoshnb1yxRcASYOkd25Bw
+
+device:
+    username: admin
+    password: this#is!not$salted

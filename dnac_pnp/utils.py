@@ -380,6 +380,25 @@ def parse_txt(serials_file_path=None):
     return serials_to_delete
 
 
+# Check two list elements
+def compare_lists(list_one=None, list_two=None):
+    """
+    This function compares list two with list one
+
+    :param list_one: (list) The list that has been compared with (origin)
+    :param list_two: (list) The list that is being checked
+    :return: (boolean) True if they are same, False if they are not
+    """
+    flag = True
+    print(list_one)
+    print(list_two)
+    for item in list_one:
+        if item not in list_two:
+            print(item)
+            flag = False
+    return flag
+
+
 # Goodbye
 def goodbye(before=False, data=None):
     """

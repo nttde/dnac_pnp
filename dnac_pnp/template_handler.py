@@ -61,12 +61,16 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
     :return: (list) Template parameters
     """
 
-    click.secho(f"[$] Retrieving template parameters for template ID [{config_id}]")
+    click.secho(
+        f"[$] Retrieving template parameters for template ID [{config_id}]", fg="blue"
+    )
     if api_headers is None:
         api_headers = get_headers(auth_token=dnac_auth_token)
     method, r_api_url, parameters = generate_api_url(api_type="get-template-parameters")
     api_url = f"{r_api_url}{config_id}"
-    api_response = call_api_endpoint(method=method, api_url=api_url, api_headers=api_headers)
+    api_response = call_api_endpoint(
+        method=method, api_url=api_url, api_headers=api_headers
+    )
     response_status, response_body = get_response(response=api_response)
     if response_status:
         template_parameters = []
@@ -74,8 +78,9 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
             template_parameters_detailed = response_body["templateParams"]
             for item in template_parameters_detailed:
                 template_parameters.append(item["parameterName"])
-            logging.debug(f"Parameters received from template "
-                          f"editor: {template_parameters}")
+            logging.debug(
+                f"Parameters received from template " f"editor: {template_parameters}"
+            )
             return template_parameters
         except Exception as err:
             click.secho(f"[x] Exception! Error: {err}")
@@ -84,4 +89,3 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
         template_parameters = []
         logging.debug(f"Parameters received for template editor: {template_parameters}")
         return template_parameters
-
