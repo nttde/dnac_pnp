@@ -43,7 +43,10 @@ def delete_device(api_headers=None, device_serial=None):
     device_id, device_state = get_device_id(
         dnac_api_headers=api_headers, serial_number=device_serial, dnac_tab="pnp"
     )
+    logging.debug(f"Delete device ID: {device_id} in state: {device_state}")
     if device_id:
+        click.secho(f"[#] Device ID received!", fg="green")
+        click.secho(f"[#] Device current state: [{device_state}]")
         if device_state in pnp_device_states:
             dnac_api_type = "remove-device-pnp"
         elif device_state in inventory_device_states:

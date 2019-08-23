@@ -301,7 +301,7 @@ def check_csv_header(file_headers=None):
     logging.debug(f"camelCased headers: {ret_headers}")
     logging.debug(f"Type of input headers: {type(file_headers)}")
     logging.debug(f"Type of converted headers: {type(ret_headers)}")
-    if all([item for item in accepted_csv_headers if item in ret_headers]):
+    if all(item in ret_headers for item in accepted_csv_headers):
         click.secho(f"[#] The list of headers is accepted!", fg="green")
         return ret_headers
     else:
@@ -382,22 +382,6 @@ def parse_txt(serials_file_path=None):
     return serials_to_delete
 
 
-# Check two list elements
-def compare_lists(list_one=None, list_two=None):
-    """
-    This function compares list two with list one
-
-    :param list_one: (list) The list that has been compared with (origin)
-    :param list_two: (list) The list that is being checked
-    :return: (boolean) True if they are same, False if they are not
-    """
-
-    for item in list_one:
-        if item not in list_two:
-            return False
-    return True
-
-
 # Goodbye
 def goodbye(before=False, data=None):
     """
@@ -410,7 +394,7 @@ def goodbye(before=False, data=None):
 
     if before:
         if data:
-            divider("Before we leave, Please note the following: ")
+            divider("Before we leave, Please note ")
             for key, value in data.items():
                 click.secho(f"[*] {key}: ", fg="cyan", nl=False)
                 click.secho(f"{value}", fg="yellow")

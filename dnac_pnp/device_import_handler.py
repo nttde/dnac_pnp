@@ -19,7 +19,7 @@ from .device_claim_handler import claim
 from .dnac_info_handler import get_device_id, get_site_id
 from .header_handler import get_headers
 from .template_handler import get_template_id, get_template_parameters
-from .utils import compare_lists, divider, goodbye, parse_csv
+from .utils import divider, goodbye, parse_csv
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -33,34 +33,53 @@ def _check_template_parameters(dnac_api_headers=None, data=None):
 
     :param dnac_api_headers: (dict) DNA center api headers
     :param data: (dict) Input data, This is same as payload data / air-config
-    :return: (boolean) True if input is consistent, False, otherwise
+    :return: (boolean, dict) True if input is consistent, False, otherwise and data
     """
 
     # Template variable validation
     # Template ID == Config ID
     template_name = data["deviceInfo"]["template_name"]
-
+    input_parameters = data["deviceInfo"].keys()
     config_id = get_template_id(api_headers=dnac_api_headers, config_data=data)
     if config_id:
         click.secho(f"[#] Configuration ID received!", fg="green")
+        data["deviceInfo"]["configId"] = config_id
         logging.debug(f"Configuration ID: [{config_id}]")
         template_parameters = get_template_parameters(
             api_headers=dnac_api_headers, config_id=config_id
         )
         if template_parameters:
             click.secho(f"[#] Template parameters received!", fg="green")
-            click.secho(f"[$] Validating input parameters against "
-                        f"DNA center template parameters.....", fg="blue")
-            ret = compare_lists(list_one=template_parameters,
-                                list_two=list(data["deviceInfo"].keys()))
-            template_parameter_status = ret
+            click.secho(
+                f"[$] Validating input parameters against "
+                f"DNA center template parameters.....",
+                fg="blue",
+            )
+            click.secho(f"[$] Parsing parameters.....", fg="blue")
+            config_parameters = []
+            for item in template_parameters:
+                try:
+                    conf_dict = {"key": item, "value": data["deviceInfo"][item]}
+                    config_parameters.append(conf_dict)
+                except KeyError as err:
+                    click.secho(f"[x] Key error!", fg="red")
+                    click.secho(f"[x] ERROR: Check parameter [{err}]", fg="red")
+            data["deviceInfo"]["configParameters"] = config_parameters
+            logging.debug(f"Data with config parameters: {data}")
+            logging.debug(f"Parameter from DNA center: {template_parameters}")
+            logging.debug(f"Input parameters: {input_parameters}")
+            logging.debug(f"Input data: {json.dumps(data, indent=4)}")
+            template_parameter_status = all(
+                item in input_parameters for item in template_parameters
+            )
         else:
+            click.secho(f"[x] Template parameters not found!", fg="red")
             template_parameter_status = False
     else:
-        click.secho(f"[x] Template Name [{template_name}] is not present")
+        click.secho(f"[x] Template Name [{template_name}] is not present", fg="red")
         template_parameter_status = False
 
-    return template_parameter_status
+    return template_parameter_status, data
 
 
 # Site name check
@@ -195,11 +214,10 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         dnac_api_headers=dnac_api_headers,
         dnac_tab="pnp",
     )
-    site_id = payload_data["deviceInfo"]["siteId"]
-    logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
-    if device_id and site_id:
+    logging.debug(f"DeviceID: {device_id}")
+    if device_id:
         claim_status = claim(
-            headers=dnac_api_headers, device_id=device_id, site_id=site_id
+            headers=dnac_api_headers, device_id=device_id, data=payload_data
         )
         return claim_status
     else:
@@ -319,13 +337,14 @@ def device_import_in_bulk(configs=None, import_file=None):
             template_name = data["deviceInfo"]["template_name"]
             if site_status:
                 divider(f"Day0 template validation for [{template_name}]")
-                template_parameter_status = _check_template_parameters(
+                template_parameter_status, mod_data = _check_template_parameters(
                     dnac_api_headers=headers, data=air_config
                 )
                 if template_parameter_status:
-                    print("PASSED")
-                    # acclaim_device(api_headers=headers, data=air_config)
+                    click.secho("[#] Parameters validated!", fg="green")
+                    acclaim_device(api_headers=headers, data=mod_data)
                 else:
+                    click.secho(f"[x] Parameter mismatch!", fg="red")
                     skipped.append(serial_number)
             else:
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")

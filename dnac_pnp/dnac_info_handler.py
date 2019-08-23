@@ -58,16 +58,14 @@ def get_device_id(
             device_id = response_body["response"][0]["id"]
             device_state = response_body["response"][0]["collectionStatus"]
             logging.debug(f"Device ID: {device_id}")
-        click.secho(f"[#] Device ID received!", fg="green")
         return device_id, device_state
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
         sys.exit(1)
     except IndexError as err:
-        click.secho(
-            f"[!] Index error! Device might not be available in PnP", fg="yellow"
-        )
+        click.secho(f"[!] Index error! "
+                    f"Device might not be available in PnP", fg="yellow")
         logging.debug(f"Error: {err}")
         device_state = "Unavailable"
         return False, device_state

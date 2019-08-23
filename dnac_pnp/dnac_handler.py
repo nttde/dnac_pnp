@@ -126,4 +126,4 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
     else:
         for serial in serials_to_delete:
             click.secho(f"[*] Device with serial number [{serial}] will "
-                        f"be deleted from [{delete_from}].", fg="cyan")
+                        f"be deleted.", fg="cyan")
