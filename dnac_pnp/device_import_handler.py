@@ -18,6 +18,7 @@ from .api_endpoint_handler import generate_api_url
 from .device_claim_handler import claim
 from .dnac_info_handler import get_device_id, get_site_id
 from .header_handler import get_headers
+from .template_handler import get_template_id, get_template_parameters
 from .utils import parse_csv, divider, goodbye
 
 # Source code meta data
@@ -274,16 +275,32 @@ def device_import_in_bulk(configs=None, import_file=None):
             air_config = {"deviceInfo": row}
             logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
             divider(f"Site [{row['siteName']}] validation for [{row['serialNumber']}]")
+            # Site Validation
             site_status, data = _check_site_name(headers=headers, data=air_config)
+            site_name = data["deviceInfo"]["siteName"]
+            serial_number = data["deviceInfo"]["serialNumber"]
+            template_name = data["deviceInfo"]["template_name"]
             if site_status:
-                acclaim_device(api_headers=headers, data=air_config)
+                # Template variable validation
+                # Template ID == Config ID
+                config_id = get_template_id(api_headers=headers, config_data=air_config)
+                if config_id:
+                    click.secho(f"[#] Configuration ID received!", fg="green")
+                    logging.debug(f"Configuration ID: [{config_id}]")
+                    template_parameters = get_template_parameters(
+                        api_headers=headers, config_id=config_id
+                    )
+                    if template_parameters:
+                        click.secho(f"[#] Template parameters received!", fg="green")
+                        acclaim_device(api_headers=headers, data=air_config)
+                else:
+                    click.secho(f"[x] Template Name [{template_name}] is not present")
+                    skipped.append(serial_number)
             else:
-                site_name = data["deviceInfo"]["siteName"]
-                serial_number = data["deviceInfo"]["serialNumber"]
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
                 click.secho(
                     f"[!] Warning: Skipping [{serial_number}].....", fg="yellow"
                 )
                 skipped.append(serial_number)
         skip_tracer["skippedSerials"] = skipped
-    goodbye(before=True, data=skip_tracer)
+        goodbye(before=True, data=skip_tracer)

@@ -41,6 +41,20 @@
             "name": ""
         }
     },
+    "get-template-id": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/template-programmer/template",
+        "parameters": {
+            "name": ""
+        }
+    },
+    "get-template-parameters": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/template-programmer/template/",
+        "parameters": {}
+    },
     "get-image-info": {
         "method": "GET",
         "protocol": "https",

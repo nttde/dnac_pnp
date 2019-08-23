@@ -32,7 +32,8 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 # Accepted values
 accepted_status_codes = [200, 202]
-accepted_csv_headers = ["serialNumber", "pid", "siteName", "name"]
+accepted_csv_headers = ["serialNumber", "pid", "siteName", "name",
+                        "template_name", "host_name", "vtp_domain", "vtp_version"]
 
 
 # Show only package info
@@ -287,10 +288,16 @@ def check_csv_header(file_headers=None):
     :return: (list) A list (subset or equal) of headers that has been checked
     """
 
+    template_flag = False
     ret_headers = []
     for cell in file_headers:
-        valid_cell_name = check_csv_cell_name(cell_name=cell)
-        ret_headers.append(valid_cell_name)
+        if "template" in cell:
+            template_flag = True
+        if template_flag:
+            ret_headers.append(cell)
+        else:
+            valid_cell_name = check_csv_cell_name(cell_name=cell)
+            ret_headers.append(valid_cell_name)
     logging.debug(f"camelCased headers: {ret_headers}")
     if collections.Counter(accepted_csv_headers) == collections.Counter(ret_headers):
         click.secho(f"[#] The list of headers is accepted!", fg="green")
@@ -301,11 +308,12 @@ def check_csv_header(file_headers=None):
         )
         click.secho(f"[*] Retrieved headers from file: {file_headers}", fg="cyan")
         click.secho(
-            f"[!] Warning! Camel cased (camelCased) headers and unicode headers are not accepted!",
+            f"[!] Warning! camelCased and unicode headers are not accepted!",
             fg="yellow",
         )
         click.secho(
-            f"[!] Warning! Underscore(_), Dash/Hyphen(-), Single Space ( ) are accepted between words",
+            f"[!] Warning! Underscore(_), Dash/Hyphen(-), Single Space ( ) "
+            f"are accepted between words",
             fg="yellow",
         )
         click.secho(
@@ -335,13 +343,17 @@ def parse_csv(file_to_parse=None):
         for r_row in reader:
             logging.debug(f"Raw input row from file: {r_row}")
             try:
-                row = collections.OrderedDict(
-                    [
-                        (check_csv_cell_name(key.strip()), value.strip())
-                        for key, value in r_row.items()
-                    ]
-                )
-            except AttributeError:
+                l_row = []
+                template_flag = False
+                for key, value in r_row.items():
+                    if "template" in key.strip():
+                        template_flag = True
+                    if template_flag:
+                        l_row.append((key.strip(), value.strip()))
+                    else:
+                        l_row.append((check_csv_cell_name(key.strip()), value.strip()))
+                row = collections.OrderedDict(l_row)
+            except AttributeError or KeyError:
                 logging.debug(f"AttributeError: An attribute error has occurred!")
                 logging.debug(f"Skipping row: {r_row}")
                 continue
