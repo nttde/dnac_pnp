@@ -322,7 +322,6 @@ def device_import_in_bulk(configs=None, import_file=None):
                 template_parameter_status = _check_template_parameters(
                     dnac_api_headers=headers, data=air_config
                 )
-                print(template_parameter_status)
                 if template_parameter_status:
                     print("PASSED")
                     # acclaim_device(api_headers=headers, data=air_config)

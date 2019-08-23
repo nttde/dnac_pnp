@@ -33,7 +33,7 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 # Accepted values
 accepted_status_codes = [200, 202]
 accepted_csv_headers = ["serialNumber", "pid", "siteName", "name",
-                        "template_name", "host_name", "vtp_domain", "vtp_version"]
+                        "template_name"]
 
 
 # Show only package info
@@ -299,7 +299,9 @@ def check_csv_header(file_headers=None):
             valid_cell_name = check_csv_cell_name(cell_name=cell)
             ret_headers.append(valid_cell_name)
     logging.debug(f"camelCased headers: {ret_headers}")
-    if collections.Counter(accepted_csv_headers) == collections.Counter(ret_headers):
+    logging.debug(f"Type of input headers: {type(file_headers)}")
+    logging.debug(f"Type of converted headers: {type(ret_headers)}")
+    if all([item for item in accepted_csv_headers if item in ret_headers]):
         click.secho(f"[#] The list of headers is accepted!", fg="green")
         return ret_headers
     else:
@@ -389,14 +391,11 @@ def compare_lists(list_one=None, list_two=None):
     :param list_two: (list) The list that is being checked
     :return: (boolean) True if they are same, False if they are not
     """
-    flag = True
-    print(list_one)
-    print(list_two)
+
     for item in list_one:
         if item not in list_two:
-            print(item)
-            flag = False
-    return flag
+            return False
+    return True
 
 
 # Goodbye
