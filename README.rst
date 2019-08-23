@@ -22,6 +22,10 @@ Features
 * Pre-checks for valid sites
 * Pre-checks for device status
 * Decision based on site status and device status
+* Read day0 template
+* Decide on day0 template parameters are provided properly or not
+* Shows day0 template parameters
+* Day0 configuration
 
 Dependencies
 ------------
