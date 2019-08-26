@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Information showcase functions"""
+"""Information butler functions"""
 
 # Import builtin python libraries
 import json
@@ -68,8 +68,9 @@ def get_device_id(
         logging.debug(f"Error: {err}")
         sys.exit(1)
     except IndexError as err:
-        click.secho(f"[!] Index error! "
-                    f"Device might not be available in PnP", fg="yellow")
+        click.secho(
+            f"[!] Index error! " f"Device might not be available in PnP", fg="yellow"
+        )
         logging.debug(f"Error: {err}")
         device_state = "Unavailable"
         return False, device_state
@@ -150,7 +151,11 @@ def get_image_id(authentication_token=None, dnac_api_headers=None, image_name=No
 
 
 def get_template_id(
-    dnac_auth_token=None, api_headers=None, config_data=None, show_all=False
+    dnac_auth_token=None,
+    api_headers=None,
+    config_data=None,
+    show_all=False,
+    template=None,
 ):
     """
     This function retrieves configuration ID by template name
@@ -159,38 +164,50 @@ def get_template_id(
     :param api_headers: (dict) DNA Center API headers
     :param config_data: (dict) data <- CSV or CLI input
     :param show_all: (boolean) To show whole list or not
+    :param template: (str) Template name
     :return: (string) Config ID (Config ID==Template ID) from DNA Center
     """
 
     logging.debug(f"Retrieving config ID by template name")
-    template_name = config_data["deviceInfo"]["template_name"]
+    if config_data:
+        template_name = config_data["deviceInfo"]["template_name"]
+    else:
+        template_name = template
+    logging.debug(f"Template Name: {template_name}")
     if api_headers is None:
         api_headers = get_headers(auth_token=dnac_auth_token)
     method, api_url, parameters = generate_api_url(api_type="get-template-id")
-    if not show_all:
-        parameters["name"] = template_name
     response_status, response_body = get_response(
         method=method, endpoint_url=api_url, headers=api_headers, parameters=parameters
     )
     if response_status:
         try:
             if not show_all:
-                config_id = response_body[0]["templateId"]
-                logging.debug(f"Config ID received from template editor: [{config_id}]")
-                return config_id
-            else:
-                print(
-                    "\n".join(
-                        sorted(
-                            [
-                                "  {0}/{1}".format(
-                                    project["projectName"], project["name"]
-                                )
-                                for project in response_body
-                            ]
-                        )
+                max_version = 0
+                for template in response_body:
+                    project_name, project_template_name = template_name.split("/")
+                    logging.debug(
+                        f"Project Name: {project_name} --> Template Name: "
+                        f"{project_template_name}"
                     )
-                )
+                    if (
+                        template["projectName"] == project_name
+                        and template["name"] == project_template_name
+                    ):
+                        for template_version in template["versionsInfo"]:
+                            if int(template_version["version"]) > max_version:
+                                max_version = int(template_version["version"])
+                                template_id = template_version["id"]
+                                logging.debug(
+                                    f"Template ID received from template editor: "
+                                    f"[{template_id}]"
+                                )
+                                return template_id
+            else:
+                click.secho(f"[$] Available templates:", fg="blue")
+                for template in response_body:
+                    print(f"{template['projectName']}/{template['name']}")
+                return True
         except IndexError:
             click.secho(f"[x] Index error! Template [{template_name}] might not exists")
             return False
@@ -205,7 +222,7 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
     :param dnac_auth_token: (str) DNA center authentication token
     :param api_headers: (dict) DNA Center API headers
     :param config_id: (str) Template id/config ID (templateId==configId)
-    :return: (list) Template parameters
+    :return: (str, list) Template content, Template parameters
     """
 
     click.secho(
@@ -222,16 +239,17 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
         template_parameters = []
         try:
             template_parameters_detailed = response_body["templateParams"]
+            template_content = response_body["templateContent"]
             for item in template_parameters_detailed:
                 template_parameters.append(item["parameterName"])
             logging.debug(
                 f"Parameters received from template " f"editor: {template_parameters}"
             )
-            return template_parameters
+            return template_content, template_parameters
         except Exception as err:
             click.secho(f"[x] Exception! Error: {err}")
-            return template_parameters
+            return False, template_parameters
     else:
         template_parameters = []
         logging.debug(f"Parameters received for template editor: {template_parameters}")
-        return template_parameters
+        return False, template_parameters

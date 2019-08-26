@@ -45,9 +45,7 @@
         "method": "GET",
         "protocol": "https",
         "api": "/dna/intent/api/v1/template-programmer/template",
-        "parameters": {
-            "name": ""
-        }
+        "parameters": {}
     },
     "get-template-parameters": {
         "method": "GET",

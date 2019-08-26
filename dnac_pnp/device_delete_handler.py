@@ -14,8 +14,8 @@ import urllib3
 from .api_call_handler import call_api_endpoint
 from .api_endpoint_handler import generate_api_url
 from .api_call_handler import get_response
-from .device_import_handler import dnac_token_generator
-from .dnac_info_handler import get_device_id
+from .dnac_token_generator import generate_token
+from .dnac_info_butler import get_device_id
 from .header_handler import get_headers
 from .utils import divider, goodbye
 
@@ -89,7 +89,7 @@ def remove_devices(configs=None, serials=None):
     """
 
     if serials:
-        token = dnac_token_generator(configs=configs)
+        token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
         for serial in serials:
             divider(f"Removing [{serial}]")

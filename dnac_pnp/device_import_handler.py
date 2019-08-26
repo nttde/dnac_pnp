@@ -10,15 +10,19 @@ import sys
 
 # Import external python libraries
 import click
-from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
 from .api_call_handler import call_api_endpoint, get_response
 from .api_endpoint_handler import generate_api_url
+from .dnac_token_generator import generate_token
 from .device_claim_handler import claim
-from .dnac_info_handler import get_device_id, get_site_id
+from .dnac_info_butler import (
+    get_device_id,
+    get_site_id,
+    get_template_id,
+    get_template_parameters,
+)
 from .header_handler import get_headers
-from .template_handler import get_template_id, get_template_parameters
 from .utils import divider, goodbye, parse_csv
 
 # Source code meta data
@@ -45,7 +49,7 @@ def _check_template_parameters(dnac_api_headers=None, data=None):
         click.secho(f"[#] Configuration ID received!", fg="green")
         data["deviceInfo"]["configId"] = config_id
         logging.debug(f"Configuration ID: [{config_id}]")
-        template_parameters = get_template_parameters(
+        _, template_parameters = get_template_parameters(
             api_headers=dnac_api_headers, config_id=config_id
         )
         if template_parameters:
@@ -126,48 +130,6 @@ def _check_site_name(headers=None, data=None):
         logging.debug(f"Site not found!")
         site_status = False
     return site_status, data
-
-
-# Login to DNAC
-def dnac_token_generator(configs=None):
-    """
-    This function logs into DNAC and generates authentication token
-
-    :param configs: (dict) DNAC configurations
-    :returns: (str) Authentication token
-    """
-
-    dnac_username = configs["username"]
-    dnac_password = configs["password"]
-
-    headers = get_headers()
-    method, api_url, parameters = generate_api_url(api_type="generate-token")
-    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
-    click.secho(f"[$] Generating authentication token.....", fg="blue")
-    api_response = call_api_endpoint(
-        method=method,
-        api_url=api_url,
-        api_headers=headers,
-        auth=HTTPBasicAuth(dnac_username, dnac_password),
-    )
-    response_status, response_body = get_response(response=api_response)
-    if response_status:
-        token = response_body["Token"]
-    else:
-        click.secho(
-            f"[x] Server response [{api_response.status_code}] [{api_response.text}]",
-            fg="red",
-        )
-        sys.exit(1)
-    if token:
-        click.secho(f"[#] Token received!", fg="green")
-        return token
-    else:
-        click.secho(
-            f"[x] Server response [{api_response.status_code}] [{api_response.text}]",
-            fg="red",
-        )
-        sys.exit(1)
 
 
 # Add a device
@@ -295,7 +257,7 @@ def import_single_device(configs=None, data=None):
     :returns: (stdout) output to the screen
     """
 
-    token = dnac_token_generator(configs=configs)
+    token = generate_token(configs=configs)
     headers = get_headers(auth_token=token)
     site_name = data["deviceInfo"]["siteName"]
     serial_number = data["deviceInfo"]["serialNumber"]
@@ -322,7 +284,7 @@ def device_import_in_bulk(configs=None, import_file=None):
 
     csv_rows = parse_csv(file_to_parse=import_file)
     if csv_rows:
-        token = dnac_token_generator(configs=configs)
+        token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
         skip_tracer = {}
         skipped = []

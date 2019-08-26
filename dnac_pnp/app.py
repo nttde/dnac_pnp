@@ -19,7 +19,7 @@ from .utils import (
     validate_input,
     validate_serial,
 )
-from .dnac_handler import import_manager, delete_manager
+from .dnac_handler import import_manager, delete_manager, info_showcase
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -74,6 +74,84 @@ def mission_control(context, debug):
     context.debug = debug
     context.initial_msg = True
     context.dry_run = True
+    context.show_help = False
+
+
+@mission_control.command(short_help="Shows DNA center component information.")
+@click.option(
+    "--all-pnp-devices",
+    "all_pnp_devices",
+    help="Shows all devices in PnP.",
+    is_flag=True,
+    type=bool,
+    default=False,
+    show_default=True,
+)
+@click.option(
+    "--pnp-device",
+    "single_pnp_device",
+    help="Shows [pnp] device information by serial number.",
+    type=str,
+)
+@click.option(
+    "--all-templates",
+    "all_templates",
+    help="Lists all available templates.",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+)
+@click.option(
+    "--template",
+    "single_template",
+    help="Shows template information by full template name",
+    type=str,
+)
+@click.option(
+    "--export-pnp",
+    "export_pnp_to_csv",
+    help="Exports PnP device information to CSV",
+    type=click.Path(exists=False, dir_okay=False),
+)
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
+@pass_context
+def show(
+    context,
+    all_pnp_devices,
+    single_pnp_device,
+    all_templates,
+    single_template,
+    export_pnp_to_csv,
+    sub_debug,
+):
+    """Shows DNA Center component information"""
+
+    if context.initial_msg:
+        initial_message()
+    if context.debug or sub_debug:
+        debug_manager()
+    if all_pnp_devices:
+        # Show all devices [Name, Serial, Site, Status]
+        pass
+    if single_pnp_device:
+        # Show everything
+        pass
+    if all_templates:
+        info_showcase(command="all_templates", template=None)
+    if single_template:
+        info_showcase(command="single_template", template=single_template)
+    if export_pnp_to_csv:
+        # Export pnp device list into a csv
+        pass
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -122,7 +200,7 @@ def mission_control(context, debug):
 )
 @pass_context
 def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_debug):
-    """This module is the entry-point for single device add and claim"""
+    """Entry-point for single device add and claim"""
 
     if context.initial_msg:
         initial_message()
@@ -147,7 +225,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
     import_manager(inputs=air_config, import_type="single")
 
 
-@mission_control.command(short_help="Add and claim multiple devices.")
+@mission_control.command(short_help="Add and claim single or multiple devices.")
 @click.option(
     "-f",
     "--catalog-file",
@@ -168,7 +246,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
 )
 @pass_context
 def acclaim_in_bulk(context, catalog_file, sub_debug):
-    """Add and claim multiple devices"""
+    """Add and claim single or multiple devices"""
 
     if context.initial_msg:
         initial_message()
@@ -218,7 +296,7 @@ def info(context, all_info, author):
         show_info(view_type="author")
 
 
-@mission_control.command(short_help="Delete [un-claim + remove] one or more devices.")
+@mission_control.command(short_help="Delete single or multiple devices.")
 @click.option(
     "-s",
     "--serial-numbers",

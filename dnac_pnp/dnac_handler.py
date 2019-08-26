@@ -17,6 +17,7 @@ import click
 from .utils import divider, parse_txt
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
+from .dnac_info_handler import show_template_info
 from .device_delete_handler import remove_devices
 
 # Setting global host variable
@@ -125,5 +126,25 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
             remove_devices(configs=dnac_configs, serials=serials_to_delete)
     else:
         for serial in serials_to_delete:
-            click.secho(f"[*] Device with serial number [{serial}] will "
-                        f"be deleted.", fg="cyan")
+            click.secho(
+                f"[*] Device with serial number [{serial}] will " f"be deleted.",
+                fg="cyan",
+            )
+
+
+# DNA Center information showcase handler
+def info_showcase(**kwargs):
+    """This function controls information showcase"""
+
+    populate_config()
+    if kwargs["command"] == "all_templates":
+        do_show_all = True
+        show_template_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "single_template":
+        do_show_all = False
+        dnac_template_name = kwargs["template"]
+        show_template_info(
+            dnac_configs=dnac_configs,
+            template_name=dnac_template_name,
+            show_all=do_show_all,
+        )
