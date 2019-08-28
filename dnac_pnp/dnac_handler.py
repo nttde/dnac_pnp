@@ -17,7 +17,7 @@ import click
 from .utils import divider, parse_txt
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
-from .dnac_info_handler import show_template_info
+from .dnac_info_handler import show_template_info, show_pnp_device_info
 from .device_delete_handler import remove_devices
 
 # Setting global host variable
@@ -59,7 +59,11 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     # ==================== SINGLE DEVICE IMPORT ========================================
     if import_type == "single":
-        import_single_device(configs=dnac_configs, data=inputs)
+        click.secho(f"[!] Attention: ", fg="yellow", nl=False)
+        click.secho(f"Claiming single device does not support ", nl=False, fg="red")
+        click.secho(f"day0 template configurations!", fg="red")
+        if click.confirm(text=f"[-] Proceed?", abort=True):
+            import_single_device(configs=dnac_configs, data=inputs)
     # =================== IMPORT  IN BULK ==============================================
     elif import_type == "bulk":
         if "device_catalog" not in kwargs:
@@ -133,7 +137,7 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
 
 
 # DNA Center information showcase handler
-def info_showcase(**kwargs):
+def info_showcase_manager(**kwargs):
     """This function controls information showcase"""
 
     populate_config()
@@ -146,5 +150,16 @@ def info_showcase(**kwargs):
         show_template_info(
             dnac_configs=dnac_configs,
             template_name=dnac_template_name,
+            show_all=do_show_all,
+        )
+    elif kwargs["command"] == "all_pnp_devices":
+        do_show_all = True
+        show_pnp_device_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "single_pnp_device":
+        do_show_all = False
+        dnac_device_serial = kwargs["device"]
+        show_pnp_device_info(
+            dnac_configs=dnac_configs,
+            device_serial=dnac_device_serial,
             show_all=do_show_all,
         )

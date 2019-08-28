@@ -15,6 +15,7 @@ import click
 from .api_call_handler import get_response
 from .api_endpoint_handler import generate_api_url
 from .header_handler import get_headers
+from .dnac_params import device_extra_param, device_extra_param_less
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -23,7 +24,11 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 
 # Retrieve device ID
 def get_device_id(
-    authentication_token=None, dnac_api_headers=None, serial_number=None, dnac_tab=None
+    authentication_token=None,
+    dnac_api_headers=None,
+    serial_number=None,
+    dnac_tab=None,
+    show_all=False,
 ):
     """
     This function retrieves the device id by serial number
@@ -32,9 +37,11 @@ def get_device_id(
     :param dnac_api_headers: (dict) API headers
     :param serial_number: (str) Device serial number
     :param dnac_tab: (str) Where to look for the device info (PnP or Inventory)
+    :param show_all: (boolean) To show whole list or not
     :returns: (str) device ID from DNAC
     """
 
+    logging.debug(f"TAB: {dnac_tab}")
     if dnac_tab == "pnp":
         dnac_api_type = "get-pnp-device-info"
     elif dnac_tab == "inventory":
@@ -54,15 +61,42 @@ def get_device_id(
         parameters=parameters,
     )
     try:
-        if dnac_tab == "pnp":
-            device_id = response_body[0]["id"]
-            device_state = response_body[0]["deviceInfo"]["state"]
-            logging.debug(f"Device ID: {device_id}")
-        if dnac_tab == "inventory":
-            device_id = response_body["response"][0]["id"]
-            device_state = response_body["response"][0]["collectionStatus"]
-            logging.debug(f"Device ID: {device_id}")
-        return device_id, device_state
+        if not show_all:
+            logging.debug(f"dnac tab: {dnac_tab}")
+            if dnac_tab == "pnp":
+                device_id = response_body[0]["id"]
+                device_state = response_body[0]["deviceInfo"]["state"]
+                logging.debug(f"Device ID: {device_id}")
+                if device_state.casefold() == "Provisioned".casefold():
+                    ext_param = device_extra_param
+                else:
+                    ext_param = device_extra_param_less
+                device_extra = {}
+                for item in ext_param:
+                    device_extra[item] = response_body[0]["deviceInfo"][item]
+            elif dnac_tab == "inventory":
+                device_id = response_body["response"][0]["id"]
+                device_state = response_body["response"][0]["collectionStatus"]
+                logging.debug(f"Device ID: {device_id}")
+                device_extra = {}
+            else:
+                device_id = False
+                device_state = "Unknown"
+                device_extra = {}
+            return device_id, device_state, device_extra
+        else:
+            if dnac_tab == "pnp":
+                available_devices =[]
+                for item in response_body:
+                    device_extra = {}
+                    for param in device_extra_param_less:
+                        device_extra[param] = item["deviceInfo"][param]
+                    available_devices.append(device_extra)
+                return True, True, available_devices
+            else:
+                available_devices = []
+                return False, False, available_devices
+
     except KeyError as err:
         click.secho(f"[x] Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
@@ -73,7 +107,8 @@ def get_device_id(
         )
         logging.debug(f"Error: {err}")
         device_state = "Unavailable"
-        return False, device_state
+        device_extra = {}
+        return False, device_state, device_extra
 
 
 # Retrieve site ID

@@ -40,17 +40,17 @@ def delete_device(api_headers=None, device_serial=None):
 
     pnp_device_states = ["Unclaimed", "Planned", "Error"]
     inventory_device_states = ["Onboarding", "Provisioned"]
-    device_id, device_state = get_device_id(
+    device_id, device_state, _ = get_device_id(
         dnac_api_headers=api_headers, serial_number=device_serial, dnac_tab="pnp"
     )
     logging.debug(f"Delete device ID: {device_id} in state: {device_state}")
     if device_id:
         click.secho(f"[#] Device ID received!", fg="green")
-        click.secho(f"[#] Device current state: [{device_state}]")
+        click.secho(f"[#] Device current state: [{device_state}]", fg="green")
         if device_state in pnp_device_states:
             dnac_api_type = "remove-device-pnp"
         elif device_state in inventory_device_states:
-            inv_device_id, device_state = get_device_id(
+            inv_device_id, device_state, _ = get_device_id(
                 dnac_api_headers=api_headers,
                 serial_number=device_serial,
                 dnac_tab="inventory",
@@ -95,11 +95,13 @@ def remove_devices(configs=None, serials=None):
             divider(f"Removing [{serial}]")
             api_response = delete_device(api_headers=headers, device_serial=serial)
             logging.debug(f"API Response: {api_response}")
-            response_status, _ = get_response(response=api_response)
-            if response_status:
-                click.secho(f"[#] Device [{serial}] removed!", fg="green")
-            else:
-                click.secho(f"[x] Device [{serial}] not removed!", fg="red")
-                logging.debug(f"[{serial}] not removed!")
-                continue
+            if api_response:
+                response_status, _ = get_response(response=api_response)
+                if response_status:
+                    click.secho(f"[#] Device [{serial}] removed!", fg="green")
+                else:
+                    click.secho(f"[x] Device [{serial}] not removed!", fg="red")
+                    logging.debug(f"[{serial}] not removed!")
+                    continue
+        click.secho(f"[*] End of the line!", fg="cyan")
         goodbye()

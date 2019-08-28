@@ -19,7 +19,7 @@ from .utils import (
     validate_input,
     validate_serial,
 )
-from .dnac_handler import import_manager, delete_manager, info_showcase
+from .dnac_handler import import_manager, delete_manager, info_showcase_manager
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -140,15 +140,13 @@ def show(
     if context.debug or sub_debug:
         debug_manager()
     if all_pnp_devices:
-        # Show all devices [Name, Serial, Site, Status]
-        pass
+        info_showcase_manager(command="all_pnp_devices", device=None)
     if single_pnp_device:
-        # Show everything
-        pass
+        info_showcase_manager(command="single_pnp_device", device=single_pnp_device)
     if all_templates:
-        info_showcase(command="all_templates", template=None)
+        info_showcase_manager(command="all_templates", template=None)
     if single_template:
-        info_showcase(command="single_template", template=single_template)
+        info_showcase_manager(command="single_template", template=single_template)
     if export_pnp_to_csv:
         # Export pnp device list into a csv
         pass
@@ -219,6 +217,8 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
             "serialNumber": serial_number,
             "pid": product_id,
             "siteName": site_name,
+            "configId": None,
+            "configParameters": None,
         }
     }
     logging.debug(f"Air Config: {air_config}")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Validation module for dnac_pnp"""
+"""Utility module for dnac_pnp"""
 
 # Import builtin python libraries
 import csv
@@ -24,16 +24,11 @@ from . import __version__ as version
 from . import __author__ as author
 from . import __author_email as author_email
 from . import __copyright__ as copy_right
+from .dnac_params import accepted_csv_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
-
-
-# Accepted values
-accepted_status_codes = [200, 202]
-accepted_csv_headers = ["serialNumber", "pid", "siteName", "name",
-                        "template_name"]
 
 
 # Show only package info

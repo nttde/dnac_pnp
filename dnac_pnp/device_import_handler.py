@@ -97,7 +97,7 @@ def _check_device(headers=None, data=None):
     """
 
     device_serial_number = data["deviceInfo"]["serialNumber"]
-    device_id, device_state = get_device_id(
+    device_id, device_state, _ = get_device_id(
         dnac_api_headers=headers, serial_number=device_serial_number, dnac_tab="pnp"
     )
     if device_id:
@@ -171,7 +171,7 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
         fg="cyan",
     )
-    device_id, _ = get_device_id(
+    device_id, _, _ = get_device_id(
         serial_number=device_serial_number,
         dnac_api_headers=dnac_api_headers,
         dnac_tab="pnp",
@@ -243,8 +243,7 @@ def acclaim_device(api_headers=None, data=None):
         if claim_status:
             click.secho(f"[#] DONE!", fg="green")
         else:
-            click.secho(f"[X] Claim status: {claim_status}")
-            sys.exit(1)
+            click.secho(f"[x] Claim status: {claim_status}", fg="red")
 
 
 # Single device import

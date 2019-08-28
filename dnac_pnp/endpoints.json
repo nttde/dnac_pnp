@@ -22,7 +22,7 @@
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device",
         "parameters": {
-            "serialNumber": ""
+            "limit": 100
         }
     },
     "get-inventory-device-info": {

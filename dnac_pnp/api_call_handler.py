@@ -14,7 +14,7 @@ import requests
 
 # Import custom (local) python packages
 from .header_handler import get_headers
-from .utils import accepted_status_codes
+from .dnac_params import accepted_status_codes
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -161,8 +161,9 @@ def get_response(
     else:
         logging.debug(f"Response status code not found in accepted codes!")
         response_status = False
+        logging.debug(f"Response Status: {response_status}")
         response_body = _content_type_check(response=response)
         click.secho(
-            f"[x] Status: [{response.status_code}] ({response.reason})", fg="red"
+            f"[x] Response status: [{response.status_code}] ({response.reason})", fg="red"
         )
     return response_status, response_body
