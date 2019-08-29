@@ -31,7 +31,8 @@ looks something similar as below -
      acclaim-in-bulk  Add and claim multiple devices.
      acclaim-one      Add and claim a single device.
      delete           Delete [un-claim + remove] or more devices.
-     info             Shows package information.
+     pkg-info         Shows package information.
+     show             Shows DNA center component information.
 
 To checkout individual options for any command use ``--help`` flag.
 
@@ -44,7 +45,7 @@ sub-command.
 
 .. code-block:: batch
 
-   Usage: dnac_pnp info [OPTIONS]
+   Usage: dnac_pnp pkg-info [OPTIONS]
 
    This module prints information about the package
 
@@ -208,10 +209,11 @@ A well formatted CSV should look something like below -
 
 .. code-block:: shell
 
-   Serial_Number, Product_ID, Site_Name, Name
-   FOC1849Z2JL, WSC2960C, Global/Demo_DE/B1/F3, MainRouter
-   AAA1111K3MX, C891FK9, Global/Demo_DE/B1/F35, HallwaySwitch
-   FOC1849Z2KK, WSC2960C, Global/Demo_DE/B1/F3, MainRouter2
+   serial_number, pid, site_name, name, template_name, host_name, vtp_domain, vtp_version
+   FOC2246T582, WS-C3560CX-8PC-S, Global/DD Germany/DD MUC, pnp-test-sw01, Onboarding Configuration/Test-Day0-Template, switch001, vtp001, 1
+   FOC1849Z2JL, WSC2960C, Global/Demo_DE/B1/F3, MainRouter, Onboarding Configuration/Test-Day0-Template, switch001, vtp001, 1
+   AAA1111K3MX, C891FK9, Global/Demo_DE/B1/F35, HallwaySwitch, Onboarding Configuration/Test-Day0-Template, switch001, vtp001, 1
+   FOC1849Z2KK, WSC2960C, Global/Demo_DE/B1/F3, MainRouter2, Onboarding Configuration/Test-Day0-Template, switch001, vtp001, 1
 
 .. danger::
 
@@ -281,3 +283,44 @@ Options explained
 - ``--debug`` turns on the debug mode.
 
 - ``--help`` shows the help options and saves the day.
+
+
+Displaying DNA Center Components
+--------------------------------
+
+To display components like ``pnp`` devices or ``templates`` this software package
+provides an option named ``show``. Use ``--help`` to see all the available options.
+
+.. code-block:: shell
+
+   dnac_pnp show --help
+
+This should output something like below -
+
+.. code-block:: shell
+
+   Usage: dnac_pnp show [OPTIONS]
+
+   Shows DNA Center component information
+
+   Options:
+     --all-pnp-devices  Shows all devices in PnP.  [default: False]
+     --pnp-device TEXT  Shows [pnp] device information by serial number.
+     --all-templates    Lists all available templates.  [default: False]
+     --template TEXT    Shows template information by full template name
+     --export-pnp FILE  Exports PnP device information to CSV
+     --debug            Turns on DEBUG mode.  [default: False]
+     --help             Show this message and exit.
+
+Options explained
+^^^^^^^^^^^^^^^^^
+
+- ``--all-pnp-devices`` Lists and shows all the devices listed under pnp tab in DNA
+  center. Display limit is set to ``100`` devices.
+- ``--pnp-device`` shows details about a particular device based on serial number
+  provided as an argument
+- ``--all-templates`` shows all available templates with their project names.
+- ``--template`` requires an argument of ``full template name``
+  [project_name/template_name] and shows the body of the template and variables
+- ``--export-pnp`` allows user to export all the listed devices under PnP tab in DNA
+  center. Export limit is also bound to display limit, which is currently set to ``100``
