@@ -16,6 +16,7 @@ Submodules
    dnac_pnp.dnac_handler
    dnac_pnp.dnac_info_butler
    dnac_pnp.dnac_info_handler
+   dnac_pnp.dnac_params
    dnac_pnp.dnac_token_generator
    dnac_pnp.header_handler
    dnac_pnp.utils
