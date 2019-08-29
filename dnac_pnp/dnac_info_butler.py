@@ -237,7 +237,8 @@ def get_template_id(
                                     f"Template ID received from template editor: "
                                     f"[{template_id}]"
                                 )
-                                return template_id
+                        logging.debug(f"ID:{template_id}, Version: {max_version}")
+                        return template_id
             else:
                 click.secho(f"[$] Available templates:", fg="blue")
                 for template in response_body:
