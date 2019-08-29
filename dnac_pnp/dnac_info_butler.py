@@ -15,7 +15,7 @@ import click
 from .api_call_handler import get_response
 from .api_endpoint_handler import generate_api_url
 from .header_handler import get_headers
-from .dnac_params import device_extra_param, device_extra_param_less
+from .dnac_params import device_extra_param, device_extra_param_less, pnp_device_limit
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -53,6 +53,8 @@ def get_device_id(
     method, api_url, parameters = generate_api_url(api_type=dnac_api_type)
     if serial_number is not None:
         parameters["serialNumber"] = serial_number
+    if dnac_tab == "pnp":
+        parameters["limit"] = pnp_device_limit
     _, response_body = get_response(
         headers=dnac_api_headers,
         authentication_token=authentication_token,
@@ -86,7 +88,7 @@ def get_device_id(
             return device_id, device_state, device_extra
         else:
             if dnac_tab == "pnp":
-                available_devices =[]
+                available_devices = []
                 for item in response_body:
                     device_extra = {}
                     for param in device_extra_param_less:

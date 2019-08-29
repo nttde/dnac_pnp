@@ -163,3 +163,9 @@ def info_showcase_manager(**kwargs):
             device_serial=dnac_device_serial,
             show_all=do_show_all,
         )
+    elif kwargs["command"] == "export_pnp_to_csv":
+        export_file = kwargs["file_path"]
+        click.secho(f"[$] Export file path location: [{export_file}]", fg="blue")
+        show_pnp_device_info(
+            dnac_configs=dnac_configs, show_all=True, export_path=export_file
+        )

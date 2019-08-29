@@ -11,6 +11,8 @@ __email__ = "dalwar.hossain@dimensiondata.com"
 accepted_status_codes = [200, 202]
 # Accepted (MUST have) CSV headers
 accepted_csv_headers = ["serialNumber", "pid", "siteName", "name", "template_name"]
+# PnP device limit
+pnp_device_limit = 100
 # Device Information extra parameters
 device_extra_param = [
     "serialNumber",
@@ -32,3 +34,4 @@ device_extra_param_less = [
     "state",
     "source",
 ]
+

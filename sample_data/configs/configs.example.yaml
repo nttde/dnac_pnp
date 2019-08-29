@@ -1,10 +1,11 @@
 ---
 dnac:
-  host: sandboxdnac.cisco.com
-  username: devnetuser
-  password: Cisco123!
-  encrypted_auth: wIWSwR6cphiSQkyJW2ug_zsoshnb1yxRcASYOkd25Bw
-
+    host: 10.160.64.200:8931
+    username: admin
+    password: Dimension!2020
 device:
     username: admin
     password: this#is!not$salted
+    port: 22
+    enable: True
+    enable_password: enable

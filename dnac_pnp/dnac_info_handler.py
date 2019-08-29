@@ -4,9 +4,8 @@
 """Information handler functions"""
 
 # Import builtin python libraries
-import json
+import csv
 import logging
-import sys
 
 # Import external python libraries
 import click
@@ -21,6 +20,60 @@ from .utils import divider, goodbye
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
+
+
+# Export into csv file
+def _export_to_csv(data=None, output_file=None):
+    """
+    This private function exports pnp device list into csv
+
+    :param data: (dict) Data to be exported to csv
+    :param output_file: (str) Full export file location
+    :return: (object) File object
+    """
+
+    csv_headers = list(data[0].keys())
+    logging.debug(f"CSV Headers: {csv_headers}")
+    logging.debug(f"CSV Data: {data}")
+
+    try:
+        with open(output_file, "w", newline='', encoding="utf-8") as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+        return True
+    except IOError:
+        click.secho(f"[x] IO exception happened!")
+        return False
+
+
+# Print output based on show_all
+def _print_device_info(device_serial_number=None, show_all=None, data=None):
+    """
+    This private function prints device information
+
+    :param device_serial_number: (str) Device serial number
+    :param show_all: (boolean) List all or show details of one
+    :param data: (dict) device information from DNAC
+    :return: (stdOut) Print on screen
+    """
+
+    if not show_all:
+        logging.debug(f"Showing single device information")
+        click.secho(f"[$] Device information for [{device_serial_number}]", fg="blue")
+        for key, value in data.items():
+            click.secho(f"{key}: ", fg="cyan", nl=False)
+            click.secho(f"{value}", fg="yellow")
+    else:
+        logging.debug(f"Showing all devices!")
+        click.secho(f"[$] All available devices in PnP", fg="blue")
+        table_rows = []
+        for index, item in enumerate(data):
+            table_header = ["No", *list(item.keys())]
+            tmp_row = [index+1, *list(item.values())]
+            table_rows.append(tmp_row)
+        print(tabulate(table_rows, table_header, tablefmt="psql"))
 
 
 # Show template body and the parameters
@@ -71,13 +124,16 @@ def show_template_info(dnac_configs=None, template_name=None, show_all=False):
 
 
 # Show device information from DNA Center PnP
-def show_pnp_device_info(dnac_configs=None, device_serial=None, show_all=False):
+def show_pnp_device_info(
+    dnac_configs=None, device_serial=None, show_all=False, export_path=None
+):
     """
     This function shows details about device(s)
 
     :param dnac_configs: (dict) DNA Center username/password configurations
-    :param device_serial: (str) Name of the template
+    :param device_serial: (str) Device serial number
     :param show_all: (boolean) List all or show details of one
+    :param export_path: (str) Export file path
     :return: (stdOut) On screen output
     """
 
@@ -92,18 +148,16 @@ def show_pnp_device_info(dnac_configs=None, device_serial=None, show_all=False):
         show_all=show_all,
     )
     if device_id:
-        if not show_all:
-            logging.debug(f"Showing single device information")
-            click.secho(f"[$] Device information for [{device_serial}]", fg="blue")
-            for key, value in device_extra.items():
-                click.secho(f"{key}: ", fg="cyan", nl=False)
-                click.secho(f"{value}", fg="yellow")
+        if export_path:
+            click.secho(f"[$] Trying to export PnP devices into csv.....", fg="blue")
+            export_status = _export_to_csv(data=device_extra, output_file=export_path)
+            if export_status:
+                click.secho(f"[#] PnP device list export successful!", fg="green")
+                click.secho(f"[*] Exported to[{export_path}]", fg="cyan")
+            else:
+                click.secho(f"[x] CSV export failed!", fg="red")
         else:
-            logging.debug(f"Showing all devices!")
-            click.secho(f"[$] All available devices in PnP", fg="blue")
-            table_rows = []
-            for index, item in enumerate(device_extra):
-                table_header = list(item.keys())
-                table_rows.append(list(item.values()))
-            print(tabulate(table_rows, table_header, tablefmt='grid'))
+            _print_device_info(
+                device_serial_number=device_serial, show_all=show_all, data=device_extra
+            )
     goodbye()

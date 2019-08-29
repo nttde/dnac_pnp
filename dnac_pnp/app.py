@@ -141,15 +141,14 @@ def show(
         debug_manager()
     if all_pnp_devices:
         info_showcase_manager(command="all_pnp_devices", device=None)
-    if single_pnp_device:
+    elif single_pnp_device:
         info_showcase_manager(command="single_pnp_device", device=single_pnp_device)
-    if all_templates:
+    elif all_templates:
         info_showcase_manager(command="all_templates", template=None)
-    if single_template:
+    elif single_template:
         info_showcase_manager(command="single_template", template=single_template)
-    if export_pnp_to_csv:
-        # Export pnp device list into a csv
-        pass
+    elif export_pnp_to_csv:
+        info_showcase_manager(command="export_pnp_to_csv", file_path=export_pnp_to_csv)
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -285,7 +284,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
 )
 @pass_context
 # Information about this package
-def info(context, all_info, author):
+def pkg_info(context, all_info, author):
     """This module prints information about the package"""
 
     if all_info:

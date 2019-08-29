@@ -21,9 +21,7 @@
         "method": "GET",
         "protocol": "https",
         "api": "/dna/intent/api/v1/onboarding/pnp-device",
-        "parameters": {
-            "limit": 100
-        }
+        "parameters": {}
     },
     "get-inventory-device-info": {
         "method": "GET",
