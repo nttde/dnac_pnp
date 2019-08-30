@@ -2,6 +2,61 @@
 History
 =======
 
+0.4.2 (2019-08-30)
+------------------
+
+* Fixed skipped serial number bug
+* Removed pagination dependency
+
+0.4.1 (2019-08-29)
+------------------
+
+* Documentation updates
+
+0.3.5 (2019-08-29)
+------------------
+
+* Fixed template version mismatch
+* Added csv export functionality
+
+0.3.4 (2019-08-26)
+------------------
+
+* Documentation updates
+
+0.3.3 (2019-08-26)
+------------------
+
+* Separated token generator
+* Modulated template functionality
+
+0.3.2 (2019-08-24)
+------------------
+
+* Fixed bug for auto build
+* Tokenize dependency for setup
+* Removed .gz artifact storage
+* Added usage instructions
+* Updated documentation tutorials
+* Added delete option for pnp devices
+* Changed package dependency and encoding
+* Fixed PnP flag for delete commands
+* Updated delete instructions
+* Introduced aliased group
+* Added template handler
+* Added template validation
+
+0.3.1 (2019-08-20)
+------------------
+
+* Fixed documentation bugs for note and warning
+
+0.2.5 (2019-08-19)
+------------------
+
+* Added api documentation
+* Introduced first draft of documentation
+
 0.2.4 (2019-08-19)
 ------------------
 
