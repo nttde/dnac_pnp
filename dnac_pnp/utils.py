@@ -390,9 +390,8 @@ def goodbye(before=False, data=None):
     if before:
         if data:
             divider("Before we leave, Please note ")
-            for key, value in data.items():
-                click.secho(f"[*] {key}: ", fg="cyan", nl=False)
-                click.secho(f"{value}", fg="yellow")
+            click.secho(f"[*] Skipped Serials: ", fg="cyan", nl=False)
+            click.secho(f"{data}", fg="yellow")
         divider("Goodbye!")
     else:
         divider("Goodbye!")

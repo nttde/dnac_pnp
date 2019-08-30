@@ -29,6 +29,9 @@ from .utils import divider, goodbye, parse_csv
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
+# Keep track of skipped serials
+skip_tracer = []
+
 
 # Template parameter check
 def _check_template_parameters(dnac_api_headers=None, data=None):
@@ -216,6 +219,7 @@ def acclaim_device(api_headers=None, data=None):
                 f"[!] Reason: Device [{serial_number}] State: [{device_state}]",
                 fg="yellow",
             )
+            skip_tracer.append(serial_number)
     else:
         ready_to_add = True
     # ========================== Add device ============================================
@@ -285,8 +289,6 @@ def device_import_in_bulk(configs=None, import_file=None):
     if csv_rows:
         token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
-        skip_tracer = {}
-        skipped = []
         for row in csv_rows:
             air_config = {"deviceInfo": row}
             logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
@@ -306,12 +308,11 @@ def device_import_in_bulk(configs=None, import_file=None):
                     acclaim_device(api_headers=headers, data=mod_data)
                 else:
                     click.secho(f"[x] Parameter mismatch!", fg="red")
-                    skipped.append(serial_number)
+                    skip_tracer.append(serial_number)
             else:
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
                 click.secho(
                     f"[!] Warning: Skipping [{serial_number}].....", fg="yellow"
                 )
-                skipped.append(serial_number)
-        skip_tracer["skippedSerials"] = skipped
+                skip_tracer.append(serial_number)
         goodbye(before=True, data=skip_tracer)
