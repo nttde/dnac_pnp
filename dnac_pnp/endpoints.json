@@ -23,6 +23,12 @@
         "api": "/dna/intent/api/v1/onboarding/pnp-device",
         "parameters": {}
     },
+    "get-pnp-device-count": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/onboarding/pnp-device/count",
+        "parameters": {}
+    },
     "get-inventory-device-info": {
         "method": "GET",
         "protocol": "https",

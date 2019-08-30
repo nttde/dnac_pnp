@@ -38,7 +38,7 @@ def get_device_id(
     :param serial_number: (str) Device serial number
     :param dnac_tab: (str) Where to look for the device info (PnP or Inventory)
     :param show_all: (boolean) To show whole list or not
-    :returns: (str) device ID from DNAC
+    :returns: (str) device ID from DNA center
     """
 
     logging.debug(f"TAB: {dnac_tab}")
@@ -54,7 +54,7 @@ def get_device_id(
     if serial_number is not None:
         parameters["serialNumber"] = serial_number
     if dnac_tab == "pnp":
-        parameters["limit"] = pnp_device_limit
+        parameters["limit"] = get_pnp_device_count(api_headers=dnac_api_headers)
     _, response_body = get_response(
         headers=dnac_api_headers,
         authentication_token=authentication_token,
@@ -258,7 +258,7 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
     This function retrieves parameters from the specified templates
 
     :param dnac_auth_token: (str) DNA center authentication token
-    :param api_headers: (dict) DNA Center API headers
+    :param api_headers: (dict) DNA center API headers
     :param config_id: (str) Template id/config ID (templateId==configId)
     :return: (str, list) Template content, Template parameters
     """
@@ -291,3 +291,30 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
         template_parameters = []
         logging.debug(f"Parameters received for template editor: {template_parameters}")
         return False, template_parameters
+
+
+# Get PnP device count
+def get_pnp_device_count(dnac_auth_token=None, api_headers=None):
+    """
+    This function gets pnp device count and returns the number
+
+    :param dnac_auth_token: (str) DNA center authentication string
+    :param api_headers: (dict) DNA center API headers
+    :return: (int) Total number of pnp devices available in DNA center
+    """
+
+    logging.debug(f"Getting dna center pnp device count!")
+    if api_headers is None:
+        api_headers = get_headers(auth_token=dnac_auth_token)
+    method, api_url, parameters = generate_api_url(api_type="get-pnp-device-count")
+    response_status, response_body = get_response(
+        method=method, endpoint_url=api_url, headers=api_headers, parameters=parameters
+    )
+    if response_status:
+        try:
+            total_devices = int(response_body["response"])
+            return total_devices
+        except ValueError:
+            return pnp_device_limit
+    else:
+        return pnp_device_limit
