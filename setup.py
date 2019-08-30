@@ -11,7 +11,7 @@ with open("README.rst", "r", encoding="utf-8") as readme_file:
 with open("HISTORY.rst", "r", encoding="utf-8") as history_file:
     history = history_file.read()
 
-requirements = ["click==7.0", "requests==2.22.0", "colorama==0.4.1", "pyyaml==5.1.1"]
+requirements = ["click==7.0", "requests==2.22.0", "colorama==0.4.2", "pyyaml==5.1.1"]
 
 setup_requirements = []
 
@@ -42,6 +42,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp",
-    version="0.4.1",
+    version="0.4.2",
     zip_safe=False,
 )
