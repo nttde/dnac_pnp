@@ -155,7 +155,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" sdist
+                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" sdist
                         deactivate
                         '''
                     }
@@ -164,7 +164,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" bdist_wheel
+                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" bdist_wheel
                         deactivate
                         '''
                     }
@@ -173,7 +173,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" bdist_egg
+                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" bdist_egg
                         deactivate
                         '''
                     }
