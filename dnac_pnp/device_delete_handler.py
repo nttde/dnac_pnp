@@ -14,8 +14,8 @@ import urllib3
 from .api_call_handler import call_api_endpoint
 from .api_endpoint_handler import generate_api_url
 from .api_call_handler import get_response
-from .device_import_handler import dnac_token_generator
-from .dnac_info_handler import get_device_id
+from .dnac_token_generator import generate_token
+from .dnac_info_butler import get_device_id
 from .header_handler import get_headers
 from .utils import divider, goodbye
 
@@ -38,15 +38,36 @@ def delete_device(api_headers=None, device_serial=None):
     :return: (obj) Response object
     """
 
-    device_id, _ = get_device_id(
-        dnac_api_headers=api_headers, serial_number=device_serial
+    pnp_device_states = ["Unclaimed", "Planned", "Error"]
+    inventory_device_states = ["Onboarding", "Provisioned"]
+    device_id, device_state, _ = get_device_id(
+        dnac_api_headers=api_headers, serial_number=device_serial, dnac_tab="pnp"
     )
+    logging.debug(f"Delete device ID: {device_id} in state: {device_state}")
     if device_id:
-        method, api_url, parameters = generate_api_url(api_type="remove-device")
+        click.secho(f"[#] Device ID received!", fg="green")
+        click.secho(f"[#] Device current state: [{device_state}]", fg="green")
+        if device_state in pnp_device_states:
+            dnac_api_type = "remove-device-pnp"
+        elif device_state in inventory_device_states:
+            inv_device_id, device_state, _ = get_device_id(
+                dnac_api_headers=api_headers,
+                serial_number=device_serial,
+                dnac_tab="inventory",
+            )
+            if inv_device_id:
+                device_id = inv_device_id
+            dnac_api_type = "remove-device-inventory"
+        else:
+            dnac_api_type = "remove-device-pnp"
+        method, api_url, parameters = generate_api_url(api_type=dnac_api_type)
         logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
         delete_api_url = f"{api_url}{device_id}"
         api_response = call_api_endpoint(
-            method=method, api_url=delete_api_url, api_headers=api_headers
+            method=method,
+            api_url=delete_api_url,
+            api_headers=api_headers,
+            parameters=parameters,
         )
         return api_response
     else:
@@ -68,15 +89,19 @@ def remove_devices(configs=None, serials=None):
     """
 
     if serials:
-        token = dnac_token_generator(configs=configs)
+        token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
         for serial in serials:
             divider(f"Removing [{serial}]")
             api_response = delete_device(api_headers=headers, device_serial=serial)
+            logging.debug(f"API Response: {api_response}")
             if api_response:
                 response_status, _ = get_response(response=api_response)
                 if response_status:
-                    click.secho(f"[#] Device removed!", fg="green")
-            else:
-                continue
+                    click.secho(f"[#] Device [{serial}] removed!", fg="green")
+                else:
+                    click.secho(f"[x] Device [{serial}] not removed!", fg="red")
+                    logging.debug(f"[{serial}] not removed!")
+                    continue
+        click.secho(f"[*] End of the line!", fg="cyan")
         goodbye()

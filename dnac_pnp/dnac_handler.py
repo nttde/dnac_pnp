@@ -17,6 +17,7 @@ import click
 from .utils import divider, parse_txt
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
+from .dnac_info_handler import show_template_info, show_pnp_device_info
 from .device_delete_handler import remove_devices
 
 # Setting global host variable
@@ -27,7 +28,8 @@ host = ""
 
 # Populate configurations
 def populate_config():
-    """This function get the configurations for DNA center"""
+    """This function loads the configurations for DNA center"""
+
     # Using the defined global variables
     global all_configs
     global dnac_configs
@@ -57,7 +59,11 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     # ==================== SINGLE DEVICE IMPORT ========================================
     if import_type == "single":
-        import_single_device(configs=dnac_configs, data=inputs)
+        click.secho(f"[!] Attention: ", fg="yellow", nl=False)
+        click.secho(f"Claiming single device does not support ", nl=False, fg="red")
+        click.secho(f"day0 template configurations!", fg="red")
+        if click.confirm(text=f"[-] Proceed?", abort=True):
+            import_single_device(configs=dnac_configs, data=inputs)
     # =================== IMPORT  IN BULK ==============================================
     elif import_type == "bulk":
         if "device_catalog" not in kwargs:
@@ -82,12 +88,12 @@ def import_manager(inputs=None, import_type=None, **kwargs):
 
 
 # DNA center device deletion
-def delete_manager(serials=None, delete_from_file=None, dry_run=None):
+def delete_manager(serials=None, delete_file=None, dry_run=None):
     """
-    This function deletes one or more devices form DNAC PnP"
+    This function deletes one or more devices form DNA Center
 
     :param serials: (str) comma separated string of serial numbers
-    :param delete_from_file: (str) Full file path with serial numbers that needed to be deleted
+    :param delete_file: (str) Full file path with serial numbers
     :param dry_run: (boolean) True or False, to just show what serials will be deleted
     :return: (str) delete status on the screen
     """
@@ -101,9 +107,9 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
             click.secho(f"[x] Can't parse the input properly!", fg="red")
             click.secho(f"[x] ERROR: {err}")
             sys.exit(1)
-    elif delete_from_file:
-        logging.debug(f"File path: [{delete_from_file}]")
-        delete_serials_file_path = delete_from_file
+    elif delete_file:
+        logging.debug(f"File path: [{delete_file}]")
+        delete_serials_file_path = delete_file
         serials_to_delete = parse_txt(serials_file_path=delete_serials_file_path)
     else:
         click.secho(
@@ -123,8 +129,43 @@ def delete_manager(serials=None, delete_from_file=None, dry_run=None):
             click.secho(f"[*] Starting device deletion engine.....", fg="cyan")
             remove_devices(configs=dnac_configs, serials=serials_to_delete)
     else:
-        print("this is a dry run")
+        for serial in serials_to_delete:
+            click.secho(
+                f"[*] Device with serial number [{serial}] will " f"be deleted.",
+                fg="cyan",
+            )
 
 
-if __name__ == "__main__":
+# DNA Center information showcase handler
+def info_showcase_manager(**kwargs):
+    """This function controls information showcase"""
+
     populate_config()
+    if kwargs["command"] == "all_templates":
+        do_show_all = True
+        show_template_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "single_template":
+        do_show_all = False
+        dnac_template_name = kwargs["template"]
+        show_template_info(
+            dnac_configs=dnac_configs,
+            template_name=dnac_template_name,
+            show_all=do_show_all,
+        )
+    elif kwargs["command"] == "all_pnp_devices":
+        do_show_all = True
+        show_pnp_device_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "single_pnp_device":
+        do_show_all = False
+        dnac_device_serial = kwargs["device"]
+        show_pnp_device_info(
+            dnac_configs=dnac_configs,
+            device_serial=dnac_device_serial,
+            show_all=do_show_all,
+        )
+    elif kwargs["command"] == "export_pnp_to_csv":
+        export_file = kwargs["file_path"]
+        click.secho(f"[$] Export file path location: [{export_file}]", fg="blue")
+        show_pnp_device_info(
+            dnac_configs=dnac_configs, show_all=True, export_path=export_file
+        )

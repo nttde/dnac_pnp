@@ -19,11 +19,27 @@ from .utils import (
     validate_input,
     validate_serial,
 )
-from .dnac_handler import import_manager, delete_manager
+from .dnac_handler import import_manager, delete_manager, info_showcase_manager
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
+
+
+# Alias group class
+class AliasedGroup(click.Group):
+    def get_command(self, ctx, cmd_name):
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        elif len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        matched_commands = ", ".join(sorted(matches))
+        print(matched_commands)
+        ctx.fail(f"Too many matches: {matched_commands}")
 
 
 # Click context manager class
@@ -40,7 +56,7 @@ class Context(object):
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
 
-@click.group()
+@click.group(cls=AliasedGroup)
 @click.option(
     "--debug",
     "debug",
@@ -58,6 +74,81 @@ def mission_control(context, debug):
     context.debug = debug
     context.initial_msg = True
     context.dry_run = True
+    context.show_help = False
+
+
+@mission_control.command(short_help="Shows DNA center component information.")
+@click.option(
+    "--all-pnp-devices",
+    "all_pnp_devices",
+    help="Shows all devices in PnP.",
+    is_flag=True,
+    type=bool,
+    default=False,
+    show_default=True,
+)
+@click.option(
+    "--pnp-device",
+    "single_pnp_device",
+    help="Shows [pnp] device information by serial number.",
+    type=str,
+)
+@click.option(
+    "--all-templates",
+    "all_templates",
+    help="Lists all available templates.",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+)
+@click.option(
+    "--template",
+    "single_template",
+    help="Shows template information by full template name",
+    type=str,
+)
+@click.option(
+    "--export-pnp",
+    "export_pnp_to_csv",
+    help="Exports PnP device information to CSV",
+    type=click.Path(exists=False, dir_okay=False),
+)
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
+@pass_context
+def show(
+    context,
+    all_pnp_devices,
+    single_pnp_device,
+    all_templates,
+    single_template,
+    export_pnp_to_csv,
+    sub_debug,
+):
+    """Shows DNA Center component information"""
+
+    if context.initial_msg:
+        initial_message()
+    if context.debug or sub_debug:
+        debug_manager()
+    if all_pnp_devices:
+        info_showcase_manager(command="all_pnp_devices", device=None)
+    elif single_pnp_device:
+        info_showcase_manager(command="single_pnp_device", device=single_pnp_device)
+    elif all_templates:
+        info_showcase_manager(command="all_templates", template=None)
+    elif single_template:
+        info_showcase_manager(command="single_template", template=single_template)
+    elif export_pnp_to_csv:
+        info_showcase_manager(command="export_pnp_to_csv", file_path=export_pnp_to_csv)
 
 
 @mission_control.command(short_help="Add and claim a single device.")
@@ -106,7 +197,7 @@ def mission_control(context, debug):
 )
 @pass_context
 def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_debug):
-    """This module is the entry-point for single device add and claim"""
+    """Entry-point for single device add and claim"""
 
     if context.initial_msg:
         initial_message()
@@ -114,7 +205,8 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
         debug_manager()
     if host_name is None:
         click.secho(
-            f"[!] Warning: No hostname provided! Serial number will be used as device name",
+            f"[!] Warning: No hostname provided! Serial number will be"
+            f" used as device name",
             fg="yellow",
         )
         host_name = serial_number
@@ -124,13 +216,15 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
             "serialNumber": serial_number,
             "pid": product_id,
             "siteName": site_name,
+            "configId": None,
+            "configParameters": None,
         }
     }
     logging.debug(f"Air Config: {air_config}")
     import_manager(inputs=air_config, import_type="single")
 
 
-@mission_control.command(short_help="Add and claim multiple devices.")
+@mission_control.command(short_help="Add and claim single or multiple devices.")
 @click.option(
     "-f",
     "--catalog-file",
@@ -151,7 +245,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
 )
 @pass_context
 def acclaim_in_bulk(context, catalog_file, sub_debug):
-    """Add and claim multiple devices"""
+    """Add and claim single or multiple devices"""
 
     if context.initial_msg:
         initial_message()
@@ -190,7 +284,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
 )
 @pass_context
 # Information about this package
-def info(context, all_info, author):
+def pkg_info(context, all_info, author):
     """This module prints information about the package"""
 
     if all_info:
@@ -201,7 +295,7 @@ def info(context, all_info, author):
         show_info(view_type="author")
 
 
-@mission_control.command(short_help="Delete [un-claim + remove] or more devices.")
+@mission_control.command(short_help="Delete single or multiple devices.")
 @click.option(
     "-s",
     "--serial-numbers",
@@ -212,7 +306,7 @@ def info(context, all_info, author):
 )
 @click.option(
     "-f",
-    "--delete-from-file",
+    "--delete-file",
     "delete_entries",
     help="Device delete full file path.",
     required=False,
@@ -248,13 +342,16 @@ def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
     if delete_entries:
         logging.debug(f"Catalog file: {delete_entries}")
         click.secho(
-            f"[!] warning: Devices will be deleted according to the serial numbers in file",
+            f"[!] warning: Devices will be deleted according to serial numbers in file",
             fg="yellow",
         )
         click.secho(f"[*] File location: [{delete_entries}]", fg="cyan")
-        delete_manager(delete_from_file=delete_entries, dry_run=dry_run)
+        delete_manager(delete_file=delete_entries, dry_run=dry_run)
     elif serial_numbers:
         delete_manager(serials=serial_numbers, dry_run=dry_run)
     else:
-        click.secho(f"[x] Provide at least one option! See --help for more!", fg="red")
+        click.secho(
+            f"[x] Provide at least one option (-s/-f)[ARGS]! " f"See --help for more!",
+            fg="red",
+        )
         sys.exit(1)

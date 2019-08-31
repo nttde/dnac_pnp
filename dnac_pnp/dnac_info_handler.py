@@ -1,129 +1,163 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Main module for dnac-pnp"""
+"""Information handler functions"""
 
 # Import builtin python libraries
-import json
+import csv
 import logging
-import sys
 
 # Import external python libraries
 import click
+from tabulate import tabulate
 
 # Import custom (local) python packages
-from .api_call_handler import get_response
-from .api_endpoint_handler import generate_api_url
+from .dnac_info_butler import get_template_id, get_template_parameters, get_device_id
+from .dnac_token_generator import generate_token
+from .header_handler import get_headers
+from .utils import divider, goodbye
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
 
-# Retrieve device ID
-def get_device_id(authentication_token=None, dnac_api_headers=None, serial_number=None):
+# Export into csv file
+def _export_to_csv(data=None, output_file=None):
     """
-    This module retrieves the device id by serial number
+    This private function exports pnp device list into csv
 
-    :param authentication_token: (str) Authentication token
-    :param dnac_api_headers: (dict) API headers
-    :param serial_number: (str) Device serial number
-    :returns: (str) device ID from DNAC
+    :param data: (dict) Data to be exported to csv
+    :param output_file: (str) Full export file location
+    :return: (object) File object
     """
 
-    method, api_url, parameters = generate_api_url(api_type="get-device-info")
-    parameters["serialNumber"] = serial_number
-    _, response_body = get_response(
-        headers=dnac_api_headers,
-        authentication_token=authentication_token,
-        method=method,
-        endpoint_url=api_url,
-        parameters=parameters,
-    )
+    csv_headers = list(data[0].keys())
+    logging.debug(f"CSV Headers: {csv_headers}")
+    logging.debug(f"CSV Data: {data}")
+
     try:
-        device_id = response_body[0]["id"]
-        device_state = response_body[0]["deviceInfo"]["state"]
-        logging.debug(f"Device ID: {device_id}")
-        click.secho(f"[#] Device ID received!", fg="green")
-        return device_id, device_state
-    except KeyError as err:
-        click.secho(f"[x] Key not found in the response!", fg="red")
-        logging.debug(f"Error: {err}")
-        sys.exit(1)
-    except IndexError as err:
-        click.secho(
-            f"[!] Index error! Device might not be available in PnP", fg="yellow"
-        )
-        logging.debug(f"Error: {err}")
-        device_state = "Unavailable"
-        return False, device_state
+        with open(output_file, "w", newline='', encoding="utf-8") as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+        return True
+    except IOError:
+        click.secho(f"[x] IO exception happened!")
+        return False
 
 
-# Retrieve site ID
-def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None):
+# Print output based on show_all
+def _print_device_info(device_serial_number=None, show_all=None, data=None):
     """
-    This module retrieves site id based on site name
+    This private function prints device information
 
-    :param authentication_token: (str) Authentication token
-    :param dnac_api_headers: (dict) DNAC api headers
-    :param site_name: (str) Site name with full hierarchy
-    :return: (str) site ID from DNAC
+    :param device_serial_number: (str) Device serial number
+    :param show_all: (boolean) List all or show details of one
+    :param data: (dict) device information from DNAC
+    :return: (stdOut) Print on screen
     """
 
-    method, api_url, parameters = generate_api_url(api_type="get-site-info")
-    parameters["name"] = site_name
-    _, response_body = get_response(
-        authentication_token=authentication_token,
-        headers=dnac_api_headers,
-        method=method,
-        endpoint_url=api_url,
-        parameters=parameters,
+    if not show_all:
+        logging.debug(f"Showing single device information")
+        click.secho(f"[$] Device information for [{device_serial_number}]", fg="blue")
+        for key, value in data.items():
+            click.secho(f"{key}: ", fg="cyan", nl=False)
+            click.secho(f"{value}", fg="yellow")
+    else:
+        logging.debug(f"Showing all devices!")
+        click.secho(f"[$] All available devices in PnP", fg="blue")
+        table_rows = []
+        for index, item in enumerate(data):
+            table_header = ["No", *list(item.keys())]
+            tmp_row = [index+1, *list(item.values())]
+            table_rows.append(tmp_row)
+        print(tabulate(table_rows, table_header, tablefmt="psql"))
+
+
+# Show template body and the parameters
+def show_template_info(dnac_configs=None, template_name=None, show_all=False):
+    """
+    This function shows details about template(s)
+
+    :param dnac_configs: (dict) DNA Center username/password configurations
+    :param template_name: (str) Name of the template
+    :param show_all: (boolean) List all or show details of one
+    :return: (stdOut) On screen output
+    """
+
+    token = generate_token(configs=dnac_configs)
+    headers = get_headers(auth_token=token)
+
+    divider("Template(s)")
+    template_id = get_template_id(
+        api_headers=headers, show_all=show_all, template=template_name
     )
-    try:
-        logging.debug(f"Type: {type(response_body)}")
-        response_json = json.loads(response_body)
-        if response_json["status"]:
-            site_id = response_json["response"][0]["id"]
-            logging.debug(f"Site ID: {site_id}")
-            click.secho(f"[#] Site ID received!", fg="green")
-            return site_id
+    if not show_all:
+        if template_id is not None:
+            template_content, template_parameters = get_template_parameters(
+                api_headers=headers, config_id=template_id
+            )
+            if template_content and template_parameters:
+                click.secho(f"[$] Template Body:", fg="blue")
+                print(template_content)
+                click.secho(f"[$] Template Parameters:", fg="blue")
+                print(template_parameters)
+            else:
+                click.secho(
+                    f"[x] Could not retrieve parameters! Use --debug to get "
+                    f"more information",
+                    fg="red",
+                )
         else:
-            err_msg = response_json["message"][0]
-            click.secho(f"[*] Message: {err_msg}", fg="cyan")
-            return False
-    except KeyError as err:
-        click.secho(f"[x] Key not found in the response!", fg="red")
-        logging.debug(f"Error: {err}")
-        sys.exit(1)
+            click.secho("[x] No template found!", fg="red")
+            click.secho(
+                f"[*] Make sure that the spelling is correct and has "
+                f"[project_name/template_name] syntax",
+                fg="blue",
+            )
+    else:
+        if template_id:
+            logging.debug(f"Found template: [{template_id}]")
+    goodbye()
 
 
-# Retrieve image ID
-def get_image_id(authentication_token=None, dnac_api_headers=None, image_name=None):
+# Show device information from DNA Center PnP
+def show_pnp_device_info(
+    dnac_configs=None, device_serial=None, show_all=False, export_path=None
+):
     """
-    This module retrieves site id based on site name
+    This function shows details about device(s)
 
-    :param authentication_token: (str) Authentication token
-    :param dnac_api_headers: (dict) DNAC api headers
-    :param image_name: (str) Full image name with extension
-    :return: (str) Image ID from DNAC
+    :param dnac_configs: (dict) DNA Center username/password configurations
+    :param device_serial: (str) Device serial number
+    :param show_all: (boolean) List all or show details of one
+    :param export_path: (str) Export file path
+    :return: (stdOut) On screen output
     """
 
-    method, api_url, parameters = generate_api_url(api_type="get-image-info")
-    parameters["name"] = image_name
-    _, response_body = get_response(
-        authentication_token=authentication_token,
-        headers=dnac_api_headers,
-        method=method,
-        endpoint_url=api_url,
-        parameters=parameters,
+    token = generate_token(configs=dnac_configs)
+    headers = get_headers(auth_token=token)
+
+    divider("Device(s)")
+    device_id, device_status, device_extra = get_device_id(
+        dnac_api_headers=headers,
+        serial_number=device_serial,
+        dnac_tab="pnp",
+        show_all=show_all,
     )
-    try:
-        logging.debug(f"Type: {type(response_body)}")
-        image_id = response_body["response"][0]["imageUuid"]
-        logging.debug(f"Image ID: {image_id}")
-        click.secho(f"[#] Image ID received!", fg="green")
-        return image_id
-    except KeyError as err:
-        logging.debug(f"Error: {err}")
-        click.secho(f"[x] Key not found in the response!", fg="red")
-        sys.exit(1)
+    if device_id:
+        if export_path:
+            click.secho(f"[$] Trying to export PnP devices into csv.....", fg="blue")
+            export_status = _export_to_csv(data=device_extra, output_file=export_path)
+            if export_status:
+                click.secho(f"[#] PnP device list export successful!", fg="green")
+                click.secho(f"[*] Exported to[{export_path}]", fg="cyan")
+            else:
+                click.secho(f"[x] CSV export failed!", fg="red")
+        else:
+            _print_device_info(
+                device_serial_number=device_serial, show_all=show_all, data=device_extra
+            )
+    goodbye()

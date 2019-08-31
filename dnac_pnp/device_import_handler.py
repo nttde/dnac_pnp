@@ -10,19 +10,83 @@ import sys
 
 # Import external python libraries
 import click
-from requests.auth import HTTPBasicAuth
 
 # Import custom (local) python packages
 from .api_call_handler import call_api_endpoint, get_response
 from .api_endpoint_handler import generate_api_url
+from .dnac_token_generator import generate_token
 from .device_claim_handler import claim
-from .dnac_info_handler import get_device_id, get_site_id
+from .dnac_info_butler import (
+    get_device_id,
+    get_site_id,
+    get_template_id,
+    get_template_parameters,
+)
 from .header_handler import get_headers
-from .utils import parse_csv, divider, goodbye
+from .utils import divider, goodbye, parse_csv
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
+
+# Keep track of skipped serials
+skip_tracer = []
+
+
+# Template parameter check
+def _check_template_parameters(dnac_api_headers=None, data=None):
+    """
+    This private function checks day0 template parameters
+
+    :param dnac_api_headers: (dict) DNA center api headers
+    :param data: (dict) Input data, This is same as payload data / air-config
+    :return: (boolean, dict) True if input is consistent, False, otherwise and data
+    """
+
+    # Template variable validation
+    # Template ID == Config ID
+    template_name = data["deviceInfo"]["template_name"]
+    input_parameters = data["deviceInfo"].keys()
+    config_id = get_template_id(api_headers=dnac_api_headers, config_data=data)
+    if config_id:
+        click.secho(f"[#] Configuration ID received!", fg="green")
+        data["deviceInfo"]["configId"] = config_id
+        logging.debug(f"Configuration ID: [{config_id}]")
+        _, template_parameters = get_template_parameters(
+            api_headers=dnac_api_headers, config_id=config_id
+        )
+        if template_parameters:
+            click.secho(f"[#] Template parameters received!", fg="green")
+            click.secho(
+                f"[$] Validating input parameters against "
+                f"DNA center template parameters.....",
+                fg="blue",
+            )
+            click.secho(f"[$] Parsing parameters.....", fg="blue")
+            config_parameters = []
+            for item in template_parameters:
+                try:
+                    conf_dict = {"key": item, "value": data["deviceInfo"][item]}
+                    config_parameters.append(conf_dict)
+                except KeyError as err:
+                    click.secho(f"[x] Key error!", fg="red")
+                    click.secho(f"[x] ERROR: Check parameter [{err}]", fg="red")
+            data["deviceInfo"]["configParameters"] = config_parameters
+            logging.debug(f"Data with config parameters: {data}")
+            logging.debug(f"Parameter from DNA center: {template_parameters}")
+            logging.debug(f"Input parameters: {input_parameters}")
+            logging.debug(f"Input data: {json.dumps(data, indent=4)}")
+            template_parameter_status = all(
+                item in input_parameters for item in template_parameters
+            )
+        else:
+            click.secho(f"[x] Template parameters not found!", fg="red")
+            template_parameter_status = False
+    else:
+        click.secho(f"[x] Template Name [{template_name}] is not present", fg="red")
+        template_parameter_status = False
+
+    return template_parameter_status, data
 
 
 # Site name check
@@ -36,8 +100,8 @@ def _check_device(headers=None, data=None):
     """
 
     device_serial_number = data["deviceInfo"]["serialNumber"]
-    device_id, device_state = get_device_id(
-        dnac_api_headers=headers, serial_number=device_serial_number
+    device_id, device_state, _ = get_device_id(
+        dnac_api_headers=headers, serial_number=device_serial_number, dnac_tab="pnp"
     )
     if device_id:
         logging.debug(f"Device ID: {device_id}")
@@ -71,48 +135,6 @@ def _check_site_name(headers=None, data=None):
     return site_status, data
 
 
-# Login to DNAC
-def dnac_token_generator(configs=None):
-    """
-    This function logs into DNAC and generates authentication token
-
-    :param configs: (dict) DNAC configurations
-    :returns: (str) Authentication token
-    """
-
-    dnac_username = configs["username"]
-    dnac_password = configs["password"]
-
-    headers = get_headers()
-    method, api_url, parameters = generate_api_url(api_type="generate-token")
-    logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
-    click.secho(f"[$] Generating authentication token.....", fg="blue")
-    api_response = call_api_endpoint(
-        method=method,
-        api_url=api_url,
-        api_headers=headers,
-        auth=HTTPBasicAuth(dnac_username, dnac_password),
-    )
-    response_status, response_body = get_response(response=api_response)
-    if response_status:
-        token = response_body["Token"]
-    else:
-        click.secho(
-            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
-            fg="red",
-        )
-        sys.exit(1)
-    if token:
-        click.secho(f"[#] Token received!", fg="green")
-        return token
-    else:
-        click.secho(
-            f"[x] Server responded with [{api_response.status_code}] [{api_response.text}]",
-            fg="red",
-        )
-        sys.exit(1)
-
-
 # Add a device
 def add_device(dnac_api_headers=None, payload_data=None):
     """
@@ -122,7 +144,7 @@ def add_device(dnac_api_headers=None, payload_data=None):
     :param payload_data: (dict) Payload data for adding a device
     :return: (obj) Requests response object
     """
-    # ========================== Add device to PnP list ===================================
+    # ========================== Add device to PnP list ================================
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
     divider(f"Add [{device_serial_number}]")
     method, api_url, parameters = generate_api_url(api_type="import-device")
@@ -152,14 +174,15 @@ def claim_device(dnac_api_headers=None, payload_data=None):
         f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
         fg="cyan",
     )
-    device_id, _ = get_device_id(
-        serial_number=device_serial_number, dnac_api_headers=dnac_api_headers
+    device_id, _, _ = get_device_id(
+        serial_number=device_serial_number,
+        dnac_api_headers=dnac_api_headers,
+        dnac_tab="pnp",
     )
-    site_id = payload_data["deviceInfo"]["siteId"]
-    logging.debug(f"DeviceID: {device_id}, SiteID: {site_id}")
-    if device_id and site_id:
+    logging.debug(f"DeviceID: {device_id}")
+    if device_id:
         claim_status = claim(
-            headers=dnac_api_headers, device_id=device_id, site_id=site_id
+            headers=dnac_api_headers, device_id=device_id, data=payload_data
         )
         return claim_status
     else:
@@ -177,23 +200,29 @@ def acclaim_device(api_headers=None, data=None):
     :return: (stdout) On screen output
     """
 
-    # ========================== Check device state ======================================
+    # ========================== Check device state ====================================
+    non_claimable_states = ["Planned", "Onboarding", "Provisioned"]
     ready_to_add = False
     ready_to_claim = False
     serial_number = data["deviceInfo"]["serialNumber"]
     divider(f"Device state validation for [{serial_number}]")
     device_attached, device_state, data = _check_device(headers=api_headers, data=data)
     logging.debug(
-        f"Device attached?: {device_attached}, Device State: {device_state}, Data={data}"
+        f"Device attached?: {device_attached}, State: {device_state}, Data={data}"
     )
-    if device_attached and device_state == "Unclaimed":
-        ready_to_claim = True
-    elif device_attached and device_state == "Planned":
-        click.secho(f"[!] Device [{serial_number}] already claimed!", fg="yellow")
-        click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+    if device_attached:
+        if device_state == "Unclaimed":
+            ready_to_claim = True
+        elif device_state in non_claimable_states:
+            click.secho(f"[!] Warning: Skipping [{serial_number}].....", fg="yellow")
+            click.secho(
+                f"[!] Reason: Device [{serial_number}] State: [{device_state}]",
+                fg="yellow",
+            )
+            skip_tracer.append(serial_number)
     else:
         ready_to_add = True
-    # ========================== Add device ==============================================
+    # ========================== Add device ============================================
     if ready_to_add:
         api_response = add_device(dnac_api_headers=api_headers, payload_data=data)
         response_status, response_body = get_response(response=api_response)
@@ -202,7 +231,8 @@ def acclaim_device(api_headers=None, data=None):
             ready_to_claim = True
         else:
             click.secho(
-                f"[x] Server responded with status code [{api_response.status_code}] but with a FAILED response",
+                f"[x] Server responded with status code [{api_response.status_code}] "
+                f"but with a FAILED response",
                 fg="red",
             )
             err_msg = response_body["failureList"][0]["msg"]
@@ -211,14 +241,13 @@ def acclaim_device(api_headers=None, data=None):
                 f"[x] Error: [{err_msg}], Serial Number: [{err_serial}]", fg="red"
             )
             sys.exit(1)
-    # ======================== Claim device ==============================================
+    # ======================== Claim device ============================================
     if ready_to_claim:
         claim_status = claim_device(dnac_api_headers=api_headers, payload_data=data)
         if claim_status:
             click.secho(f"[#] DONE!", fg="green")
         else:
-            click.secho(f"[X] Claim status: {claim_status}")
-            sys.exit(1)
+            click.secho(f"[x] Claim status: {claim_status}", fg="red")
 
 
 # Single device import
@@ -231,7 +260,7 @@ def import_single_device(configs=None, data=None):
     :returns: (stdout) output to the screen
     """
 
-    token = dnac_token_generator(configs=configs)
+    token = generate_token(configs=configs)
     headers = get_headers(auth_token=token)
     site_name = data["deviceInfo"]["siteName"]
     serial_number = data["deviceInfo"]["serialNumber"]
@@ -258,24 +287,32 @@ def device_import_in_bulk(configs=None, import_file=None):
 
     csv_rows = parse_csv(file_to_parse=import_file)
     if csv_rows:
-        token = dnac_token_generator(configs=configs)
+        token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
-        skip_tracer = {}
-        skipped = []
         for row in csv_rows:
             air_config = {"deviceInfo": row}
             logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
             divider(f"Site [{row['siteName']}] validation for [{row['serialNumber']}]")
+            # Site Validation
             site_status, data = _check_site_name(headers=headers, data=air_config)
+            site_name = data["deviceInfo"]["siteName"]
+            serial_number = data["deviceInfo"]["serialNumber"]
+            template_name = data["deviceInfo"]["template_name"]
             if site_status:
-                acclaim_device(api_headers=headers, data=air_config)
+                divider(f"Day0 template validation for [{template_name}]")
+                template_parameter_status, mod_data = _check_template_parameters(
+                    dnac_api_headers=headers, data=air_config
+                )
+                if template_parameter_status:
+                    click.secho("[#] Parameters validated!", fg="green")
+                    acclaim_device(api_headers=headers, data=mod_data)
+                else:
+                    click.secho(f"[x] Parameter mismatch!", fg="red")
+                    skip_tracer.append(serial_number)
             else:
-                site_name = data["deviceInfo"]["siteName"]
-                serial_number = data["deviceInfo"]["serialNumber"]
                 click.secho(f"[x] Site name [{site_name}] is not valid!", fg="red")
                 click.secho(
                     f"[!] Warning: Skipping [{serial_number}].....", fg="yellow"
                 )
-                skipped.append(serial_number)
-        skip_tracer["skippedSerials"] = skipped
-    goodbye(before=True, data=skip_tracer)
+                skip_tracer.append(serial_number)
+        goodbye(before=True, data=skip_tracer)

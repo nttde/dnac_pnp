@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Validation module for dnac_pnp"""
+"""Utility module for dnac_pnp"""
 
 # Import builtin python libraries
 import csv
@@ -24,15 +24,11 @@ from . import __version__ as version
 from . import __author__ as author
 from . import __author_email as author_email
 from . import __copyright__ as copy_right
+from .dnac_params import accepted_csv_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
-
-
-# Accepted values
-accepted_status_codes = [200]
-accepted_csv_headers = ["serialNumber", "pid", "siteName", "name"]
 
 
 # Show only package info
@@ -92,7 +88,7 @@ def _show_dnac_dependencies():
 # Show information about the package
 def show_info(view_type=None):
     """
-    This module prints information about the package on screen
+    This function prints information about the package on screen
 
     :param view_type: (boolean) To show more or less info
     :returns: (stdout) output to the screen
@@ -173,7 +169,7 @@ def initial_message():
     divider(f"Initializing [{package_name}]")
     click.secho(f"[*] Initializing.....", fg="cyan")
     click.secho(
-        f"[*] Please use 'dnac_pnp info' to see supported version of Cisco DNA Center",
+        f"[*] Please use 'dnac_pnp --help' to see all available options",
         fg="cyan",
     )
 
@@ -287,12 +283,20 @@ def check_csv_header(file_headers=None):
     :return: (list) A list (subset or equal) of headers that has been checked
     """
 
+    template_flag = False
     ret_headers = []
     for cell in file_headers:
-        valid_cell_name = check_csv_cell_name(cell_name=cell)
-        ret_headers.append(valid_cell_name)
+        if "template" in cell:
+            template_flag = True
+        if template_flag:
+            ret_headers.append(cell)
+        else:
+            valid_cell_name = check_csv_cell_name(cell_name=cell)
+            ret_headers.append(valid_cell_name)
     logging.debug(f"camelCased headers: {ret_headers}")
-    if collections.Counter(accepted_csv_headers) == collections.Counter(ret_headers):
+    logging.debug(f"Type of input headers: {type(file_headers)}")
+    logging.debug(f"Type of converted headers: {type(ret_headers)}")
+    if all(item in ret_headers for item in accepted_csv_headers):
         click.secho(f"[#] The list of headers is accepted!", fg="green")
         return ret_headers
     else:
@@ -301,11 +305,12 @@ def check_csv_header(file_headers=None):
         )
         click.secho(f"[*] Retrieved headers from file: {file_headers}", fg="cyan")
         click.secho(
-            f"[!] Warning! Camel cased (camelCased) headers and unicode headers are not accepted!",
+            f"[!] Warning! camelCased and unicode headers are not accepted!",
             fg="yellow",
         )
         click.secho(
-            f"[!] Warning! Underscore(_), Dash/Hyphen(-), Single Space ( ) are accepted between words",
+            f"[!] Warning! Underscore(_), Dash/Hyphen(-), Single Space ( ) "
+            f"are accepted between words",
             fg="yellow",
         )
         click.secho(
@@ -335,13 +340,17 @@ def parse_csv(file_to_parse=None):
         for r_row in reader:
             logging.debug(f"Raw input row from file: {r_row}")
             try:
-                row = collections.OrderedDict(
-                    [
-                        (check_csv_cell_name(key.strip()), value.strip())
-                        for key, value in r_row.items()
-                    ]
-                )
-            except AttributeError:
+                l_row = []
+                template_flag = False
+                for key, value in r_row.items():
+                    if "template" in key.strip():
+                        template_flag = True
+                    if template_flag:
+                        l_row.append((key.strip(), value.strip()))
+                    else:
+                        l_row.append((check_csv_cell_name(key.strip()), value.strip()))
+                row = collections.OrderedDict(l_row)
+            except AttributeError or KeyError:
                 logging.debug(f"AttributeError: An attribute error has occurred!")
                 logging.debug(f"Skipping row: {r_row}")
                 continue
@@ -380,10 +389,9 @@ def goodbye(before=False, data=None):
 
     if before:
         if data:
-            divider("Before we leave, Please note the following: ")
-            for key, value in data.items():
-                click.secho(f"[*] {key}: ", fg="cyan", nl=False)
-                click.secho(f"{value}", fg="yellow")
+            divider("Before we leave, Please note ")
+            click.secho(f"[*] Skipped Serials: ", fg="cyan", nl=False)
+            click.secho(f"{data}", fg="yellow")
         divider("Goodbye!")
     else:
         divider("Goodbye!")

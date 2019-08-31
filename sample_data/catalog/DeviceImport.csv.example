@@ -1,0 +1,2 @@
+serial_number, product_id, site_name, name, template_name, host_name, vtp_domain, vtp_version
+FOC2246T582, WS-C3560CX-8PC-S, Global/DD Germany/DD MUC, pnp-test-sw01, Test-Day0-Template, switch001, vtp001, 1
