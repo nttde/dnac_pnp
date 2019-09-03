@@ -155,7 +155,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" sdist
+                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" sdist
                         deactivate
                         '''
                     }
@@ -164,7 +164,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" bdist_wheel
+                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" bdist_wheel
                         deactivate
                         '''
                     }
@@ -173,7 +173,7 @@ pipeline {
                     steps {
                         sh '''
                         source venv/bin/activate
-                        python3 setup.py egg_info --tag-build="-${BRANCH_NAME}" bdist_egg
+                        python3 setup.py egg_info --tag-build=".${BRANCH_NAME}" bdist_egg
                         deactivate
                         '''
                     }
@@ -256,7 +256,7 @@ pipeline {
                     steps {
                         rtUpload (
                             serverId: "JFrog-DimensionData",
-                            buildName: "${REPOSITORY_NAME}-${BRANCH_NAME}",
+                            buildName: "${REPOSITORY_NAME}_${BRANCH_NAME}",
                             buildNumber: "${BUILD_NUMBER}",
                             specPath: 'jfrog-spec.json',
                             failNoOp: true
@@ -280,7 +280,7 @@ pipeline {
             steps {
                 rtPublishBuildInfo (
                     serverId: "JFrog-Local",
-                    buildName: "${REPOSITORY_NAME}-${BRANCH_NAME}",
+                    buildName: "${REPOSITORY_NAME}_${BRANCH_NAME}",
                     buildNumber: "${BUILD_NUMBER}"
                 )
             }
