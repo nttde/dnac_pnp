@@ -11,7 +11,13 @@ with open("README.rst", "r", encoding="utf-8") as readme_file:
 with open("HISTORY.rst", "r", encoding="utf-8") as history_file:
     history = history_file.read()
 
-requirements = ["click==7.0", "requests==2.22.0", "colorama==0.4.2", "pyyaml==5.1.1"]
+requirements = [
+    "click==7.0",
+    "requests==2.22.0",
+    "colorama==0.4.1",
+    "pyyaml==5.1.1",
+    "tabulate==0.8.3",
+]
 
 setup_requirements = []
 
@@ -31,7 +37,12 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     description="Cisco DNA center PnP device add, claim and delete automation",
-    entry_points={"console_scripts": ["dnac_pnp=dnac_pnp.app:mission_control"]},
+    entry_points={
+        "console_scripts": [
+            "dnac_pnp=dnac_pnp.app:mission_control",
+            "ios_reset=ios_reset.ios:mission_control",
+        ]
+    },
     install_requires=requirements,
     long_description=readme + "\n\n" + history,
     include_package_data=True,
