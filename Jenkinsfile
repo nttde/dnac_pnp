@@ -247,22 +247,22 @@ pipeline {
                         '''
                     }
                 }
-                stage ('Upload to DD Artifactory') {
-                    when {
-                        anyOf {
-                            branch 'master'
-                        }
-                    }
-                    steps {
-                        rtUpload (
-                            serverId: "JFrog-DimensionData",
-                            buildName: "${REPOSITORY_NAME}_${BRANCH_NAME}",
-                            buildNumber: "${BUILD_NUMBER}",
-                            specPath: 'jfrog-spec.json',
-                            failNoOp: true
-                        )
-                    }
-                }
+//                 stage ('Upload to DD Artifactory') {
+//                     when {
+//                         anyOf {
+//                             branch 'master'
+//                         }
+//                     }
+//                     steps {
+//                         rtUpload (
+//                             serverId: "JFrog-DimensionData",
+//                             buildName: "${REPOSITORY_NAME}_${BRANCH_NAME}",
+//                             buildNumber: "${BUILD_NUMBER}",
+//                             specPath: 'jfrog-spec.json',
+//                             failNoOp: true
+//                         )
+//                     }
+//                 }
                 stage ('Upload to DDLAB Artifactory') {
                     steps {
                         rtUpload (
