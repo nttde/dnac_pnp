@@ -329,16 +329,17 @@ def _parse_site_additional_info(sites=None):
     :return: (dict) Site and type
     """
 
+    site_dict = {}
     for site in sites:
         try:
-            if "additionalInfo" in site.keys():
-                for item in site["additionalInfo"]:
-                    if item["nameSpace"].casefold() == "Location".casefold():
-                        site_type = item["attributes"]["type"]
+            for item in site["additionalInfo"]:
+                if item["nameSpace"].casefold() == "Location".casefold():
+                    site_type = item["attributes"]["type"]
         except KeyError:
             click.secho(f"[x] Key error! Error: {KeyError}")
             return False
-        site_dict = {site["groupNameHierarchy"]: site_type}
+        site_dict[site['groupNameHierarchy']] = site_type
+    logging.debug(f"Dictionary: {site_dict}")
     return site_dict
 
 
@@ -362,7 +363,8 @@ def get_full_site_list(dnac_auth_token=None, api_headers=None):
     if response_status:
         try:
             raw_sites = response_body["response"]
-            return raw_sites
+            sites_dict = _parse_site_additional_info(sites=raw_sites)
+            return sites_dict
         except Exception as err:
             click.secho(f"[x] Exception! Error: [{err}]", fg="red")
             return False

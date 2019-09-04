@@ -4,6 +4,7 @@
 """Information handler functions"""
 
 # Import builtin python libraries
+from collections import OrderedDict
 import csv
 import logging
 
@@ -181,4 +182,14 @@ def show_site_info(dnac_configs=None, show_all=True):
     headers = get_headers(auth_token=token)
     divider("Sites")
     site_dict = get_full_site_list(api_headers=headers)
-    print(site_dict)
+    if site_dict:
+        click.secho("[$] All available sites:", fg="blue")
+        table_headers = ["Serial", "Site Name", "Site Type"]
+        table_rows = []
+        row_count = 1
+        for key in sorted(site_dict.keys()):
+            row = [row_count, key, site_dict[key]]
+            table_rows.append(row)
+            row_count += 1
+        print(tabulate(table_rows, headers=table_headers, tablefmt="psql"))
+    goodbye()
