@@ -12,7 +12,12 @@ import click
 from tabulate import tabulate
 
 # Import custom (local) python packages
-from .dnac_info_butler import get_template_id, get_template_parameters, get_device_id
+from .dnac_info_butler import (
+    get_template_id,
+    get_template_parameters,
+    get_device_id,
+    get_full_site_list,
+)
 from .dnac_token_generator import generate_token
 from .header_handler import get_headers
 from .utils import divider, goodbye
@@ -37,7 +42,7 @@ def _export_to_csv(data=None, output_file=None):
     logging.debug(f"CSV Data: {data}")
 
     try:
-        with open(output_file, "w", newline='', encoding="utf-8") as csv_file:
+        with open(output_file, "w", newline="", encoding="utf-8") as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
             writer.writeheader()
             for row in data:
@@ -71,7 +76,7 @@ def _print_device_info(device_serial_number=None, show_all=None, data=None):
         table_rows = []
         for index, item in enumerate(data):
             table_header = ["No", *list(item.keys())]
-            tmp_row = [index+1, *list(item.values())]
+            tmp_row = [index + 1, *list(item.values())]
             table_rows.append(tmp_row)
         print(tabulate(table_rows, table_header, tablefmt="psql"))
 
@@ -161,3 +166,19 @@ def show_pnp_device_info(
                 device_serial_number=device_serial, show_all=show_all, data=device_extra
             )
     goodbye()
+
+
+def show_site_info(dnac_configs=None, show_all=True):
+    """
+    This function shows a list of all available sites from DNA center
+
+    :param dnac_configs: (dict) DNA Center username/password configurations
+    :param show_all: (boolean) List all or show details of one
+    :return: (stdOut) On screen output
+    """
+
+    token = generate_token(configs=dnac_configs)
+    headers = get_headers(auth_token=token)
+    divider("Sites")
+    site_dict = get_full_site_list(api_headers=headers)
+    print(site_dict)

@@ -79,6 +79,15 @@ def mission_control(context, debug):
 
 @mission_control.command(short_help="Shows DNA center component information.")
 @click.option(
+    "--all-locations",
+    "all_locations",
+    help="Shows all available site locations.",
+    is_flag=True,
+    type=bool,
+    default=False,
+    show_default=True,
+)
+@click.option(
     "--all-pnp-devices",
     "all_pnp_devices",
     help="Shows all devices in PnP.",
@@ -124,31 +133,31 @@ def mission_control(context, debug):
     type=str,
 )
 @pass_context
-def show(
-    context,
-    all_pnp_devices,
-    single_pnp_device,
-    all_templates,
-    single_template,
-    export_pnp_to_csv,
-    sub_debug,
-):
+def show(context, sub_debug, **kwargs):
     """Shows DNA Center component information"""
 
     if context.initial_msg:
         initial_message()
     if context.debug or sub_debug:
         debug_manager()
-    if all_pnp_devices:
+    if kwargs["all_locations"]:
+        info_showcase_manager(command="all_locations", site="all")
+    elif kwargs["all_pnp_devices"]:
         info_showcase_manager(command="all_pnp_devices", device=None)
-    elif single_pnp_device:
-        info_showcase_manager(command="single_pnp_device", device=single_pnp_device)
-    elif all_templates:
+    elif kwargs["single_pnp_device"]:
+        info_showcase_manager(
+            command="single_pnp_device", device=kwargs["single_pnp_device"]
+        )
+    elif kwargs["all_templates"]:
         info_showcase_manager(command="all_templates", template=None)
-    elif single_template:
-        info_showcase_manager(command="single_template", template=single_template)
-    elif export_pnp_to_csv:
-        info_showcase_manager(command="export_pnp_to_csv", file_path=export_pnp_to_csv)
+    elif kwargs["single_template"]:
+        info_showcase_manager(
+            command="single_template", template=kwargs["all_templates"]
+        )
+    elif kwargs["export_pnp_to_csv"]:
+        info_showcase_manager(
+            command="export_pnp_to_csv", file_path=kwargs["export_pnp_to_csv"]
+        )
 
 
 @mission_control.command(short_help="Add and claim a single device.")

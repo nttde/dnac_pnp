@@ -37,6 +37,14 @@
             "serialNumber": ""
         }
     },
+    "get-all-sites": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/api/v1/group",
+        "parameters": {
+            "groupType": "SITE"
+        }
+    },
     "get-site-info": {
         "method": "GET",
         "protocol": "https",
