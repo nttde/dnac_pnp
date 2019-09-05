@@ -17,7 +17,7 @@ import click
 from .utils import divider, parse_txt
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
-from .dnac_info_handler import show_template_info, show_pnp_device_info
+from .dnac_info_handler import show_template_info, show_pnp_device_info, show_site_info
 from .device_delete_handler import remove_devices
 
 # Setting global host variable
@@ -141,7 +141,10 @@ def info_showcase_manager(**kwargs):
     """This function controls information showcase"""
 
     populate_config()
-    if kwargs["command"] == "all_templates":
+    if kwargs["command"] == "all_locations":
+        do_show_all = True
+        show_site_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "all_templates":
         do_show_all = True
         show_template_info(dnac_configs=dnac_configs, show_all=do_show_all)
     elif kwargs["command"] == "single_template":

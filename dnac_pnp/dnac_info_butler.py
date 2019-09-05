@@ -318,3 +318,53 @@ def get_pnp_device_count(dnac_auth_token=None, api_headers=None):
             return pnp_device_limit
     else:
         return pnp_device_limit
+
+
+# Parse site data
+def _parse_site_additional_info(sites=None):
+    """
+    This private function parses additional info of site response
+
+    :param sites: (list) A list of dictionaries containing site information
+    :return: (dict) Site and type
+    """
+
+    site_dict = {}
+    for site in sites:
+        try:
+            for item in site["additionalInfo"]:
+                if item["nameSpace"].casefold() == "Location".casefold():
+                    site_type = item["attributes"]["type"]
+        except KeyError:
+            click.secho(f"[x] Key error! Error: {KeyError}")
+            return False
+        site_dict[site['groupNameHierarchy']] = site_type
+    logging.debug(f"Dictionary: {site_dict}")
+    return site_dict
+
+
+# Get full site list
+def get_full_site_list(dnac_auth_token=None, api_headers=None):
+    """
+    This function retrieves the list of available sites and type form DNA center
+
+    :param dnac_auth_token: (str) DNA center authentication string
+    :param api_headers: (dict) DNA center API headers
+    :return: (dict) a dictionary of sites and types
+    """
+
+    logging.debug(f"Getting full site list from DNA center")
+    if api_headers is None:
+        api_headers = get_headers(auth_token=dnac_auth_token)
+    method, api_url, parameters = generate_api_url(api_type="get-all-sites")
+    response_status, response_body = get_response(
+        method=method, endpoint_url=api_url, headers=api_headers, parameters=parameters
+    )
+    if response_status:
+        try:
+            raw_sites = response_body["response"]
+            sites_dict = _parse_site_additional_info(sites=raw_sites)
+            return sites_dict
+        except Exception as err:
+            click.secho(f"[x] Exception! Error: [{err}]", fg="red")
+            return False
