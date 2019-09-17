@@ -8,14 +8,14 @@ Features
 ********
 
 Behaviour
-~~~~~~~~~
+^^^^^^^^^
 * ``Git`` alike commandline user interface
 * Define user credentials and host for DNAC
 * Read configurations from file
 * Configurations file lookup in 3 default locations
 
 Checks
-~~~~~~
+^^^^^^
 * Pre-checks user inputs
 * Pre-checks csv file for bulk import (add+claim)
 * Pre-checks txt file for bulk delete
@@ -25,17 +25,17 @@ Checks
 * Pre-checks for device status
 
 Import
-~~~~~~
+^^^^^^
 * Single import of device
 * Bulk import from csv
 
 Delete
-~~~~~~
+^^^^^^
 * Single device deletion, more than one device deletion
 * Bulk delete from txt file
 
 Decision
-~~~~~~~~
+^^^^^^^^
 * Decision based on site status and device status
 * Read day0 template
 * Decide on day0 template parameters are provided properly or not
@@ -43,8 +43,13 @@ Decision
 * Day0 configuration
 
 View
-~~~~
+^^^^
 * Shows all pnp devices
 * Shows details about a single device by serial number
 * Shows all available templates
 * Shows specific template body and variables by full template name
+* Shows all available locations
+
+Export
+^^^^^^
+* Export all PnP devices to csv
