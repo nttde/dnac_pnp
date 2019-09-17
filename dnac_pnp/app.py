@@ -69,7 +69,7 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
 @click.version_option()
 @pass_context
 def mission_control(context, debug):
-    """Mission control module"""
+    """CISCO DNA Center PnP automation control panel"""
 
     context.debug = debug
     context.initial_msg = True
@@ -160,7 +160,7 @@ def show(context, sub_debug, **kwargs):
         )
 
 
-@mission_control.command(short_help="Add and claim a single device.")
+@mission_control.command(short_help="[Tests Only] Add and claim a single device.")
 @click.option(
     "-s",
     "--serial-number",
