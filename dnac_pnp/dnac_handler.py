@@ -150,6 +150,7 @@ def info_showcase_manager(**kwargs):
     elif kwargs["command"] == "single_template":
         do_show_all = False
         dnac_template_name = kwargs["template"]
+        logging.debug(f"Template Name from INPUT: {dnac_template_name}")
         show_template_info(
             dnac_configs=dnac_configs,
             template_name=dnac_template_name,

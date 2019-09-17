@@ -243,8 +243,8 @@ def get_template_id(
                         return template_id
             else:
                 click.secho(f"[$] Available templates:", fg="blue")
-                for template in response_body:
-                    print(f"{template['projectName']}/{template['name']}")
+                for index, template in enumerate(response_body):
+                    print(f"{index+1}. {template['projectName']}/{template['name']}")
                 return True
         except IndexError:
             click.secho(f"[x] Index error! Template [{template_name}] might not exists")

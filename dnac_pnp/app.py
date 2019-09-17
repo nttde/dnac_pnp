@@ -152,7 +152,7 @@ def show(context, sub_debug, **kwargs):
         info_showcase_manager(command="all_templates", template=None)
     elif kwargs["single_template"]:
         info_showcase_manager(
-            command="single_template", template=kwargs["all_templates"]
+            command="single_template", template=kwargs["single_template"]
         )
     elif kwargs["export_pnp_to_csv"]:
         info_showcase_manager(
