@@ -11,6 +11,12 @@
         "api": "/dna/intent/api/v1/onboarding/pnp-device/import",
         "parameters": {}
     },
+    "add-site": {
+        "method": "POST",
+        "protocol": "https",
+        "api": "/dna/system/api/v1/site",
+        "parameters": {}
+    },
     "claim-device": {
         "method": "POST",
         "protocol": "https",

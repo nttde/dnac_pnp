@@ -19,7 +19,12 @@ from .utils import (
     validate_input,
     validate_serial,
 )
-from .dnac_handler import import_manager, delete_manager, info_showcase_manager
+from .dnac_handler import (
+    import_manager,
+    delete_manager,
+    info_showcase_manager,
+    site_manger,
+)
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -271,6 +276,21 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
         import_manager(import_type="bulk")
 
 
+@mission_control.command(short_help="Add one or more sites.")
+@click.option(
+    "-l",
+    "--location-file",
+    "location_file",
+    help="Sites configuration file path.",
+    type=click.Path(exists=True, dir_okay=False),
+)
+@pass_context
+def add_site_in_bulk(context, location_file):
+    """Adds single or multiple sites """
+
+    site_manger(site_config_file_path=location_file)
+
+
 @mission_control.command(short_help="Shows package information.")
 @click.option(
     "--all",
@@ -294,7 +314,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
 @pass_context
 # Information about this package
 def pkg_info(context, all_info, author):
-    """This module prints information about the package"""
+    """Prints information about the package"""
 
     if all_info:
         show_info(view_type="more")

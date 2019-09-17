@@ -31,8 +31,13 @@ def generate_token(configs=None):
     :returns: (str) Authentication token
     """
 
-    dnac_username = configs["username"]
-    dnac_password = configs["password"]
+    if configs:
+        dnac_username = configs["username"]
+        dnac_password = configs["password"]
+    else:
+        click.secho(f"[*] Please check DNA center configurations!", fg="blue")
+        click.secho(f"[x] Configs not found!", fg="red")
+        sys.exit(1)
 
     divider("Authentication")
     headers = get_headers()

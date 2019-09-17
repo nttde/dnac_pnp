@@ -338,7 +338,7 @@ def _parse_site_additional_info(sites=None):
         except KeyError:
             click.secho(f"[x] Key error! Error: {KeyError}")
             return False
-        site_dict[site['groupNameHierarchy']] = site_type
+        site_dict[site["groupNameHierarchy"]] = site_type
     logging.debug(f"Dictionary: {site_dict}")
     return site_dict
 

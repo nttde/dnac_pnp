@@ -1,0 +1,22 @@
+---
+sites:
+  - site1:
+      type: area
+      name: EU-WEST
+      parent: Global
+  - site2:
+      type: area
+      name: FRA
+      parent: Global/EU-WEST
+  - site3:
+      type: area
+      name: DH
+      parent: Global/EU-WEST/FRA
+  - site4:
+      type: building
+      area_name: DH
+      area_parent: Global/EU-WEST/FRA
+      name: HQ
+      latitude: 50.219202
+      longitude: 8.622795
+      address: Horexstr 7
