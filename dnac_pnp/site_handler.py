@@ -10,7 +10,7 @@ import sys
 
 # import external python libraries
 import click
-from yaml import load, dump
+from yaml import load
 import yaml
 
 # Import custom (local) python packages
@@ -25,19 +25,23 @@ from .utils import divider, goodbye
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
-    
+
 # Check dict keys
 def _check_dict_keys(dict_to_check=None, dnac_site_type=None):
     """
-    This private function checkes dict keys
+    This private function checks dict keys
 
-    :param dict_to_check: (dict) Dictonary that is being checked
+    :param dict_to_check: (dict) Dictionary that is being checked
     :param dnac_site_type: (str) Cisco DNA center site type (area, building, floor)
     :returns: (dict) Checked and modified dictionary
     """
 
     dict_status = False
-    site_type_map = {"area": area_essentials, "building": building_essentials, "floor": floor_essentials}
+    site_type_map = {
+        "area": area_essentials,
+        "building": building_essentials,
+        "floor": floor_essentials,
+    }
     try:
         for item in site_type_map[dnac_site_type]:
             if item in dict_to_check.keys():
@@ -48,8 +52,8 @@ def _check_dict_keys(dict_to_check=None, dnac_site_type=None):
         click.secho(f"[x] Essential key missing from site configuration!")
         dict_status = False
     return dict_status
-        
-            
+
+
 # Generate site payload
 def _generate_site_payload(site=None):
     """
@@ -67,25 +71,35 @@ def _generate_site_payload(site=None):
     payload = {"type": site_type}
     if site_type == "floor":
         # If any keys are not present leave it blank
-        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        site_dict_status = _check_dict_keys(
+            dict_to_check=site[site_name], dnac_site_type=site_type
+        )
         if site_dict_status:
             payload["site"] = {
                 "floor": {
-                    key:value for key, value in site[site_name].items() if not key.startswith("type")
+                    key: value
+                    for key, value in site[site_name].items()
+                    if not key.startswith("type")
                 }
             }
     elif site_type == "building":
         # If any keys are not present leave it blank
-        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        site_dict_status = _check_dict_keys(
+            dict_to_check=site[site_name], dnac_site_type=site_type
+        )
         if site_dict_status:
             payload["site"] = {
                 "building": {
-                    key:value for key, value in site[site_name].items() if not key.startswith("type")
+                    key: value
+                    for key, value in site[site_name].items()
+                    if not key.startswith("type")
                 }
             }
     elif site_type == "area":
         # If any keys are not present leave it blank
-        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        site_dict_status = _check_dict_keys(
+            dict_to_check=site[site_name], dnac_site_type=site_type
+        )
         if site_dict_status:
             payload["site"] = {
                 "area": {
@@ -142,7 +156,11 @@ def add_site(dnac_auth_configs=None, locations_file_path=None):
         payload = _generate_site_payload(site=item)
         print(json.dumps(payload, indent=4))
         api_response = call_api_endpoint(
-            method=method, api_url=api_url, data=payload, api_headers=headers, check_payload=False
+            method=method,
+            api_url=api_url,
+            data=payload,
+            api_headers=headers,
+            check_payload=False,
         )
         response_status, response_body = get_response(response=api_response)
 
