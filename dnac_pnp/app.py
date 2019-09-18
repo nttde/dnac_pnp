@@ -284,10 +284,23 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
     help="Sites configuration file path.",
     type=click.Path(exists=True, dir_okay=False),
 )
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
 @pass_context
-def add_site_in_bulk(context, location_file):
+def add_sites_in_bulk(context, location_file, sub_debug):
     """Adds single or multiple sites """
 
+    if context.initial_msg:
+        initial_message()
+    if context.debug or sub_debug:
+        debug_manager()
     site_manger(site_config_file_path=location_file)
 
 

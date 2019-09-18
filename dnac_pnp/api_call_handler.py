@@ -103,6 +103,7 @@ def call_api_endpoint(
             json_input = _check_payload(payload=data, check=False)
     else:
         json_input = None
+    logging.debug(f"JSON INPUT (call_api_endpoint): {json_input}")
     click.secho(f"[$] Making API call.....", fg="blue")
     try:
         response = requests.request(

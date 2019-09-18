@@ -141,6 +141,7 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
 def site_manger(site_config_file_path=None):
     """Manages DNA center site creation"""
 
+    populate_config()
     add_site(dnac_auth_configs=dnac_configs, locations_file_path=site_config_file_path)
 
 

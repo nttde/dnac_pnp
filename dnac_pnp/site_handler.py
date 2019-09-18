@@ -16,6 +16,7 @@ import yaml
 # Import custom (local) python packages
 from .api_call_handler import call_api_endpoint, get_response
 from .api_endpoint_handler import generate_api_url
+from .dnac_params import area_essentials, building_essentials, floor_essentials
 from .dnac_token_generator import generate_token
 from .header_handler import get_headers
 from .utils import divider, goodbye
@@ -24,7 +25,31 @@ from .utils import divider, goodbye
 __author__ = "Dalwar Hossain"
 __email__ = "dalwar.hossain@dimensiondata.com"
 
+    
+# Check dict keys
+def _check_dict_keys(dict_to_check=None, dnac_site_type=None):
+    """
+    This private function checkes dict keys
 
+    :param dict_to_check: (dict) Dictonary that is being checked
+    :param dnac_site_type: (str) Cisco DNA center site type (area, building, floor)
+    :returns: (dict) Checked and modified dictionary
+    """
+
+    dict_status = False
+    site_type_map = {"area": area_essentials, "building": building_essentials, "floor": floor_essentials}
+    try:
+        for item in site_type_map[dnac_site_type]:
+            if item in dict_to_check.keys():
+                dict_status = True
+            else:
+                dict_status = False
+    except KeyError:
+        click.secho(f"[x] Essential key missing from site configuration!")
+        dict_status = False
+    return dict_status
+        
+            
 # Generate site payload
 def _generate_site_payload(site=None):
     """
@@ -37,47 +62,38 @@ def _generate_site_payload(site=None):
     site_name = list(site.keys())[0]
     site_type = site[site_name]["type"]
     logging.debug(f"Site Name: {site_name}, Site Type: {site_type}")
+    divider(text=f"Adding {site_type} [{site_name}]", char="-")
 
     payload = {"type": site_type}
     if site_type == "floor":
-        payload["site"] = {
-            "area": {
-                "name": site[site_name]["area_name"],
-                "parentName": site[site_name]["area_parent"],
-            },
-            "building": {
-                "name": site[site_name]["name"],
-                "latitude": site[site_name]["latitude"],
-                "longitude": site[site_name]["longitude"],
-                "address": site[site_name]["address"],
-            },
-            "floor": {
-                "name": site[site_name]["name"],
-                "parentName": site[site_name]["parent"],
-            },
-        }
-    elif site_type == "building":
-        payload["site"] = {
-            "area": {
-                "name": site[site_name]["area_name"],
-                "parentName": site[site_name]["area_parent"],
-            },
-            "building": {
-                "name": site[site_name]["name"],
-                "latitude": site[site_name]["latitude"],
-                "longitude": site[site_name]["longitude"],
-                "address": site[site_name]["address"],
-            },
-        }
-    elif site_type == "area":
-        payload["site"] = {
-            "area": {
-                "name": site[site_name]["name"],
-                "parentName": site[site_name]["parent"],
+        # If any keys are not present leave it blank
+        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        if site_dict_status:
+            payload["site"] = {
+                "floor": {
+                    key:value for key, value in site[site_name].items() if not key.startswith("type")
+                }
             }
-        }
-    json_payload = json.dumps(payload, indent=4)
-    return json_payload
+    elif site_type == "building":
+        # If any keys are not present leave it blank
+        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        if site_dict_status:
+            payload["site"] = {
+                "building": {
+                    key:value for key, value in site[site_name].items() if not key.startswith("type")
+                }
+            }
+    elif site_type == "area":
+        # If any keys are not present leave it blank
+        site_dict_status = _check_dict_keys(dict_to_check=site[site_name], dnac_site_type=site_type)
+        if site_dict_status:
+            payload["site"] = {
+                "area": {
+                    "name": site[site_name]["name"],
+                    "parentName": site[site_name]["parentName"],
+                }
+            }
+    return payload
 
 
 # Read sites configuration
@@ -117,16 +133,22 @@ def add_site(dnac_auth_configs=None, locations_file_path=None):
     # Authentication token
     token = generate_token(configs=dnac_auth_configs)
     headers = get_headers(auth_token=token)
+    headers["__runsync"] = "true"
+    headers["__persistbapioutput"] = "true"
     method, api_url, parameters = generate_api_url(api_type="add-site")
+    divider("Adding Site(s)")
+    click.secho(f"[$] Attempting to add sites.....", fg="blue")
     for item in sites:
         payload = _generate_site_payload(site=item)
-        api_response = call_api_endpoint(
-            method=method, api_url=api_url, data=payload, api_headers=headers
-        )
-        response_status, response_body = get_response(response=api_response)
+        print(json.dumps(payload, indent=4))
+        # api_response = call_api_endpoint(
+        #     method=method, api_url=api_url, data=payload, api_headers=headers, check_payload=False
+        # )
+        # response_status, response_body = get_response(response=api_response)
 
-        if response_status:
-            print(response_body)
-        else:
-            print("------------------")
-            print(response_body)
+        # if response_status:
+        #     print(response_body)
+        # else:
+        #     print("------------------")
+        #     print(response_body)
+    goodbye()
