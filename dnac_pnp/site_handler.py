@@ -141,14 +141,14 @@ def add_site(dnac_auth_configs=None, locations_file_path=None):
     for item in sites:
         payload = _generate_site_payload(site=item)
         print(json.dumps(payload, indent=4))
-        # api_response = call_api_endpoint(
-        #     method=method, api_url=api_url, data=payload, api_headers=headers, check_payload=False
-        # )
-        # response_status, response_body = get_response(response=api_response)
+        api_response = call_api_endpoint(
+            method=method, api_url=api_url, data=payload, api_headers=headers, check_payload=False
+        )
+        response_status, response_body = get_response(response=api_response)
 
-        # if response_status:
-        #     print(response_body)
-        # else:
-        #     print("------------------")
-        #     print(response_body)
+        if response_status:
+            print(response_body)
+        else:
+            print("------------------")
+            print(response_body)
     goodbye()
