@@ -35,14 +35,10 @@ def _generate_site_payload(site=None):
     """
 
     site_name = list(site.keys())[0]
-    if site[site_name]["type"] == "area":
-        site_type = "area"
-    elif site[site_name]["type"] == "building":
-        site_type = "building"
-    elif site[site_name]["type"] == "floor":
-        site_type = "floor"
+    site_type = site[site_name]["type"]
+    logging.debug(f"Site Name: {site_name}, Site Type: {site_type}")
 
-    payload = {"type": site[site_name]["type"]}
+    payload = {"type": site_type}
     if site_type == "floor":
         payload["site"] = {
             "area": {
@@ -73,7 +69,7 @@ def _generate_site_payload(site=None):
                 "address": site[site_name]["address"],
             },
         }
-    else:
+    elif site_type == "area":
         payload["site"] = {
             "area": {
                 "name": site[site_name]["name"],
@@ -81,7 +77,6 @@ def _generate_site_payload(site=None):
             }
         }
     json_payload = json.dumps(payload, indent=4)
-
     return json_payload
 
 
