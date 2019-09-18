@@ -27,11 +27,4 @@ device_extra_param = [
     "source",
     "siteClaimType",
 ]
-device_extra_param_less = [
-    "serialNumber",
-    "name",
-    "pid",
-    "state",
-    "source",
-]
-
+device_extra_param_less = ["serialNumber", "name", "pid", "state", "source"]

@@ -38,10 +38,7 @@ def _generate_claim_payload(device_id=None, raw_payload=None, image_id=None):
         "deviceId": device_id,
         "type": "Default",
         "imageInfo": {"imageId": "", "skip": "true"},
-        "configInfo": {
-            "configId": config_id,
-            "configParameters": config_parameters,
-        },
+        "configInfo": {"configId": config_id, "configParameters": config_parameters},
     }
     return dict_payload
 

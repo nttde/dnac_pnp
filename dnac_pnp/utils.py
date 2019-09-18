@@ -169,8 +169,7 @@ def initial_message():
     divider(f"Initializing [{package_name}]")
     click.secho(f"[*] Initializing.....", fg="cyan")
     click.secho(
-        f"[*] Please use 'dnac_pnp --help' to see all available options",
-        fg="cyan",
+        f"[*] Please use 'dnac_pnp --help' to see all available options", fg="cyan"
     )
 
 

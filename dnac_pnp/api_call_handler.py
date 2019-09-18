@@ -164,6 +164,7 @@ def get_response(
         logging.debug(f"Response Status: {response_status}")
         response_body = _content_type_check(response=response)
         click.secho(
-            f"[x] Response status: [{response.status_code}] ({response.reason})", fg="red"
+            f"[x] Response status: [{response.status_code}] ({response.reason})",
+            fg="red",
         )
     return response_status, response_body
