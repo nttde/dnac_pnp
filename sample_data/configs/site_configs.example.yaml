@@ -1,22 +1,29 @@
 ---
 sites:
-  - site1:
+  - EU-WEST:
       type: area
       name: EU-WEST
-      parent: Global
-  - site2:
+      parentName: Global
+  - FRA:
       type: area
       name: FRA
-      parent: Global/EU-WEST
-  - site3:
+      parentName: Global/EU-WEST
+  - DH:
       type: area
       name: DH
-      parent: Global/EU-WEST/FRA
-  - site4:
+      parentName: Global/EU-WEST/FRA
+  - HQ:
       type: building
-      area_name: DH
-      area_parent: Global/EU-WEST/FRA
+      parentName: Global/EU-WEST/FRA/DH
       name: HQ
       latitude: 50.219202
       longitude: 8.622795
       address: Horexstr 7
+  - F1:
+      type: floor
+      name: F1
+      parentName: Global/EU-WEST/FRA/DH/HQ
+      rfModel: Cubes And Walled Offices
+      length: 20
+      width: 15
+      height: 8
