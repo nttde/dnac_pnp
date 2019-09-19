@@ -28,10 +28,9 @@ looks something similar as below -
      --help     Show this message and exit.
 
    Commands:
-     acclaim-in-bulk    Add and claim single or multiple devices.
-     acclaim-one        [Tests Only] Add and claim a single device.
+     acclaim-devices    Add and claim single or multiple devices.
      add-sites          Add one or more sites.
-     delete             Delete single or multiple devices.
+     delete-devices     Delete single or multiple devices.
      pkg-info           Shows package information.
      show               Shows DNA center component information.
 

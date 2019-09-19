@@ -184,11 +184,11 @@ This should give an output like below -
      --help     Show this message and exit.
 
    Commands:
-   acclaim-in-bulk  Add and claim single or multiple devices.
-   acclaim-one      [Tests Only] Add and claim a single device.
-   delete           Delete single or multiple devices.
-   pkg-info         Shows package information.
-   show             Shows DNA center component information.
+     acclaim-devices  Add and claim single or multiple devices.
+     add-sites        Add one or more sites.
+     delete-devices   Delete single or multiple devices.
+     pkg-info         Shows package information.
+     show             Shows DNA center component information.
 
 To see the individual options for any of the ``commands`` use ``--help``
 flag after the command.
