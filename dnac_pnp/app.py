@@ -294,7 +294,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
     type=str,
 )
 @pass_context
-def add_sites_in_bulk(context, location_file, sub_debug):
+def add_sites(context, location_file, sub_debug):
     """Adds single or multiple sites """
 
     if context.initial_msg:
