@@ -165,7 +165,9 @@ def show(context, sub_debug, **kwargs):
         )
 
 
-@mission_control.command(short_help="[Tests Only] Add and claim a single device.")
+@mission_control.command(
+    short_help="[Tests Only] Add and claim a single device.", hidden=True
+)
 @click.option(
     "-s",
     "--serial-number",
@@ -258,7 +260,7 @@ def acclaim_one(context, serial_number, product_id, site_name, host_name, sub_de
     type=str,
 )
 @pass_context
-def acclaim_in_bulk(context, catalog_file, sub_debug):
+def acclaim_devices(context, catalog_file, sub_debug):
     """Add and claim single or multiple devices"""
 
     if context.initial_msg:
@@ -374,7 +376,7 @@ def pkg_info(context, all_info, author):
     type=str,
 )
 @pass_context
-def delete(context, serial_numbers, delete_entries, dry_run, delete_debug):
+def delete_devices(context, serial_numbers, delete_entries, dry_run, delete_debug):
     """Delete one or multiple devices"""
 
     if context.initial_msg:
