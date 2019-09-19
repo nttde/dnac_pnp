@@ -1,0 +1,36 @@
+!
+crypto key zeroize
+y
+!
+no crypto pki cert pool
+y
+!
+no crypto pki certificate pool
+y
+!
+no crypto pki trustpoint pnplabel
+y
+!
+no pnp profile pnp-zero-touch
+y
+!
+no crypto pki trustpoint DNAC-CA
+y
+!
+end
+!
+show run | i crypto
+!
+wr mem
+!
+delete /force flash:vlan.dat
+delete /force flash:pnp*
+delete /force nvram:*.cer
+delete /force nvram:pnp*
+!
+write erase
+y
+!
+reload in 1
+y
+!

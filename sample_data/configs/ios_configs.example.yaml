@@ -1,0 +1,9 @@
+---
+device_login:
+  device_type: cisco_ios
+  username: didata
+  password: didata
+  secret: enable
+  port: 22
+reset_commands:
+  file: /home/dalwar/reset_commands.txt

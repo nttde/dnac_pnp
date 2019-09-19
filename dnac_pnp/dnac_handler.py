@@ -14,11 +14,12 @@ import sys
 import click
 
 # Import custom (local) python packages
-from .utils import divider, parse_txt
 from .config_handler import config_files, load_config
 from .device_import_handler import device_import_in_bulk, import_single_device
-from .dnac_info_handler import show_template_info, show_pnp_device_info
+from .dnac_info_handler import show_template_info, show_pnp_device_info, show_site_info
 from .device_delete_handler import remove_devices
+from .utils import divider, parse_txt
+from .site_handler import add_site
 
 # Setting global host variable
 all_configs = {}
@@ -136,17 +137,29 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
             )
 
 
+# DNA Center site manager
+def site_manger(site_config_file_path=None):
+    """Manages DNA center site creation"""
+
+    populate_config()
+    add_site(dnac_auth_configs=dnac_configs, locations_file_path=site_config_file_path)
+
+
 # DNA Center information showcase handler
 def info_showcase_manager(**kwargs):
     """This function controls information showcase"""
 
     populate_config()
-    if kwargs["command"] == "all_templates":
+    if kwargs["command"] == "all_locations":
+        do_show_all = True
+        show_site_info(dnac_configs=dnac_configs, show_all=do_show_all)
+    elif kwargs["command"] == "all_templates":
         do_show_all = True
         show_template_info(dnac_configs=dnac_configs, show_all=do_show_all)
     elif kwargs["command"] == "single_template":
         do_show_all = False
         dnac_template_name = kwargs["template"]
+        logging.debug(f"Template Name from INPUT: {dnac_template_name}")
         show_template_info(
             dnac_configs=dnac_configs,
             template_name=dnac_template_name,

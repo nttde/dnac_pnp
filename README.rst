@@ -28,12 +28,15 @@ Checks
 Import
 ^^^^^^
 * Single import of device
-* Bulk import from csv
+* Bulk import devices from csv
+* Single site creation
+* Bulk site creation
 
 Delete
 ^^^^^^
 * Single device deletion, more than one device deletion
-* Bulk delete from txt file
+* Bulk device delete from txt file
+* Single/Multiple Device delete even after provision
 
 Decision
 ^^^^^^^^
@@ -49,6 +52,11 @@ View
 * Shows details about a single device by serial number
 * Shows all available templates
 * Shows specific template body and variables by full template name
+* Shows all available locations
+
+Export
+^^^^^^
+* Export all PnP devices to csv
 
 Dependencies
 ------------
@@ -176,10 +184,11 @@ This should give an output like below -
      --help     Show this message and exit.
 
    Commands:
-     acclaim-in-bulk  Add and claim multiple devices.
-     acclaim-one      Add and claim a single device.
-     delete           Delete [un-claim + remove] or more devices.
-     info             Shows package information.
+   acclaim-in-bulk  Add and claim single or multiple devices.
+   acclaim-one      [Tests Only] Add and claim a single device.
+   delete           Delete single or multiple devices.
+   pkg-info         Shows package information.
+   show             Shows DNA center component information.
 
 To see the individual options for any of the ``commands`` use ``--help``
 flag after the command.

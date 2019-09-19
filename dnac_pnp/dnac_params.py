@@ -27,11 +27,7 @@ device_extra_param = [
     "source",
     "siteClaimType",
 ]
-device_extra_param_less = [
-    "serialNumber",
-    "name",
-    "pid",
-    "state",
-    "source",
-]
-
+device_extra_param_less = ["serialNumber", "name", "pid", "state", "source"]
+area_essentials = ["name", "parentName"]
+building_essentials = ["name", "parentName", "latitude", "longitude"]
+floor_essentials = ["name", "parentName", "rfModel", "length", "width", "height"]

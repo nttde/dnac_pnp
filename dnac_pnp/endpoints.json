@@ -11,6 +11,12 @@
         "api": "/dna/intent/api/v1/onboarding/pnp-device/import",
         "parameters": {}
     },
+    "add-site": {
+        "method": "POST",
+        "protocol": "https",
+        "api": "/dna/intent/api/v1/site",
+        "parameters": {}
+    },
     "claim-device": {
         "method": "POST",
         "protocol": "https",
@@ -35,6 +41,14 @@
         "api": "/dna/intent/api/v1/network-device",
         "parameters": {
             "serialNumber": ""
+        }
+    },
+    "get-all-sites": {
+        "method": "GET",
+        "protocol": "https",
+        "api": "/api/v1/group",
+        "parameters": {
+            "groupType": "SITE"
         }
     },
     "get-site-info": {

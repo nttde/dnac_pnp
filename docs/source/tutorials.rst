@@ -20,7 +20,7 @@ looks something similar as below -
 
    Usage: dnac_pnp [OPTIONS] COMMAND [ARGS]...
 
-   Mission control module
+   CISCO DNA Center PnP automation control panel
 
    Options:
      --debug    Turns on DEBUG mode.  [default: False]
@@ -28,11 +28,12 @@ looks something similar as below -
      --help     Show this message and exit.
 
    Commands:
-     acclaim-in-bulk  Add and claim multiple devices.
-     acclaim-one      Add and claim a single device.
-     delete           Delete [un-claim + remove] or more devices.
-     pkg-info         Shows package information.
-     show             Shows DNA center component information.
+     acclaim-in-bulk    Add and claim single or multiple devices.
+     acclaim-one        [Tests Only] Add and claim a single device.
+     add-sites          Add one or more sites.
+     delete             Delete single or multiple devices.
+     pkg-info           Shows package information.
+     show               Shows DNA center component information.
 
 To checkout individual options for any command use ``--help`` flag.
 
@@ -80,8 +81,12 @@ OR like this -
 
     dnac_pnp acclaim-one --debug [here goes other arguments]
 
-Acclaim (add + claim) one device
---------------------------------
+Acclaim (add + claim) one device [Test Purpose Only]
+----------------------------------------------------
+
+.. warning::
+
+   Does not support ``day0 template`` configurations
 
 To add and claim one single device use the ``acclaim-one`` sub-command. ``--help``
 will guide through the required arguments.
@@ -219,6 +224,62 @@ A well formatted CSV should look something like below -
 
    DO NOT USE ``camelCased`` headers or ``unicode`` characters in the headers
 
+Add Sites
+---------
+
+Adding site designs are handled by the sub-command ``add-sites``. With the help of
+this sub command we can add one or multiple sites (area/building/floor).
+
+.. code-block:: shell
+
+   dnac_pnp add-sites -l ..\..\sites-config.yaml
+
+This should check the input and create the sites listed in the ``sies-config.yaml``
+file.
+
+.. warning::
+
+   While creating sites, ``parent site`` (referred by ``parentName``) **MUST** be
+   present.
+
+A sample ``sites-config.yaml`` -
+
+.. code-block:: yaml
+
+   ---
+   sites:
+     - EU-WEST:
+         type: area
+         name: EU-WEST
+         parentName: Global
+     - FRA:
+         type: area
+         name: FRA
+         parentName: Global/EU-WEST
+     - DH:
+         type: area
+         name: DH
+         parentName: Global/EU-WEST/FRA
+     - HQ:
+         type: building
+         parentName: Global/EU-WEST/FRA/DH
+         name: HQ
+         latitude: 50.219202
+         longitude: 8.622795
+         address: Horexstr 7
+     - F1:
+         type: floor
+         name: F1
+         parentName: Global/EU-WEST/FRA/DH/HQ
+         rfModel: Cubes And Walled Offices
+         length: 20
+         width: 15
+         height: 8
+
+.. note::
+
+   If the site (area/building/floor) already exists then it will NOT be over written
+
 Delete from PnP
 ---------------
 
@@ -304,6 +365,7 @@ This should output something like below -
    Shows DNA Center component information
 
    Options:
+     --all-locations    Shows all available site locations.  [default: False]
      --all-pnp-devices  Shows all devices in PnP.  [default: False]
      --pnp-device TEXT  Shows [pnp] device information by serial number.
      --all-templates    Lists all available templates.  [default: False]
@@ -315,6 +377,8 @@ This should output something like below -
 Options explained
 ^^^^^^^^^^^^^^^^^
 
+- ``--all-locations`` lists all available sites/building/floors from DNA
+  center
 - ``--all-pnp-devices`` Lists and shows all the devices listed under pnp tab in DNA
   center. Display limit is set to ``100`` devices.
 - ``--pnp-device`` shows details about a particular device based on serial number

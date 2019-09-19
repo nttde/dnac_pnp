@@ -19,7 +19,12 @@ from .utils import (
     validate_input,
     validate_serial,
 )
-from .dnac_handler import import_manager, delete_manager, info_showcase_manager
+from .dnac_handler import (
+    import_manager,
+    delete_manager,
+    info_showcase_manager,
+    site_manger,
+)
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -69,7 +74,7 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
 @click.version_option()
 @pass_context
 def mission_control(context, debug):
-    """Mission control module"""
+    """CISCO DNA Center PnP automation control panel"""
 
     context.debug = debug
     context.initial_msg = True
@@ -78,6 +83,15 @@ def mission_control(context, debug):
 
 
 @mission_control.command(short_help="Shows DNA center component information.")
+@click.option(
+    "--all-locations",
+    "all_locations",
+    help="Shows all available site locations.",
+    is_flag=True,
+    type=bool,
+    default=False,
+    show_default=True,
+)
 @click.option(
     "--all-pnp-devices",
     "all_pnp_devices",
@@ -124,34 +138,34 @@ def mission_control(context, debug):
     type=str,
 )
 @pass_context
-def show(
-    context,
-    all_pnp_devices,
-    single_pnp_device,
-    all_templates,
-    single_template,
-    export_pnp_to_csv,
-    sub_debug,
-):
+def show(context, sub_debug, **kwargs):
     """Shows DNA Center component information"""
 
     if context.initial_msg:
         initial_message()
     if context.debug or sub_debug:
         debug_manager()
-    if all_pnp_devices:
+    if kwargs["all_locations"]:
+        info_showcase_manager(command="all_locations", site="all")
+    elif kwargs["all_pnp_devices"]:
         info_showcase_manager(command="all_pnp_devices", device=None)
-    elif single_pnp_device:
-        info_showcase_manager(command="single_pnp_device", device=single_pnp_device)
-    elif all_templates:
+    elif kwargs["single_pnp_device"]:
+        info_showcase_manager(
+            command="single_pnp_device", device=kwargs["single_pnp_device"]
+        )
+    elif kwargs["all_templates"]:
         info_showcase_manager(command="all_templates", template=None)
-    elif single_template:
-        info_showcase_manager(command="single_template", template=single_template)
-    elif export_pnp_to_csv:
-        info_showcase_manager(command="export_pnp_to_csv", file_path=export_pnp_to_csv)
+    elif kwargs["single_template"]:
+        info_showcase_manager(
+            command="single_template", template=kwargs["single_template"]
+        )
+    elif kwargs["export_pnp_to_csv"]:
+        info_showcase_manager(
+            command="export_pnp_to_csv", file_path=kwargs["export_pnp_to_csv"]
+        )
 
 
-@mission_control.command(short_help="Add and claim a single device.")
+@mission_control.command(short_help="[Tests Only] Add and claim a single device.")
 @click.option(
     "-s",
     "--serial-number",
@@ -262,6 +276,34 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
         import_manager(import_type="bulk")
 
 
+@mission_control.command(short_help="Add one or more sites.")
+@click.option(
+    "-l",
+    "--location-file",
+    "location_file",
+    help="Sites configuration file path.",
+    type=click.Path(exists=True, dir_okay=False),
+)
+@click.option(
+    "--debug",
+    "sub_debug",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="Turns on DEBUG mode.",
+    type=str,
+)
+@pass_context
+def add_sites(context, location_file, sub_debug):
+    """Adds single or multiple sites """
+
+    if context.initial_msg:
+        initial_message()
+    if context.debug or sub_debug:
+        debug_manager()
+    site_manger(site_config_file_path=location_file)
+
+
 @mission_control.command(short_help="Shows package information.")
 @click.option(
     "--all",
@@ -285,7 +327,7 @@ def acclaim_in_bulk(context, catalog_file, sub_debug):
 @pass_context
 # Information about this package
 def pkg_info(context, all_info, author):
-    """This module prints information about the package"""
+    """Prints information about the package"""
 
     if all_info:
         show_info(view_type="more")
