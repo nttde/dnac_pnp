@@ -9,6 +9,7 @@ Welcome to dnac_pnp's documentation!
    installation
    tutorials
    api_references
+   changelogs
 
 Indices and tables
 ==================
