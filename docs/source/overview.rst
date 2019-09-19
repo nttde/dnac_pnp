@@ -27,12 +27,15 @@ Checks
 Import
 ^^^^^^
 * Single import of device
-* Bulk import from csv
+* Bulk import devices from csv
+* Single site creation
+* Bulk site creation
 
 Delete
 ^^^^^^
 * Single device deletion, more than one device deletion
-* Bulk delete from txt file
+* Bulk device delete from txt file
+* Single/Multiple Device delete even after provision
 
 Decision
 ^^^^^^^^

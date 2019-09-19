@@ -36,6 +36,7 @@ def _check_dict_keys(dict_to_check=None, dnac_site_type=None):
     :returns: (dict) Checked and modified dictionary
     """
 
+    click.secho(f"[$] Checking config file keys.....", fg="blue")
     dict_status = False
     site_type_map = {
         "area": area_essentials,
@@ -47,10 +48,14 @@ def _check_dict_keys(dict_to_check=None, dnac_site_type=None):
             if item in dict_to_check.keys():
                 dict_status = True
             else:
-                dict_status = False
+                click.secho(
+                    f"[x] [{item}] key is missing for site type: [{dnac_site_type}]!",
+                    fg="red",
+                )
+                sys.exit(1)
     except KeyError:
-        click.secho(f"[x] Essential key missing from site configuration!")
-        dict_status = False
+        click.secho(f"[x] Essential key is missing from site configuration!", fg="red")
+        sys.exit(1)
     return dict_status
 
 
@@ -154,7 +159,6 @@ def add_site(dnac_auth_configs=None, locations_file_path=None):
     click.secho(f"[$] Attempting to add sites.....", fg="blue")
     for item in sites:
         payload = _generate_site_payload(site=item)
-        print(json.dumps(payload, indent=4))
         api_response = call_api_endpoint(
             method=method,
             api_url=api_url,
@@ -163,10 +167,23 @@ def add_site(dnac_auth_configs=None, locations_file_path=None):
             check_payload=False,
         )
         response_status, response_body = get_response(response=api_response)
-
-        if response_status:
-            print(response_body)
-        else:
-            print("------------------")
-            print(response_body)
+        # Response header is in plain/text so try to convert it into json
+        try:
+            json_response_body = json.loads(response_body)
+            if response_status:
+                site_status = json_response_body["status"]
+                if site_status:
+                    site_msg = json_response_body["result"]["result"]["progress"]
+                    prefix = "[#] "
+                    color = "green"
+                else:
+                    site_msg = json_response_body["result"]["result"]
+                    prefix = "[x] "
+                    color = "red"
+                click.secho(f"{prefix}{site_msg}", fg=color)
+            else:
+                click.secho(f"[x] {json_response_body['result']['result']}", fg="red")
+        except Exception as err:
+            click.secho(f"[x] ERROR: {err}")
+            sys.exit(1)
     goodbye()
