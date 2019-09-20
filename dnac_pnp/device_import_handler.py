@@ -146,7 +146,7 @@ def add_device(dnac_api_headers=None, payload_data=None):
     """
     # ========================== Add device to PnP list ================================
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
-    divider(f"Add [{device_serial_number}]")
+    divider(f"Add [{device_serial_number}]", char="-")
     method, api_url, parameters = generate_api_url(api_type="import-device")
     logging.debug(f"Method: {method}, API:{api_url}, Parameters:{parameters}")
     api_response = call_api_endpoint(
@@ -169,7 +169,7 @@ def claim_device(dnac_api_headers=None, payload_data=None):
     :return: (obj) Requests response object
     """
     device_serial_number = payload_data["deviceInfo"]["serialNumber"]
-    divider(f"Claim [{device_serial_number}]")
+    divider(f"Claim [{device_serial_number}]", char="-")
     click.secho(
         f"[*] Starting CLAIM process for serial [{device_serial_number}].....",
         fg="cyan",
@@ -205,7 +205,7 @@ def acclaim_device(api_headers=None, data=None):
     ready_to_add = False
     ready_to_claim = False
     serial_number = data["deviceInfo"]["serialNumber"]
-    divider(f"Device state validation for [{serial_number}]")
+    divider(f"Device state validation for [{serial_number}]", char="-")
     device_attached, device_state, data = _check_device(headers=api_headers, data=data)
     logging.debug(
         f"Device attached?: {device_attached}, State: {device_state}, Data={data}"
@@ -289,17 +289,21 @@ def device_import_in_bulk(configs=None, import_file=None):
     if csv_rows:
         token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
-        for row in csv_rows:
+        for index, row in enumerate(csv_rows):
             air_config = {"deviceInfo": row}
+            divider(f"[{index+1}/{len(csv_rows)}] - [{row['serialNumber']}]")
             logging.debug(json.dumps(air_config, indent=4, sort_keys=True))
-            divider(f"Site [{row['siteName']}] validation for [{row['serialNumber']}]")
+            divider(
+                f"Site [{row['siteName']}] validation for [{row['serialNumber']}]",
+                char="-",
+            )
             # Site Validation
             site_status, data = _check_site_name(headers=headers, data=air_config)
             site_name = data["deviceInfo"]["siteName"]
             serial_number = data["deviceInfo"]["serialNumber"]
             template_name = data["deviceInfo"]["template_name"]
             if site_status:
-                divider(f"Day0 template validation for [{template_name}]")
+                divider(f"Day0 template validation for [{template_name}]", char="-")
                 template_parameter_status, mod_data = _check_template_parameters(
                     dnac_api_headers=headers, data=air_config
                 )

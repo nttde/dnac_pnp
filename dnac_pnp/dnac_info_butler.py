@@ -53,7 +53,7 @@ def get_device_id(
     method, api_url, parameters = generate_api_url(api_type=dnac_api_type)
     if serial_number is not None:
         parameters["serialNumber"] = serial_number
-    if dnac_tab == "pnp":
+    if dnac_tab == "pnp" and show_all:
         parameters["limit"] = get_pnp_device_count(api_headers=dnac_api_headers)
     _, response_body = get_response(
         headers=dnac_api_headers,

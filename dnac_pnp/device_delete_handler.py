@@ -8,6 +8,7 @@ import logging
 
 # Import external python libraries
 import click
+from tqdm import tqdm
 import urllib3
 
 # Import custom (local) python packages
@@ -91,8 +92,8 @@ def remove_devices(configs=None, serials=None):
     if serials:
         token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
-        for serial in serials:
-            divider(f"Removing [{serial}]")
+        for index, serial in enumerate(serials):
+            divider(f"[{index+1}/{len(serials)}] - Removing [{serial}]")
             api_response = delete_device(api_headers=headers, device_serial=serial)
             logging.debug(f"API Response: {api_response}")
             if api_response:
