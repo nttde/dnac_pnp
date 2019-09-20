@@ -138,7 +138,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
     try:
         logging.debug(f"Type: {type(response_body)}")
         response_json = json.loads(response_body)
-        if response_json["status"]:
+        if response_json:
             site_id = response_json["response"][0]["id"]
             logging.debug(f"Site ID: {site_id}")
             click.secho(f"[#] Site ID received!", fg="green")
@@ -148,7 +148,7 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
             click.secho(f"[*] Message: {err_msg}", fg="cyan")
             return False
     except KeyError as err:
-        click.secho(f"[x] Key not found in the response!", fg="red")
+        click.secho(f"[x] {err} Key not found in the response!", fg="red")
         logging.debug(f"Error: {err}")
         sys.exit(1)
 
