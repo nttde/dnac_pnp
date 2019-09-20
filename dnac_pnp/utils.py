@@ -264,10 +264,14 @@ def check_csv_cell_name(cell_name=None):
     :return: (str) Valid cell name
     """
 
-    invalid_entry = re.match("^[pP]roduct.*$", cell_name)
-    if invalid_entry:
-        logging.debug(f"Found invalid header [{cell_name}] in CSV, converting.....")
+    product_id = re.match("^[pP]roduct.*$", cell_name)
+    device_name = re.match("^[dD]evice.*$", cell_name)
+    if product_id:
+        logging.debug(f"Product ID header [{cell_name}] in CSV, converting.....")
         valid_cell_name = "pid"
+    elif device_name:
+        logging.debug(f"Device name header [{cell_name}] in CSV, converting.....")
+        valid_cell_name = "hostname"
     else:
         valid_cell_name = do_camel_case(cell_name)
     return valid_cell_name
