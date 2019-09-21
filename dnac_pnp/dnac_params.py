@@ -31,3 +31,4 @@ device_extra_param_less = ["serialNumber", "hostname", "pid", "state", "source"]
 area_essentials = ["name", "parentName"]
 building_essentials = ["name", "parentName", "latitude", "longitude"]
 floor_essentials = ["name", "parentName", "rfModel", "length", "width", "height"]
+max_col_length = 120

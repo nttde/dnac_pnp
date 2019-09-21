@@ -51,17 +51,12 @@ def _check_payload(payload=None, check=None):
             json_input = json.loads([payload])
             return json_input
         except TypeError:
-            click.secho(
-                f"[!] Warning: Input data stream is not valid JSON!", fg="yellow"
-            )
+            logging.debug(f"[!] Warning: Input data stream is not valid JSON!")
             logging.debug(f"Input data is not valid JSON format")
-            click.secho(
-                f"[$] Trying to convert the input stream into JSON.....", fg="blue"
-            )
+            logging.debug(f"[$] Trying to convert the input stream into JSON.....")
             try:
                 json_input = json.dumps([payload], indent=4, sort_keys=True)
                 logging.debug(f"JSON formatted payload: {json_input}")
-                click.secho(f"[#] Payload converted into valid JSON!", fg="green")
                 return json_input
             except Exception as err:
                 logging.debug(f"Error: {err}")
@@ -97,14 +92,14 @@ def call_api_endpoint(
 
     if data:
         if check_payload:
-            click.secho(f"[*] Checking payload.....", fg="cyan")
+            logging.debug(f"[*] Checking payload.....")
             json_input = _check_payload(payload=data, check=True)
         else:
             json_input = _check_payload(payload=data, check=False)
     else:
         json_input = None
     logging.debug(f"JSON INPUT (call_api_endpoint): {json_input}")
-    click.secho(f"[$] Making API call.....", fg="blue")
+    logging.debug(f"[$] Making API call.....", fg="blue")
     try:
         response = requests.request(
             method,
@@ -155,9 +150,7 @@ def get_response(
     if response.status_code in accepted_status_codes:
         logging.debug(f"Response status code found in accepted codes!")
         response_status = True
-        click.secho(
-            f"[#] [{response.status_code}] API call accepted by the server!", fg="green"
-        )
+        logging.debug(f"[#] [{response.status_code}] API call accepted by the server!")
         response_body = _content_type_check(response=response)
     else:
         logging.debug(f"Response status code not found in accepted codes!")
