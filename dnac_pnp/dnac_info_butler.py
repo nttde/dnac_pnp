@@ -142,12 +142,16 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
             return site_id
         else:
             err_msg = response_json["message"][0]
-            click.secho(f"[*] Message: {err_msg}", fg="cyan")
+            logging.debug(f"[*] Message: {err_msg}")
             return False
     except KeyError as err:
-        click.secho(f"[x] {err} Key not found in the response!", fg="red")
+        logging.debug(f"[x] {err} Key not found in the response!")
         logging.debug(f"Error: {err}")
-        sys.exit(1)
+        return False
+    except IndexError as err:
+        logging.debug(f"[x] {err} The input site is not valid or site is not present")
+        logging.debug(f"Error: {err}")
+        return False
 
 
 # Retrieve image ID
@@ -220,10 +224,6 @@ def get_template_id(
                 max_version = 0
                 for template in response_body:
                     project_name, project_template_name = template_name.split("/")
-                    logging.debug(
-                        f"Project Name: {project_name} --> Template Name: "
-                        f"{project_template_name}"
-                    )
                     if (
                         template["projectName"] == project_name
                         and template["name"] == project_template_name

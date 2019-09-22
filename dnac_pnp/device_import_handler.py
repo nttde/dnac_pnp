@@ -81,10 +81,10 @@ def _check_template_parameters(dnac_api_headers=None, data=None):
                 item in input_parameters for item in template_parameters
             )
         else:
-            click.secho(f"[x] Template parameters not found!", fg="red")
+            logging.debug(f"[x] Template parameters not found!")
             template_parameter_status = False
     else:
-        click.secho(f"[x] Template Name [{template_name}] is not present", fg="red")
+        logging.debug(f"[x] Template Name [{template_name}] is not present")
         template_parameter_status = False
 
     return template_parameter_status, data
@@ -211,7 +211,9 @@ def acclaim_device(api_headers=None, data=None):
             ready_to_claim = True
         elif device_state in non_claimable_states:
             logging.debug(f"[!] Warning: Skipping [{serial_number}].....")
-            logging.debug(f"[!] Reason: Device [{serial_number}] State: [{device_state}]")
+            logging.debug(
+                f"[!] Reason: Device [{serial_number}] State: [{device_state}]"
+            )
             skip_tracer.append(serial_number)
     else:
         ready_to_add = True
@@ -280,14 +282,16 @@ def device_import_in_bulk(configs=None, import_file=None):
         token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
         divider("Device Management")
-        click.secho(f"[*] Starting device management engine.....", fg="cyan")
+        click.secho(
+            f"[*] Starting device management (add + claim) engine.....", fg="cyan"
+        )
         for index, row in enumerate(
             tqdm(
                 csv_rows,
                 ascii=True,
                 ncols=max_col_length,
                 unit="device",
-                desc="Device claim progress",
+                desc="[*] Device claim progress",
             )
         ):
             air_config = {"deviceInfo": row}

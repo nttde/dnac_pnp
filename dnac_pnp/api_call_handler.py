@@ -99,7 +99,7 @@ def call_api_endpoint(
     else:
         json_input = None
     logging.debug(f"JSON INPUT (call_api_endpoint): {json_input}")
-    logging.debug(f"[$] Making API call.....", fg="blue")
+    logging.debug(f"[$] Making API call.....")
     try:
         response = requests.request(
             method,
@@ -157,8 +157,4 @@ def get_response(
         response_status = False
         logging.debug(f"Response Status: {response_status}")
         response_body = _content_type_check(response=response)
-        click.secho(
-            f"[x] Response status: [{response.status_code}] ({response.reason})",
-            fg="red",
-        )
     return response_status, response_body

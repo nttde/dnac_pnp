@@ -95,7 +95,7 @@ def remove_devices(configs=None, serials=None):
         skipped_serial = []
         for index, serial in enumerate(
             tqdm(
-                serials, ascii=True, ncols=max_col_length, desc="Deletion progress", unit="devices"
+                serials, ascii=True, ncols=max_col_length, desc="[*] Deletion progress", unit="devices"
             )
         ):
             api_response = delete_device(api_headers=headers, device_serial=serial)

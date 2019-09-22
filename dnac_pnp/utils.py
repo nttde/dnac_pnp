@@ -390,6 +390,7 @@ def goodbye(before=False, data=None):
     if before:
         if data:
             divider("Before we leave, Please note ")
+            click.secho(f"[*] Total serial skipped: {len(data)}", fg="cyan")
             click.secho(f"[*] Skipped Serials: ", fg="cyan", nl=False)
             click.secho(f"{data}", fg="yellow")
         divider("Goodbye!")
