@@ -55,7 +55,6 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     """
 
     populate_config()
-    click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     # ==================== SINGLE DEVICE IMPORT ========================================
     if import_type == "single":
         click.secho(f"[!] Attention: ", fg="yellow", nl=False)
