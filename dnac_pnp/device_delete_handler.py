@@ -8,6 +8,7 @@ import logging
 
 # Import external python libraries
 import click
+from tqdm import tqdm
 import urllib3
 
 # Import custom (local) python packages
@@ -16,6 +17,7 @@ from .api_endpoint_handler import generate_api_url
 from .api_call_handler import get_response
 from .dnac_token_generator import generate_token
 from .dnac_info_butler import get_device_id
+from .dnac_params import max_col_length
 from .header_handler import get_headers
 from .utils import divider, goodbye
 
@@ -45,8 +47,8 @@ def delete_device(api_headers=None, device_serial=None):
     )
     logging.debug(f"Delete device ID: {device_id} in state: {device_state}")
     if device_id:
-        click.secho(f"[#] Device ID received!", fg="green")
-        click.secho(f"[#] Device current state: [{device_state}]", fg="green")
+        logging.debug(f"[#] Device ID received!")
+        logging.debug(f"[#] Device current state: [{device_state}]")
         if device_state in pnp_device_states:
             dnac_api_type = "remove-device-pnp"
         elif device_state in inventory_device_states:
@@ -71,10 +73,7 @@ def delete_device(api_headers=None, device_serial=None):
         )
         return api_response
     else:
-        click.secho(
-            f"[!] Warning: Device ID not found. SKIPPING serial [{device_serial}].....",
-            fg="yellow",
-        )
+        logging.debug(f"[!]Device ID not found. SKIPPING serial [{device_serial}].....")
         return False
 
 
@@ -91,17 +90,22 @@ def remove_devices(configs=None, serials=None):
     if serials:
         token = generate_token(configs=configs)
         headers = get_headers(auth_token=token)
-        for serial in serials:
-            divider(f"Removing [{serial}]")
+        divider("Deleting devices")
+        click.secho(f"[*] Starting device deletion engine.....", fg="cyan")
+        skipped_serial = []
+        for index, serial in enumerate(
+            tqdm(
+                serials, ascii=True, ncols=max_col_length, desc="[*] Deletion progress", unit="devices"
+            )
+        ):
             api_response = delete_device(api_headers=headers, device_serial=serial)
             logging.debug(f"API Response: {api_response}")
             if api_response:
                 response_status, _ = get_response(response=api_response)
-                if response_status:
-                    click.secho(f"[#] Device [{serial}] removed!", fg="green")
-                else:
+                if not response_status:
                     click.secho(f"[x] Device [{serial}] not removed!", fg="red")
                     logging.debug(f"[{serial}] not removed!")
                     continue
-        click.secho(f"[*] End of the line!", fg="cyan")
-        goodbye()
+            else:
+                skipped_serial.append(serial)
+        goodbye(before=True, data=skipped_serial)

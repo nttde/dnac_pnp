@@ -38,7 +38,7 @@ def generate_api_url(host=None, api_type=None):
     logging.debug(f"Endpoint file: {api_collection}")
     if os.path.isfile(api_collection):
         if os.access(api_collection, os.F_OK) and os.access(api_collection, os.R_OK):
-            click.secho(f"[$] Reading API collection for [{api_type}].....", fg="blue")
+            logging.debug(f"[$] Reading API collection for [{api_type}].....")
             with open(api_collection, "r") as collection:
                 api_collection = json.load(collection)
             api_components = api_collection[api_type]
@@ -53,5 +53,5 @@ def generate_api_url(host=None, api_type=None):
     method = api_components["method"]
     parameters = api_components["parameters"]
     api_url = f"{protocol}://{host}{api}"
-    click.secho(f"[#] API endpoint URL created!", fg="green")
+    logging.debug(f"[#] API endpoint URL created!")
     return method, api_url, parameters

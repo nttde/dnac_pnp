@@ -2,6 +2,17 @@
 History
 =======
 
+0.4.5 (2019-09-23)
+------------------
+
+* Major CLI look and fell changes
+* Bug fixes
+
+0.4.4 (2019-09-20)
+------------------
+
+* Bug fixes as CISCO api changes
+
 0.4.3 (2019-09-19)
 ------------------
 

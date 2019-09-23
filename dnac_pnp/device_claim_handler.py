@@ -69,7 +69,6 @@ def claim(auth_token=None, headers=None, device_id=None, data=None):
     )
     response_status, response_body = get_response(response=api_response)
     if response_status:
-        click.secho(f"[#] Device claimed!", fg="green")
         return True
     else:
         click.secho(f"[x] Device claim failed!", fg="red")

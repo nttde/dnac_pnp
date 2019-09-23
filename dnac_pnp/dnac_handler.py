@@ -55,9 +55,6 @@ def import_manager(inputs=None, import_type=None, **kwargs):
     """
 
     populate_config()
-    divider("Device Management")
-    click.secho(f"[*] Starting device management.....", fg="cyan")
-    click.secho(f"[*] Attempting {import_type} device import.....", fg="cyan")
     # ==================== SINGLE DEVICE IMPORT ========================================
     if import_type == "single":
         click.secho(f"[!] Attention: ", fg="yellow", nl=False)
@@ -78,10 +75,6 @@ def import_manager(inputs=None, import_type=None, **kwargs):
             )
         else:
             device_catalog_file = kwargs.get("device_catalog")
-            click.secho(
-                f"[#] Using device import catalog file from: [{device_catalog_file}]",
-                fg="green",
-            )
         device_import_in_bulk(configs=dnac_configs, import_file=device_catalog_file)
     else:
         click.secho(f"Invalid import type!", fg="red")
@@ -126,8 +119,6 @@ def delete_manager(serials=None, delete_file=None, dry_run=None):
             logging.debug(
                 f"User confirmed deletion of [{len(serials_to_delete)}]devices"
             )
-            divider("Deleting devices")
-            click.secho(f"[*] Starting device deletion engine.....", fg="cyan")
             remove_devices(configs=dnac_configs, serials=serials_to_delete)
     else:
         for serial in serials_to_delete:

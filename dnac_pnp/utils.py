@@ -24,7 +24,7 @@ from . import __version__ as version
 from . import __author__ as author
 from . import __author_email as author_email
 from . import __copyright__ as copy_right
-from .dnac_params import accepted_csv_headers
+from .dnac_params import accepted_csv_headers, max_col_length
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
@@ -220,7 +220,7 @@ def divider(text="", char="="):
     """
 
     pretty = True
-    line_max = 88
+    line_max = max_col_length
     if len(char) != 1:
         raise ValueError(
             "Divider chars need to be one character long. " "Received: {}".format(char)
@@ -300,7 +300,6 @@ def check_csv_header(file_headers=None):
     logging.debug(f"Type of input headers: {type(file_headers)}")
     logging.debug(f"Type of converted headers: {type(ret_headers)}")
     if all(item in ret_headers for item in accepted_csv_headers):
-        click.secho(f"[#] The list of headers is accepted!", fg="green")
         return ret_headers
     else:
         click.secho(
@@ -333,7 +332,6 @@ def parse_csv(file_to_parse=None):
     """
 
     logging.debug(f"Reading csv from [{file_to_parse}]")
-    click.secho(f"[$] Reading CSV file.....", fg="blue")
     csv_rows = []
     with open(file_to_parse) as csv_import_file:
         reader = csv.DictReader(csv_import_file)
@@ -359,7 +357,6 @@ def parse_csv(file_to_parse=None):
                 continue
             logging.debug(f"Stripped row: {row}")
             csv_rows.extend([{title[i]: row[title[i]] for i in range(len(title))}])
-    click.secho(f"[#] Primary input check successful!", fg="green")
     return csv_rows
 
 
@@ -393,6 +390,7 @@ def goodbye(before=False, data=None):
     if before:
         if data:
             divider("Before we leave, Please note ")
+            click.secho(f"[*] Total serial skipped: {len(data)}", fg="cyan")
             click.secho(f"[*] Skipped Serials: ", fg="cyan", nl=False)
             click.secho(f"{data}", fg="yellow")
         divider("Goodbye!")

@@ -53,7 +53,7 @@ def get_device_id(
     method, api_url, parameters = generate_api_url(api_type=dnac_api_type)
     if serial_number is not None:
         parameters["serialNumber"] = serial_number
-    if dnac_tab == "pnp":
+    if dnac_tab == "pnp" and show_all:
         parameters["limit"] = get_pnp_device_count(api_headers=dnac_api_headers)
     _, response_body = get_response(
         headers=dnac_api_headers,
@@ -104,9 +104,7 @@ def get_device_id(
         logging.debug(f"Error: {err}")
         sys.exit(1)
     except IndexError as err:
-        click.secho(
-            f"[!] Index error! " f"Device might not be available in PnP", fg="yellow"
-        )
+        logging.debug(f"[!] Index error! " f"Device might not be available in PnP")
         logging.debug(f"Error: {err}")
         device_state = "Unavailable"
         device_extra = {}
@@ -141,16 +139,19 @@ def get_site_id(authentication_token=None, dnac_api_headers=None, site_name=None
         if response_json:
             site_id = response_json["response"][0]["id"]
             logging.debug(f"Site ID: {site_id}")
-            click.secho(f"[#] Site ID received!", fg="green")
             return site_id
         else:
             err_msg = response_json["message"][0]
-            click.secho(f"[*] Message: {err_msg}", fg="cyan")
+            logging.debug(f"[*] Message: {err_msg}")
             return False
     except KeyError as err:
-        click.secho(f"[x] {err} Key not found in the response!", fg="red")
+        logging.debug(f"[x] {err} Key not found in the response!")
         logging.debug(f"Error: {err}")
-        sys.exit(1)
+        return False
+    except IndexError as err:
+        logging.debug(f"[x] {err} The input site is not valid or site is not present")
+        logging.debug(f"Error: {err}")
+        return False
 
 
 # Retrieve image ID
@@ -223,10 +224,6 @@ def get_template_id(
                 max_version = 0
                 for template in response_body:
                     project_name, project_template_name = template_name.split("/")
-                    logging.debug(
-                        f"Project Name: {project_name} --> Template Name: "
-                        f"{project_template_name}"
-                    )
                     if (
                         template["projectName"] == project_name
                         and template["name"] == project_template_name
@@ -263,9 +260,7 @@ def get_template_parameters(dnac_auth_token=None, api_headers=None, config_id=No
     :return: (str, list) Template content, Template parameters
     """
 
-    click.secho(
-        f"[$] Retrieving template parameters for template ID [{config_id}]", fg="blue"
-    )
+    logging.debug(f"[$] Template ID [{config_id}]")
     if api_headers is None:
         api_headers = get_headers(auth_token=dnac_auth_token)
     method, r_api_url, parameters = generate_api_url(api_type="get-template-parameters")

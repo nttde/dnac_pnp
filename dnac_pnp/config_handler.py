@@ -49,7 +49,7 @@ def _read_configs(config_file_paths=None):
 
     :param config_file_paths: Configuration files full path (default and custom)
     """
-    click.secho(f"[$] Reading configurations.....", fg="blue")
+    logging.debug(f"[$] Reading configurations.....")
     for config_file in config_file_paths:
         with open(config_file, "r") as stream:
             try:
@@ -75,7 +75,7 @@ def load_config(config_file_paths=None):
     file_flag = 0
     permission_flag = 0
     for path in config_file_paths:
-        click.secho(f"[*] Searching configs in: [{path}].....", fg="cyan")
+        logging.debug(f"[*] Searching configs in: [{path}].....")
         if os.path.exists(path) and os.path.isfile(path):
             file_flag = 1
             if os.access(path, os.F_OK) and os.access(path, os.R_OK):
