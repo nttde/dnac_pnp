@@ -17,6 +17,8 @@ requirements = [
     "colorama==0.4.1",
     "pyyaml==5.1.1",
     "tabulate==0.8.3",
+    "netmiko==2.4.1",
+    "tqdm==4.36.1"
 ]
 
 setup_requirements = []
