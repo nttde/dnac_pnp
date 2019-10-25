@@ -1,6 +1,17 @@
 Installation
 ============
 
+Getting the package
+-------------------
+The current version of the release in (.tar.gz/.zip/.tar.bz2) format can always be found in
+the release section of this project in SCM.
+
+Here is the direct link to the releases section - 
+`Releases <https://scm.dimensiondata.com/de-ps/digital-infrastructure/automation/carnival/dnac-pnp/-/releases>`_
+
+Download preffered format and extract. Once that is done, move forward witht the dependency
+management.
+
 Dependencies
 ------------
 
