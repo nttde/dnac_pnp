@@ -55,6 +55,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://scm.dimensiondata.com/de-ps/automation/carnival/dnac-pnp",
-    version="1.0.1b1",
+    version="1.0.1b2",
     zip_safe=False,
 )
