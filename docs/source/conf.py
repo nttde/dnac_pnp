@@ -31,7 +31,7 @@ with open(release_file, "rb") as rf:
 # -- Project information -----------------------------------------------------
 
 project = "dnac_pnp"
-copyright = "2019, NTT Germany Network Automation Development Team"
+copyright = "2020, NTT Germany, Network Automation Development Team"
 author = "Dalwar Hossain (dalwar.hossain@global.ntt)"
 
 # The short X.Y version
@@ -52,8 +52,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
-    "recommonmark",
     "sphinx.ext.napoleon",
+    "recommonmark",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
