@@ -7,6 +7,11 @@ History
 
 * Second release with package missing error fixes
 
+1.0.1b2 (2019-09-23)
+-------------------------
+
+* Beta release 2
+
 1.0.1b1 (2019-09-23)
 -------------------------
 
