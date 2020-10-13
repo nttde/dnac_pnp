@@ -1,6 +1,6 @@
 /*
 File: Jenkinsfile
-Author: Dalwar Hossain (dalwar.hossain@dimensiondata.com)
+Author: Dalwar Hossain (dalwar.hossain@global.ntt)
 Copyright: Dalwar Hossain, Dimensiondata Germany AG & Co. KG
 */
 

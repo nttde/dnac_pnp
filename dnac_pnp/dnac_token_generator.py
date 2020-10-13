@@ -19,7 +19,7 @@ from .utils import divider
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Login to DNAC, generate token and return

@@ -28,7 +28,7 @@ from .dnac_params import accepted_csv_headers, max_col_length
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Show only package info

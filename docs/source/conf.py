@@ -31,8 +31,8 @@ with open(release_file, "rb") as rf:
 # -- Project information -----------------------------------------------------
 
 project = "dnac_pnp"
-copyright = "2019, NTT Dimension Data Germany PS Automation Team"
-author = "Dalwar Hossain (dalwar.hossain@dimensiondata.com)"
+copyright = "2019, NTT Germany Network Automation Development Team"
+author = "Dalwar Hossain (dalwar.hossain@global.ntt)"
 
 # The short X.Y version
 version = release_info["__version__"]
@@ -194,7 +194,7 @@ latex_elements = {
         %\fancyhead[LE]{\small \nouppercase{\leftmark}}
 
         %% for oneside: change footer at right side. If you want to use Left and right then use same as header defined above.
-        %%\fancyfoot[R]{\ifthenelse{\isodd{\value{page}}}{{\tiny NTT Dimension Data} }{\href{http://pythondsp.readthedocs.io/en/latest/pythondsp/toc.html}{\tiny PythonDSP}}}
+        %%\fancyfoot[R]{\ifthenelse{\isodd{\value{page}}}{{\tiny NTT Germany} }{\href{http://pythondsp.readthedocs.io/en/latest/pythondsp/toc.html}{\tiny PythonDSP}}}
 
     
 
@@ -229,7 +229,7 @@ latex_elements = {
             \end{figure}
 
             \vspace{0mm}
-            \Large \textbf{{NTT Dimension Data Germany PS Automation Team}}
+            \Large \textbf{{NTT Germany Network Automation Development Team}}
 
             \vspace*{0mm}
             \small  Last updated : {\today}
@@ -259,7 +259,7 @@ latex_documents = [
         "index",
         "dnac_pnp.tex",
         "dnac_pnp Documentation",
-        "NTT Dimension Data Germany PS Automation Team",
+        "NTT Germany Network Automation Development Team",
         "howto",
     )
 ]
@@ -275,7 +275,7 @@ man_pages = [
         "index",
         "dnac_pnp",
         "dnac_pnp Documentation",
-        ["NTT Dimension Data Germany PS Automation Team"],
+        ["NTT Germany Network Automation Development Team"],
         1,
     )
 ]

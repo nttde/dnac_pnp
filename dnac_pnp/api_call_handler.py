@@ -18,7 +18,7 @@ from .dnac_params import accepted_status_codes
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Content type check

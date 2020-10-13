@@ -29,7 +29,7 @@ from .utils import divider, goodbye, parse_csv
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 # Keep track of skipped serials
 skip_tracer = []
