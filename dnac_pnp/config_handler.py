@@ -18,7 +18,7 @@ from . import __package_name__ as package_name
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Config and template path

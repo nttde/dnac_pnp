@@ -12,13 +12,13 @@ with open("HISTORY.rst", "r", encoding="utf-8") as history_file:
     history = history_file.read()
 
 requirements = [
-    "click==7.0",
-    "requests==2.22.0",
-    "colorama==0.4.1",
-    "pyyaml==5.1.1",
-    "tabulate==0.8.3",
-    "netmiko==2.4.1",
-    "tqdm==4.36.1"
+    "click>=7.0",
+    "requests>=2.22.0",
+    "colorama>=0.4.1",
+    "pyyaml>=5.1.1",
+    "tabulate>=0.8.3",
+    "netmiko>=2.4.1",
+    "tqdm>=4.36.1"
 ]
 
 setup_requirements = []
@@ -27,15 +27,16 @@ test_requirements = []
 
 setup(
     author="Dalwar Hossain",
-    author_email="dalwar.hossain@dimensiondata.com",
-    maintainer="NTT Germany PS Automation Team",
-    maintainer_email="DE.PS.DI.Automation@dimensiondata.com",
+    author_email="dalwar.hossain@global.ntt",
+    maintainer="NTT Germany Network Automation Development Team",
+    maintainer_email="DE.PS.DI.Automation@global.ntt",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 4-Beta",
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3 :: Only",
     ],
     description="Cisco DNA center PnP device add, claim and delete automation",

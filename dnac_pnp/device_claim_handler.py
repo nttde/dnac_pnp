@@ -16,7 +16,7 @@ from .header_handler import get_headers
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Generate claim payload

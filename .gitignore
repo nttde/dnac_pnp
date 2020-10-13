@@ -1,5 +1,5 @@
 # Basic .gitignore file
-# Author: Dalwar Hossain (dalwar.hossain@dimensiondata.com)
+# Author: Dalwar Hossain (dalwar.hossain@global.ntt)
 
 # Memory Profiling data #
 #########################
@@ -21,6 +21,7 @@ env/
 ##################################
 dist/
 build/
+_build/
 
 # Python egg metadata, regenerated from source files by setuptools #
 ####################################################################

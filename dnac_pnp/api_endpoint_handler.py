@@ -17,7 +17,7 @@ from . import dnac_handler as dnac
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 # Define API URL generator

@@ -20,7 +20,7 @@ from .ios_utils import divider, goodbye
 
 # Source code meta data
 __author__ = "Dalwar Hossain"
-__email__ = "dalwar.hossain@dimensiondata.com"
+__email__ = "dalwar.hossain@global.ntt"
 
 
 def _file_parser(file_path=None):
