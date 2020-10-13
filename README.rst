@@ -24,8 +24,8 @@ Cisco DNA center device claim and delete automation
    :alt: Supported platforms
    :target: https://dnc-pnp.readthedocs.io/
 
-.. image:: https://readthedocs.org/projects/dnc-pnp/badge/?version=latest&style=for-the-badge
-   :target: https://dnc-pnp.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/dnac-pnp/badge/?version=latest&style=for-the-badge
+   :target: https://dnac-pnp.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge
