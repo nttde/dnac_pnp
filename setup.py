@@ -58,6 +58,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/nttde/dnac_pnp.git",
-    version="1.0.2b2",
+    version="1.0.2b1",
     zip_safe=False,
 )
