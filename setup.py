@@ -32,7 +32,7 @@ setup(
     maintainer_email="DE.PS.DI.Automation@global.ntt",
     python_requires=">=3.6",
     classifiers=[
-        "Development Status :: 4-Beta",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.6",
