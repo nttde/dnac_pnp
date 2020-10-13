@@ -4,6 +4,33 @@ dnac-pnp
 
 Cisco DNA center device claim and delete automation
 
+.. image:: https://img.shields.io/badge/license-bsd--3--clause-blue.svg?style=for-the-badge
+    :alt: License
+    :target: https://opensource.org/licenses/BSD-3-Clause
+
+.. image:: https://img.shields.io/pypi/v/dnac_pnp.svg?logo=python&style=for-the-badge
+    :alt: Pypi Version
+    :target: https://pypi.org/project/dnac_pnp/
+
+.. image:: https://img.shields.io/pypi/wheel/dnac_pnp?color=blue&logo=python&style=for-the-badge
+   :alt: PyPI - Wheel
+   :target: https://dnc-pnp.readthedocs.io/
+
+.. image:: https://img.shields.io/pypi/pyversions/dnac_pnp?logo=python&style=for-the-badge
+   :alt: PyPI - Python Version
+   :target: https://dnc-pnp.readthedocs.io/
+
+.. image:: https://img.shields.io/badge/platform-windows%2Flinux%2Fmacos-blue.svg?style=for-the-badge
+   :alt: Supported platforms
+   :target: https://dnc-pnp.readthedocs.io/
+
+.. image:: https://readthedocs.org/projects/dnc-pnp/badge/?version=latest&style=for-the-badge
+   :target: https://dnc-pnp.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+.. image:: https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge
+    :target: https://github.com/python/black
+    :alt: Code Style
 
 Features
 --------
