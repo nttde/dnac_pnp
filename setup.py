@@ -30,6 +30,7 @@ setup(
     author_email="dalwar.hossain@global.ntt",
     maintainer="NTT Germany Network Automation Development Team",
     maintainer_email="DE.PS.DI.Automation@global.ntt",
+    python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4-Beta",
         "Intended Audience :: Developers",
@@ -47,6 +48,7 @@ setup(
         ]
     },
     install_requires=requirements,
+    license="BSD-3-Clause License",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords=["dnac", "pnp", "cisco", "NTT"],
@@ -56,6 +58,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/nttde/dnac_pnp.git",
-    version="1.0.1b2",
+    version="1.0.2b2",
     zip_safe=False,
 )
