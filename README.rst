@@ -34,7 +34,7 @@ Cisco DNA center device claim and delete automation
 
 Documentation
 -------------
-Full documentation avaialable at [https://dnac-pnp.readthedocs.io/en/latest/](https://dnac-pnp.readthedocs.io/en/latest/)
+Full documentation avaialable at rtddocumentation_
 
 Features
 --------
@@ -247,3 +247,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+.. _rtddocumentation: https://dnac-pnp.readthedocs.io/en/latest/
